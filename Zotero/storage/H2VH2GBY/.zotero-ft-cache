@@ -1,0 +1,551 @@
+Proceedings of the Twenty-Fourth International Joint Conference on Artificial Intelligence (IJCAI 2015)
+
+Imaging Time-Series to Improve Classiﬁcation and Imputation
+Zhiguang Wang and Tim Oates Department of Computer Science and Electric Engineering
+University of Maryland, Baltimore County {stephen.wang, oates}@umbc.edu
+
+Abstract
+Inspired by recent successes of deep learning in computer vision, we propose a novel framework for encoding time series as different types of images, namely, Gramian Angular Summation/Difference Fields (GASF/GADF) and Markov Transition Fields (MTF). This enables the use of techniques from computer vision for time series classiﬁcation and imputation. We used Tiled Convolutional Neural Networks (tiled CNNs) on 20 standard datasets to learn high-level features from the individual and compound GASF-GADF-MTF images. Our approaches achieve highly competitive results when compared to nine of the current best time series classiﬁcation approaches. Inspired by the bijection property of GASF on 0/1 rescaled data, we train Denoised Auto-encoders (DA) on the GASF images of four standard and one synthesized compound dataset. The imputation MSE on test data is reduced by 12.18%-48.02% when compared to using the raw data. An analysis of the features and weights learned via tiled CNNs and DAs explains why the approaches work.
+1 Introduction
+Since 2006, the techniques developed from deep neural networks (or, deep learning) have greatly impacted natural language processing, speech recognition and computer vision research [Bengio, 2009; Deng and Yu, 2014]. One successful deep learning architecture used in computer vision is convolutional neural networks (CNN) [LeCun et al., 1998]. CNNs exploit translational invariance by extracting features through receptive ﬁelds [Hubel and Wiesel, 1962] and learning with weight sharing, becoming the state-of-the-art approach in various image recognition and computer vision tasks [Krizhevsky et al., 2012]. Since unsupervised pretraining has been shown to improve performance [Erhan et al., 2010], sparse coding and Topographic Independent Component Analysis (TICA) are integrated as unsupervised pretraining approaches to learn more diverse features with complex invariances [Kavukcuoglu et al., 2010; Ngiam et al., 2010].
+Along with the success of unsupervised pretraining applied in deep learning, others are studying unsupervised learning
+
+algorithms for generative models, such as Deep Belief Networks (DBN) and Denoised Auto-encoders (DA) [Hinton et al., 2006; Vincent et al., 2008]. Many deep generative models are developed based on energy-based model or autoencoders. Temporal autoencoding is integrated with Restrict Boltzmann Machines (RBMs) to improve generative models [Ha¨usler et al., 2013]. A training strategy inspired by recent work on optimization-based learning is proposed to train complex neural networks for imputation tasks [Brakel et al., 2013]. A generalized Denoised Auto-encoder extends the theoretical framework and is applied to Deep Generative Stochastic Networks (DGSN) [Bengio et al., 2013; Bengio and Thibodeau-Laufer, 2013].
+Inspired by recent successes of supervised and unsupervised learning techniques in computer vision, we consider the problem of encoding time series as images to allow machines to “visually” recognize, classify and learn structures and patterns. Reformulating features of time series as visual clues has raised much attention in computer science and physics. In speech recognition systems, acoustic/speech data input is typically represented by concatenating Mel-frequency cepstral coefﬁcients (MFCCs) or perceptual linear predictive coefﬁcient (PLPs) [Hermansky, 1990]. Recently, researchers are trying to build different network structures from time series for visual inspection or designing distance measures. Recurrence Networks were proposed to analyze the structural properties of time series from complex systems [Donner et al., 2010; 2011]. They build adjacency matrices from the predeﬁned recurrence functions to interpret the time series as complex networks. Silva et al. extended the recurrence plot paradigm for time series classiﬁcation using compression distance [Silva et al., 2013]. Another way to build a weighted adjacency matrix is extracting transition dynamics from the ﬁrst order Markov matrix [Campanharo et al., 2011]. Although these maps demonstrate distinct topological properties among different time series, it remains unclear how these topological properties relate to the original time series since they have no exact inverse operations.
+We present three novel representations for encoding time series as images that we call the Gramian Angular Summation/Difference Field (GASF/GADF) and the Markov Transition Field (MTF). We applied deep Tiled Convolutional Neural Networks (Tiled CNN) [Ngiam et al., 2010] to classify time series images on 20 standard datasets. Our experimental
+
+3939
+
+Time Series x
+
+Polar Coordinate
+
+GASF
+
+GADF
+
+Figure 1: Illustration of the proposed encoding map of Gramian Angular Fields. X is a sequence of rescaled time series in the ’Fish’ dataset. We transform X into a polar coordinate system by eq. (3) and ﬁnally calculate its GASF/GADF images with eqs. (5) and (7). In this example, we build GAFs without PAA smoothing, so the GAFs both have high resolution.
+
+results demonstrate our approaches achieve the best performance on 9 of 20 standard dataset compared with 9 previous and current best classiﬁcation methods. Inspired by the bijection property of GASF on 0/1 rescaled data, we train the Denoised Auto-encoder (DA) on the GASF images of 4 standard and a synthesized compound dataset. The imputation MSE on test data is reduced by 12.18%-48.02% compared to using the raw data. An analysis of the features and weights learned via tiled CNNs and DA explains why the approaches work.
+
+2 Imaging Time Series
+We ﬁrst introduce our two frameworks for encoding time series as images. The ﬁrst type of image is a Gramian Angular Field (GAF), in which we represent time series in a polar coordinate system instead of the typical Cartesian coordinates. In the Gramian matrix, each element is actually the cosine of the summation of angles. Inspired by previous work on the duality between time series and complex networks [Campanharo et al., 2011], the main idea of the second framework, the Markov Transition Field (MTF), is to build the Markov matrix of quantile bins after discretization and encode the dynamic transition probability in a quasi-Gramian matrix.
+
+2.1 Gramian Angular Field
+Given a time series X = {x1, x2, ..., xn} of n real-valued observations, we rescale X so that all values fall in the interval [−1, 1] or [0, 1] by:
+
+x˜i−1
+
+=
+
+(xi −max(X )+(xi −min(X )) max(X )−min(X )
+
+(1)
+
+or
+
+x˜i0
+
+=
+
+xi −min(X ) max(X )−min(X )
+
+(2)
+
+Thus we can represent the rescaled time series X˜ in polar coordinates by encoding the value as the angular cosine and the time stamp as the radius with the equation below:
+
+φ = arccos (x˜i), −1 ≤ x˜i ≤ 1, x˜i ∈ X˜
+
+r
+
+=
+
+ti N
+
+,
+
+ti
+
+∈
+
+N
+
+(3)
+
+In the equation above, ti is the time stamp and N is a con-
+
+stant factor to regularize the span of the polar coordinate sys-
+
+tem. This polar coordinate based representation is a novel
+
+way to understand time series. As time increases, correspond-
+
+ing values warp among different angular points on the span-
+
+ning circles, like water rippling. The encoding map of equa-
+
+tion 3 has two important properties. First, it is bijective as
+
+cos(φ) is monotonic when φ ∈ [0, π]. Given a time series,
+
+the proposed map produces one and only one result in the po-
+
+lar coordinate system with a unique inverse map. Second, as
+
+opposed to Cartesian coordinates, polar coordinates preserve
+
+absolute temporal relations. We will discuss this in more de-
+
+tail in future work.
+
+Rescaled data in different intervals have different angular
+
+bounds.
+
+[0, 1]
+
+corresponds
+
+to
+
+the
+
+cosine
+
+function
+
+in
+
+[0,
+
+π 2
+
+],
+
+while cosine values in the interval [−1, 1] fall into the angu-
+
+lar bounds [0, π]. As we will discuss later, they provide dif-
+
+ferent information granularity in the Gramian Angular Field
+
+for classiﬁcation tasks, and the Gramian Angular Difference
+
+Field (GADF) of [0, 1] rescaled data has the accurate inverse
+
+map. This property actually lays the foundation for imputing
+
+missing value of time series by recovering the images.
+
+After transforming the rescaled time series into the polar
+
+coordinate system, we can easily exploit the angular perspec-
+
+tive by considering the trigonometric sum/difference between
+
+each point to identify the temporal correlation within differ-
+
+ent time intervals. The Gramian Summation Angular Field
+
+(GASF) and Gramian Difference Angular Field (GADF) are
+
+deﬁned as follows:
+
+GASF = [cos(φi + φj)]
+
+(4)
+
+= X˜ · X˜ − I − X˜ 2 · I − X˜ 2 (5)
+
+GADF = [sin(φi − φj)]
+
+(6)
+
+= I − X˜ 2 · X˜ − X˜ · I − X˜ 2 (7)
+
+I is the unit row vector [1, 1, ..., 1]. After transforming to the polar coordinate system, we take time series at each time step as a 1-D m√etric space. By deﬁning the inner p√roduct < x, y >= x·y − 1 − x2 · 1 − y2 and < x, y >= 1 − x2 ·
+y−x· 1 − y2, two types of Gramian Angular Fields (GAFs) are actually quasi-Gramian matrices [< x˜1, x˜1 >]. 1
+The GAFs have several advantages. First, they provide a way to preserve temporal dependency, since time increases as the position moves from top-left to bottom-right. The GAFs contain temporal correlations because G(i,j||i−j|=k) represents the relative correlation by superposition/difference of directions with respect to time interval k. The main diagonal Gi,i is the special case when k = 0, which contains the original value/angular information. From the main diagonal, we can reconstruct the time series from the high level features learned by the deep neural network. However, the GAFs are large because the size of the Gramian matrix is n × n when the length of the raw time series is n. To reduce the size of
+
+1’quasi’ because the functions < x, y > we deﬁned do not satisfy the property of linearity in inner-product space.
+
+3940
+
+Time Series x
+
+A
+
+B
+
+A 0.944 0.056
+
+B 0.056 0.860
+
+C0
+
+0.085
+
+D0
+
+0
+
+C
+
+D
+
+0
+0.084 0.840
+0.075
+
+0
+0 0.075 Markov Transition Matrix
+0.925
+
+Convolutional I Feature maps ������ = 6
+
+Receptive Field 8 × 8
+
+...
+
+TICA Pooling I
+
+Convolutional II TICA Pooling II ...
+
+Linear SVM
+
+...
+
+Untied weights k = 2
+
+Pooling Size 3 × 3
+
+...
+
+...
+
+MTF
+
+Figure 2: Illustration of the proposed encoding map of Markov Transition Fields. X is a sequence of time-series in the ’ECG’ dataset . X is ﬁrst discretized into Q quantile bins. Then we calculate its Markov Transition Matrix W and ﬁnally build its MTF with eq. (8).
+
+the GAFs, we apply Piecewise Aggregation Approximation (PAA) [Keogh and Pazzani, 2000] to smooth the time series while preserving the trends. The full pipeline for generating the GAFs is illustrated in Figure 1.
+
+2.2 Markov Transition Field
+We propose a framework similar to Campanharo et al. for encoding dynamical transition statistics, but we extend that idea by representing the Markov transition probabilities sequentially to preserve information in the time domain.
+Given a time series X, we identify its Q quantile bins and assign each xi to the corresponding bins qj (j ∈ [1, Q]). Thus we construct a Q×Q weighted adjacency matrix W by counting transitions among quantile bins in the manner of a ﬁrstorder Markov chain along the time axis. wi,j is given by the frequency with which a point in quantile qj is followed by a point in quantile qi. After normalization by j wij = 1, W is the Markov transition matrix. It is insensitive to the distribution of X and temporal dependency on time steps ti. However, our experimental results on W demonstrate that getting rid of the temporal dependency results in too much information loss in matrix W . To overcome this drawback, we deﬁne the Markov Transition Field (MTF) as follows:
+
+wij|x1∈qi,x1∈qj · · · wij|x1∈qi,xn∈qj 
+
+M
+
+=
+
+ wij |x2 ∈qi ,x1 ∈qj
+
+ 
+
+...
+
+··· ...
+
+wij|x2∈qi,xn∈qj 
+
+...
+
+ 
+
+(8)
+
+wij|xn∈qi,x1∈qj · · · wij|xn∈qi,xn∈qj
+
+We build a Q × Q Markov transition matrix (W ) by dividing the data (magnitude) into Q quantile bins. The quantile bins that contain the data at time stamp i and j (temporal axis) are qi and qj (q ∈ [1, Q]). Mij in the MTF denotes the transition probability of qi → qj. That is, we spread out matrix W which contains the transition probability on the magnitude axis into the MTF matrix by considering the temporal positions.
+By assigning the probability from the quantile at time step i to the quantile at time step j at each pixel Mij, the MTF M actually encodes the multi-span transition probabilities of
+
+Receptive Field 3 × 3
+
+Pooling Size 3 × 3
+
+Figure 3: Structure of the tiled convolutional neural networks. We ﬁx the size of receptive ﬁelds to 8 × 8 in the ﬁrst convolutional layer and 3 × 3 in the second convolutional layer. Each TICA pooling layer pools over a block of 3 × 3 input units in the previous layer without warping around the borders to optimize for sparsity of the pooling units. The number of pooling units in each map is exactly the same as the number of input units. The last layer is a linear SVM for classiﬁcation. We construct this network by stacking two Tiled CNNs, each with 6 maps (l = 6) and tiling size k = 1, 2, 3.
+
+the time series. Mi,j||i−j|=k denotes the transition probability between the points with time interval k. For example,
+
+Mij|j−i=1 illustrates the transition process along the time axis with a skip step. The main diagonal Mii, which is a special case when k = 0 captures the probability from each
+
+quantile to itself (the self-transition probability) at time step
+
+i. To make the image size manageable and computation more
+
+efﬁcient, we reduce the MTF size by averaging the pixels in
+
+each non-overlapping m × m patch with the blurring kernel
+
+{
+
+1 m2
+
+}m×m.
+
+That
+
+is,
+
+we
+
+aggregate
+
+the
+
+transition
+
+probabilities
+
+in each subsequence of length m together. Figure 2 shows the
+
+procedure to encode time series to MTF.
+
+3 Classify Time Series Using GAF/MTF with
+Tiled CNNs
+We apply Tiled CNNs to classify time series using GAF and MTF representations on 20 datasets from [Keogh et al., 2011] in different domains such as medicine, entomology, engineering, astronomy, signal processing, and others. The datasets are pre-split into training and testing sets to facilitate experimental comparisons. We compare the classiﬁcation error rate of our GASF-GADF-MTF approach with previously published results of 3 competing methods and 6 best approaches proposed recently: early state-of-the-art 1NN classiﬁers based on Euclidean distance and DTW (Best Warping Window and no Warping Window), Fast-Shapelets[Rakthanmanon and Keogh, 2013], a 1NN classiﬁer based on SAX with Bag-of-Patterns (SAX-BoP) [Lin et al., 2012], a SAX based Vector Space Model (SAX-VSM)[Senin and Malinchik, 2013], a classiﬁer based on the Recurrence Patterns Compression Distance(RPCD) [Silva et al., 2013], a treebased symbolic representation for multivariate time series (SMTS) [Baydogan and Runger, 2014] and a SVM classiﬁer based on a bag-of-features representation (TSBF) [Baydogan
+
+3941
+
+Table 1: Summary of error rates for 3 classic baselines, 6 recently published best results and our approach. The symbols , ∗, † and • represent datasets generated from human motions, ﬁgure shapes, synthetically predeﬁned procedures and all remaining temporal signals, respectively. For our approach, the numbers in brackets are the optimal PAA size and quantile size.
+
+Dataset 1NN- 1NN-DTW- 1NN-DTW-
+
+Fast- SAX- SAX- RPCD SMTS TSBF GASF-GADF-
+
+RAW
+
+BWW
+
+nWW Shapelet BoP VSM
+
+MTF
+
+50words • Adiac ∗ Beef • CBF † Coffee • ECG •
+FaceAll ∗ FaceFour ∗
+ﬁsh ∗ Gun Point Lighting2 • Lighting7 •
+OliveOil • OSULeaf ∗ SwedishLeaf ∗ synthetic control †
+Trace † Two Patterns †
+wafer • yoga ∗ #wins
+
+0.369 0.389 0.467 0.148 0.25 0.12 0.286 0.216 0.217 0.087 0.246 0.425 0.133 0.483 0.213 0.12
+0.24 0.09 0.005 0.17
+0
+
+0.242 0.391 0.467 0.004 0.179
+0.12 0.192 0.114
+0.16 0.087 0.131 0.288 0.167 0.384 0.157 0.017
+0.01 0.0015 0.005
+0.155 0
+
+0.31 0.396
+0.5 0.003 0.179
+0.23 0.192
+0.17 0.167 0.093 0.131 0.274 0.133 0.409 0.21 0.007
+0 0 0.02 0.164 3
+
+N/A 0.514 0.447 0.053 0.068 0.227 0.411 0.090 0.197 0.061 0.295 0.403 0.213 0.359 0.269 0.081 0.002 0.113 0.004 0.249
+0
+
+0.466 0.432 0.433 0.013 0.036
+0.15 0.219 0.023 0.074 0.027 0.164 0.466 0.133 0.256 0.198 0.037
+0 0.129 0.003 0.17
+1
+
+N/A 0.381 0.33 0.02
+0 0.14 0.207
+0 0.017 0.007 0.196 0.301
+0.1 0.107 0.01 0.251
+0 0.004 0.0006 0.164
+5
+
+0.2264 0.3836 0.3667
+N/A 0
+0.14 0.1905 0.0568 0.1257
+0 0.2459 0.3562 0.1667 0.3554 0.0976
+N/A N/A N/A 0.0034 0.134
+3
+
+0.289 0.248 0.26 0.02 0.029 0.159 0.191 0.165 0.147 0.011 0.269 0.255 0.177 0.377 0.08 0.025
+0 0.003
+0 0.094
+4
+
+0.209 0.245 0.287 0.009 0.004 0.145 0.234 0.051
+0.08 0.011 0.257 0.262
+0.09 0.329 0.075 0.008 0.02 0.001 0.004 0.149
+4
+
+0.301 (16, 32) 0.373 (32, 48) 0.233 (64, 40) 0.009 (32, 24)
+0 (64, 48) 0.09 (8, 32) 0.237 (8, 48) 0.068 (8, 16) 0.114 (8, 40) 0.08 (32, 32) 0.114 (16, 40) 0.260 (16, 48)
+0.2 (8, 48) 0.358 (16, 32) 0.065 (16, 48) 0.007 (64, 48)
+0 (64, 48) 0.091 (64, 32)
+0 (64, 16) 0.196 (8, 32)
+9
+
+et al., 2013].
+
+3.1 Tiled Convolutional Neural Networks
+Tiled Convolutional Neural Networks are a variation of Convolutional Neural Networks that use tiles and multiple feature maps to learn invariant features. Tiles are parameterized by a tile size k to control the distance over which weights are shared. By producing multiple feature maps, Tiled CNNs learn overcomplete representations through unsupervised pretraining with Topographic ICA (TICA). For the sake of space, please refer to [Ngiam et al., 2010] for more details. The structure of Tiled CNNs applied in this paper is illustrated in Figure 3.
+
+3.2 Experiment Setting
+
+In our experiments, the size of the GAF image is regulated
+
+by the the number of PAA bins SGAF . Given a time se-
+
+ries X of size n, we divide the time series into SGAF ad-
+
+jacent, non-overlapping windows along the time axis and ex-
+
+tract the means of each bin. This enables us to construct the
+
+smaller GAF matrix GSGAF ×SGAF . MTF requires the time series to be discretized into Q quantile bins to calculate the
+
+Q × Q Markov transition matrix, from which we construct
+
+the raw MTF image Mn×n afterwards. Before classiﬁca-
+
+tion, we shrink the MTF image size to SMT F × SMT F by
+
+the
+
+blurring
+
+kernel
+
+{
+
+1 m2
+
+}m×m
+
+where
+
+m
+
+=
+
+n SMT F
+
+.
+
+The
+
+Tiled CNN is trained with image size {SGAF , SMT F } ∈
+
+{16, 24, 32, 40, 48} and quantile size Q ∈ {8, 16, 32, 64}. At
+
+the last layer of the Tiled CNN, we use a linear soft margin
+
+SVM [Fan et al., 2008] and select C by 5-fold cross valida-
+
+tion over {10−4, 10−3, . . . , 104} on the training set.
+
+For each input of image size SGAF or SMT F and quantile size Q, we pretrain the Tiled CNN with the full unlabeled dataset (both training and test set) to learn the initial weights W through TICA. Then we train the SVM at the last layer by selecting the penalty factor C with cross validation. Finally, we classify the test set using the optimal hyperparameters {S, Q, C} with the lowest error rate on the training set. If two or more models tie, we prefer the larger S and Q because larger S helps preserve more information through the PAA procedure and larger Q encodes the dynamic transition statistics with more detail. Our model selection approach provides generalization without being overly expensive computationally.
+3.3 Results and Discussion
+We use Tiled CNNs to classify the single GASF, GADF and MTF images as well as the compound GASF-GADF-MTF images on 20 datasets. For the sake of space, we do not show the full results on single-channel images. Generally, our approach is not prone to overﬁtting by the relatively small difference between training and test set errors. One exception is the Olive Oil dataset with the MTF approach where the test error is signiﬁcantly higher.
+In addition to the risk of potential overﬁtting, we found that MTF has generally higher error rates than GAFs. This is most likely because of the uncertainty in the inverse map of MTF. Note that the encoding function from −1/1 rescaled time series to GAFs and MTF are both surjections. The map functions of GAFs and MTF will each produce only one image with ﬁxed S and Q for each given time series X . Because they are both surjective mapping functions, the inverse image of both mapping functions is not ﬁxed. However, the
+
+3942
+
+Figure 4: Pipeline of time series imputation by image recovery. Raw GASF → ”broken” GASF → recovered GASF (top), Raw time series → corrupted time series with missing value → predicted time series (bottom) on dataset ”SwedishLeaf” (left) and ”ECG” (right).
+
+mapping function of GAFs on 0/1 rescaled time series are bijective. As shown in a later section, we can reconstruct the raw time series from the diagonal of GASF, but it is very hard to even roughly recover the signal from MTF. Even for −1/1 rescaled data, the GAFs have smaller uncertainty in the inverse image of their mapping function because such randomness only comes from the ambiguity of cos(φ) when φ ∈ [0, 2π]. MTF, on the other hand, has a much larger inverse image space, which results in large variations when we try to recover the signal. Although MTF encodes the transition dynamics which are important features of time series, such features alone seem not to be sufﬁcient for recognition/classiﬁcation tasks.
+Note that at each pixel, Gij denotes the superstition/difference of the directions at ti and tj, Mij is the transition probability from the quantile at ti to the quantile at tj. GAF encodes static information while MTF depicts information about dynamics. From this point of view, we consider them as three “orthogonal” channels, like different colors in the RGB image space. Thus, we can combine GAFs and MTF images of the same size (i.e. SGAF s = SMT F ) to construct a triple-channel image (GASF-GADF-MTF). It combines both the static and dynamic statistics embedded in the raw time series, and we posit that it will be able to enhance classiﬁcation performance. In the experiments below, we pretrain and tune the Tiled CNN on the compound GASF-GADF-MTF images. Then, we report the classiﬁcation error rate on test sets. In Table 1, the Tiled CNN classiﬁers on GASF-GADFMTF images achieved signiﬁcantly competitive results with 9 other state-of-the-art time series classiﬁcation approaches.
+
+4 Image Recovery on GASF for Time Series Imputation with Denoised Auto-encoder
+As previously mentioned, the mapping functions from −1/1 rescaled time series to GAFs are surjections. The uncertainty among the inverse images come from the ambiguity of the cos(φ) when φ ∈ [0, 2π]. However the mapping functions of 0/1 rescaled time series are bijections. The main diagonal of GASF, i.e. {Gii} = {cos(2φi)} allows us to precisely reconstruct the original time series by
+
+cos(2φ) + 1
+
+π
+
+cos(φ) =
+
+φ ∈ [0, ]
+
+(9)
+
+2
+
+2
+
+Thus, we can predict missing values among time series
+
+through recovering the ”broken” GASF images. During training, we manually add ”salt-and-pepper” noise (i.e., randomly set a number of points to 0) to the raw time series and transform the data to GASF images. Then a single layer Denoised Auto-encoder (DA) is fully trained as a generative model to reconstruct GASF images. Note that at the input layer, we do not add noise again to the ”broken” GASF images. A Sigmoid function helps to learn the nonlinear features at the hidden layer. At the last layer we compute the Mean Square Error (MSE) between the original and ”broken” GASF images as the loss function to evaluate ﬁtting performance. To train the models simple batch gradient descent is applied to back propagate the inference loss. For testing, after we corrupt the time series and transform the noisy data to ”broken” GASF, the trained DA helps recover the image, on which we extract the main diagonal to reconstruct the recovered time series. To compare the imputation performance, we also test standard DA with the raw time series data as input to recover the missing values (Figure. 4).
+4.1 Experiment Setting
+For the DA models we use batch gradient descent with a batch size of 20. Optimization iterations run until the MSE changed less than a threshold of 10−3 for GASF and 10−5 for raw time series. A single hidden layer has 500 hidden neurons with sigmoid functions. We choose four dataset of different types from the UCR time series repository for the imputation task: ”Gun Point” (human motion), ”CBF” (synthetic data), ”SwedishLeaf” (ﬁgure shapes) and ”ECG” (other remaining temporal signals). To explore if the statistical dependency learned by the DA can be generalized to unknown data, we use the above four datasets and the ”Adiac” dataset together to train the DA to impute two totally unknown test datasets, ”Two Patterns” and ”wafer” (We name these synthetic miscellaneous datasets ”7 Misc”). To add randomness to the input of DA, we randomly set 20% of the raw data among a speciﬁc time series to be zero (salt-and-pepper noise). Our experiments for imputation are implemented with Theano [Bastien et al., 2012]. To control for the random initialization of the parameters and the randomness induced by gradient descent, we repeated every experiment 10 times and report the average MSE.
+4.2 Results and Discussion
+
+Table 2: MSE of imputation on time series using raw data and GASF images.
+
+Dataset
+
+Full MSE
+
+Interpolation MSE
+
+ECG CBF Gun Point SwedishLeaf 7 Misc
+
+Raw 0.01001 0.02009 0.00693 0.00606 0.06134
+
+GASF 0.01148 0.03520 0.00894 0.00889 0.10130
+
+Raw 0.02301 0.04116 0.01069 0.01117 0.10998
+
+GASF 0.01196 0.03119 0.00841 0.00981 0.07077
+
+In Table 2, ”Full MSE” means the MSE between the complete recovered and original sequence and ”Imputation MSE”
+
+3943
+
+Figure 5: (a) Original GASF and its six learned feature maps before the SVM layer in Tiled CNNs (left). (b) Raw time series and its reconstructions from the main diagonal of six feature maps on ’50Words’ dataset (right).
+means the MSE of only the unknown points among each time series. Interestingly, DA on the raw data perform well on the whole sequence, generally, but there is a gap between the full MSE and imputation MSE. That is, DA on raw time series can ﬁt the known data much better than predicting the unknown data (like overﬁtting). Predicting the missing value using GASF always achieves slightly higher full MSE but the imputation MSE is reduced by 12.18%-48.02%. We can observe that the difference between the full MSE and imputation MSE is much smaller on GASF than on the raw data. Interpolation with GASF has more stable performance than on the raw data.
+Why does predicting missing values using GASF have more stable performance than using raw time series? Actually, the transformation maps of GAFs are generally equivalent to a kernel trick. By deﬁning the inner product k(xi, xj), we achieve data augmentation by increasing the dimensionality of the raw data. By preserving the temporal and spatial information in GASF images, the DA utilizes both temporal and spatial dependencies by considering the missing points as well as their relations to other data that has been explicitly encoded in the GASF images. Because the entire sequence, instead of a short subsequence, helps predict the missing value, the performance is more stable as the full MSE and imputation MSE are close.
+5 Analysis on Features and Weights Learned by Tiled CNNs and DA
+In contrast to the cases in which the CNNs is applied in natural image recognition tasks, neither GAFs nor MTF have natural interpretations of visual concepts like “edges” or “angles”. In this section we analyze the features and weights learned through Tiled CNNs to explain why our approach works.
+Figure 5 illustrates the reconstruction results from six feature maps learned through the Tiled CNNs on GASF (by Eqn 9). The Tiled CNNs extracts the color patch, which is essentially a moving average that enhances several receptive ﬁelds within the nonlinear units by different trained weights. It is not a simple moving average but the synthetic integration by considering the 2D temporal dependencies among different time intervals, which is a beneﬁt from the Gramian matrix structure that helps preserve the temporal information. By observing the orthogonal reconstruction from each layer of the feature maps, we can clearly observe that the tiled CNNs can extract the multi-frequency dependencies through the convo-
+
+Figure 6: All 500 ﬁlters learned by DA on the ”Gun Point” (left) and ”7 Misc” (right) dataset.
+lution and pooling architecture on the GAF and MTF images to preserve the trend while addressing more details in different subphases. The high-leveled feature maps learned by the Tiled CNN are equivalent to a multi-frequency approximator of the original curve. Our experiments also demonstrates the learned weight matrix W with the constraint W W T = I, which makes effective use of local orthogonality. The TICA pretraining provides the built-in advantage that the function w.r.t the parameter space is not likely to be ill-conditioned as W W T = 1. The weight matrix W is quasi-orthogonal and approaching 0 without large magnitude. This implies that the condition number of W approaches 1 and helps the system to be well-conditioned.
+As for imputation, because the GASF images have no concept of ”angle” and ”edge”, DA actually learned different prototypes of the GASF images (Table 6). We ﬁnd that there is signiﬁcant noise in the ﬁlters on the ”7 Misc” dataset because the training set is relatively small to better learn different ﬁlters. Actually, all the noisy ﬁlters with no patterns work like one Gaussian noise ﬁlter.
+6 Conclusions and Future Work
+We created a pipeline for converting time series into novel representations, GASF, GADF and MTF images, and extracted multi-level features from these using Tiled CNN and DA for classiﬁcation and imputation. We demonstrated that our approach yields competitive results for classiﬁcation when compared to recently best methods. Imputation using GASF achieved better and more stable performance than on the raw data using DA. Our analysis of the features learned from Tiled CNN suggested that Tiled CNN works like a multi-frequency moving average that beneﬁts from the 2D temporal dependency that is preserved by Gramian matrix. Features learned by DA on GASF is shown to be different prototype, as correlated basis to construct the raw images.
+Important future work will involve developing recurrent neural nets to process streaming data. We are also quite interested in how different deep learning architectures perform on the GAFs and MTF images. Another important future work is to learn deep generative models with more high-level features on GAFs images. We aim to further apply our time series models in real world regression/imputation and anomaly detection tasks.
+
+3944
+
+References
+[Bastien et al., 2012] Fre´de´ric Bastien, Pascal Lamblin, Razvan Pascanu, James Bergstra, Ian J. Goodfellow, Arnaud Bergeron, Nicolas Bouchard, and Yoshua Bengio. Theano: new features and speed improvements. Deep Learning and Unsupervised Feature Learning NIPS 2012 Workshop, 2012.
+[Baydogan and Runger, 2014] Mustafa Gokce Baydogan and George Runger. Learning a symbolic representation for multivariate time series classiﬁcation. Data Mining and Knowledge Discovery, pages 1–23, 2014.
+[Baydogan et al., 2013] Mustafa Gokce Baydogan, George Runger, and Eugene Tuv. A bag-of-features framework to classify time series. Pattern Analysis and Machine Intelligence, IEEE Transactions on, 35(11):2796–2802, 2013.
+[Bengio and Thibodeau-Laufer, 2013] Yoshua Bengio and Eric Thibodeau-Laufer. Deep generative stochastic networks trainable by backprop. arXiv preprint arXiv:1306.1091, 2013.
+[Bengio et al., 2013] Yoshua Bengio, Li Yao, Guillaume Alain, and Pascal Vincent. Generalized denoising auto-encoders as generative models. In Advances in Neural Information Processing Systems, pages 899–907, 2013.
+[Bengio, 2009] Yoshua Bengio. Learning deep architectures for ai. Foundations and trends R in Machine Learning, 2(1):1–127, 2009.
+[Brakel et al., 2013] Phile´mon Brakel, Dirk Stroobandt, and Benjamin Schrauwen. Training energy-based models for timeseries imputation. The Journal of Machine Learning Research, 14(1):2771–2797, 2013.
+[Campanharo et al., 2011] Andriana SLO Campanharo, M Irmak Sirer, R Dean Malmgren, Fernando M Ramos, and Lu´ıs A Nunes Amaral. Duality between time series and networks. PloS one, 6(8):e23378, 2011.
+[Deng and Yu, 2014] Li Deng and Dong Yu. Deep learning: Methods and applications. Technical Report MSR-TR-2014-21, January 2014.
+[Donner et al., 2010] Reik V Donner, Yong Zou, Jonathan F Donges, Norbert Marwan, and Ju¨rgen Kurths. Recurrence networksa novel paradigm for nonlinear time series analysis. New Journal of Physics, 12(3):033025, 2010.
+[Donner et al., 2011] Reik V Donner, Michael Small, Jonathan F Donges, Norbert Marwan, Yong Zou, Ruoxi Xiang, and Ju¨rgen Kurths. Recurrence-based time series analysis by means of complex network methods. International Journal of Bifurcation and Chaos, 21(04):1019–1046, 2011.
+[Erhan et al., 2010] Dumitru Erhan, Yoshua Bengio, Aaron Courville, Pierre-Antoine Manzagol, Pascal Vincent, and Samy Bengio. Why does unsupervised pre-training help deep learning? The Journal of Machine Learning Research, 11:625–660, 2010.
+[Fan et al., 2008] Rong-En Fan, Kai-Wei Chang, Cho-Jui Hsieh, Xiang-Rui Wang, and Chih-Jen Lin. Liblinear: A library for large linear classiﬁcation. The Journal of Machine Learning Research, 9:1871–1874, 2008.
+[Ha¨usler et al., 2013] Chris Ha¨usler, Alex Susemihl, Martin P Nawrot, and Manfred Opper. Temporal autoencoding improves generative models of time series. arXiv preprint arXiv:1309.3103, 2013.
+[Hermansky, 1990] Hynek Hermansky. Perceptual linear predictive (plp) analysis of speech. the Journal of the Acoustical Society of America, 87(4):1738–1752, 1990.
+
+[Hinton et al., 2006] Geoffrey Hinton, Simon Osindero, and YeeWhye Teh. A fast learning algorithm for deep belief nets. Neural computation, 18(7):1527–1554, 2006.
+[Hubel and Wiesel, 1962] David H Hubel and Torsten N Wiesel. Receptive ﬁelds, binocular interaction and functional architecture in the cat’s visual cortex. The Journal of physiology, 160(1):106, 1962.
+[Kavukcuoglu et al., 2010] Koray Kavukcuoglu, Pierre Sermanet, Y-Lan Boureau, Karol Gregor, Michae¨l Mathieu, and Yann L Cun. Learning convolutional feature hierarchies for visual recognition. In Advances in neural information processing systems, pages 1090–1098, 2010.
+[Keogh and Pazzani, 2000] Eamonn J Keogh and Michael J Pazzani. Scaling up dynamic time warping for datamining applications. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining, pages 285– 289. ACM, 2000.
+[Keogh et al., 2011] Eamonn Keogh, Xiaopeng Xi, Li Wei, and Chotirat Ann Ratanamahatana. The ucr time series classiﬁcation/clustering homepage. URL= http://www. cs. ucr. edu/˜ eamonn/time series data, 2011.
+[Krizhevsky et al., 2012] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. Imagenet classiﬁcation with deep convolutional neural networks. In Advances in neural information processing systems, pages 1097–1105, 2012.
+[LeCun et al., 1998] Yann LeCun, Le´on Bottou, Yoshua Bengio, and Patrick Haffner. Gradient-based learning applied to document recognition. Proceedings of the IEEE, 86(11):2278–2324, 1998.
+[Lin et al., 2012] Jessica Lin, Rohan Khade, and Yuan Li. Rotationinvariant similarity in time series using bag-of-patterns representation. Journal of Intelligent Information Systems, 39(2):287– 315, 2012.
+[Ngiam et al., 2010] Jiquan Ngiam, Zhenghao Chen, Daniel Chia, Pang W Koh, Quoc V Le, and Andrew Y Ng. Tiled convolutional neural networks. In Advances in Neural Information Processing Systems, pages 1279–1287, 2010.
+[Rakthanmanon and Keogh, 2013] Thanawin Rakthanmanon and Eamonn Keogh. Fast shapelets: A scalable algorithm for discovering time series shapelets. In Proceedings of the thirteenth SIAM conference on data mining (SDM). SIAM, 2013.
+[Senin and Malinchik, 2013] Pavel Senin and Sergey Malinchik. Sax-vsm: Interpretable time series classiﬁcation using sax and vector space model. In Data Mining (ICDM), 2013 IEEE 13th International Conference on, pages 1175–1180. IEEE, 2013.
+[Silva et al., 2013] Diego F Silva, Vinicius Souza, MA De, and Gustavo EAPA Batista. Time series classiﬁcation using compression distance of recurrence plots. In Data Mining (ICDM), 2013 IEEE 13th International Conference on, pages 687–696. IEEE, 2013.
+[Vincent et al., 2008] Pascal Vincent, Hugo Larochelle, Yoshua Bengio, and Pierre-Antoine Manzagol. Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning, pages 1096–1103. ACM, 2008.
+
+3945
+

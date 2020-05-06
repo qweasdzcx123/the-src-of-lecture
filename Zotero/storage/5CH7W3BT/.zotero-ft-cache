@@ -1,0 +1,881 @@
+RSB Decoupling Property of MAP Estimators
+
+arXiv:1611.02629v1 [cs.IT] 8 Nov 2016
+
+Ali Bereyhi∗, Ralf Müller∗, Hermann Schulz-Baldes† ∗Institute for Digital Communications (IDC), †Department of Mathematics,
+Friedrich Alexander Universität (FAU), Erlangen, Germany
+ali.bereyhi@fau.de, ralf.r.mueller@fau.de, schuba@mi.uni-erlangen.de
+
+Abstract—The large-system decoupling property of a MAP estimator is studied when it estimates the i.i.d. vector x from the observation y = Ax + z with A being chosen from a wide range of matrix ensembles, and the noise vector z being i.i.d. and Gaussian. Using the replica method, we show that the marginal joint distribution of any two corresponding input and output symbols converges to a deterministic distribution which describes the input-output distribution of a single user system followed by a MAP estimator. Under the bRSB assumption, the single user system is a scalar channel with additive noise where the noise term is given by the sum of an independent Gaussian random variable and b correlated interference terms. As the bRSB assumption reduces to RS, the interference terms vanish which results in the formerly studied RS decoupling principle.
+
+I. INTRODUCTION
+
+A linear vector system with Additive White Gaussian Noise (AWGN) is described by
+
+y = Ax + z
+
+(1)
+
+where the independent and identically distributed (i.i.d.) source vector xn×1, taken from support n, is measured by the ran-
+dom system matrix Ak×n and corrupted by an i.i.d. Gaussian
+noise vector zk×1. The observation vector y is given to the vector estimator g(·) which maps the k-dimensional vector y to an n-dimensional vector xˆn×1 ∈ n. The entries of xˆ are in general correlated due to the coupling imposed by A
+and g(·). Considering the entries xj and xˆj, 1 ≤ j ≤ n, the marginal joint distribution of (xˆj , xj) in the large-system limit, i.e. k, n ↑ ∞, is of interest. To clarify the point, consider the linear estimation, i.e. g(y) = GTy for some Gk×n, and denote A = [a1 · · · an] and G = [g1 · · · gn] with ai and gi being k × 1 vectors for i ∈ {1, . . . , n}. Thus,
+
+n
+
+xˆj = gjTaj xj +
+
+gjTai xi + gjTz.
+
+(2)
+
+i=1,i=j
+
+One considers the right hand side (r.h.s.) of (2) as the linear estimation of a single user system with additive impairment in which the impairment term is not necessarily Gaussian and the system is indexed by j. For some families of A and G, it is shown that the index dependency of these systems vanishes and the impairment term converges to a Gaussian noise term with modiﬁed power level when the system dimensions tend to inﬁnity, e.g. [1]. Thus, one can assume the linear vector estimator in the large-system limit to decouple into a bank of single user linear estimators operating over n parallel scalar systems with additive Gaussian noise terms. This decoupling
+
+This work was supported by the German Research Foundation, Deutsche Forschungsgemeinschaft (DFG), under Grant No. MU 3735/2-1.
+
+property of the linear estimators is rigorously justiﬁed invoking the central limit theorem and the properties of large random matrices. For nonlinear forms of g(·), however, the analysis faces difﬁculties, since the output entries do not linearly decouple. Tanaka noted the similarity between the asymptotic analysis of spin glasses [2] and vector estimators and showed that the performance of a vector estimator in the large-system limit can be represented as the macroscopic parameter of a spin glass [3]. Consequently, a class of generally nonlinear estimators was analyzed using the nonrigorous replica method developed in statistical mechanics. Inspired by [3], several works employed the replica method to study the performance of nonlinear estimators in the asymptotic regime considering different classes of estimators, system matrices, and performance measures, e.g. [4]. Having the decoupling property of the linear estimators in mind, it was conjectured that this property holds for nonlinear estimators as well. In [5], Guo and Verdú justiﬁed this conjecture for the postulated Minimum Mean Square Error (MMSE) estimator
+
+g(y) = E{x|y, A}
+
+(3)
+
+where A is considered to be i.i.d., and the expectation is taken over x due to some postulated posterior distribution qx|y,A. For this setup, the authors showed the Replica Symmetry (RS) decoupling principle which says that under the RS assumption the marginal joint distribution of (xj, xˆj ) converges to the input-output joint distribution of a scalar channel with additive Gaussian noise followed by a single user MMSE estimator. The RS decoupling principle was further extended to the case with a postulated Maximum-A-Posteriori (MAP) estimator in [6] where Rangan et al. studied
+
+g(y) = arg min
+v
+
+1 2λ
+
+y − Av
+
+2 + u(v)
+
+(4)
+
+Ê Ê for some “utility function” u(·) : n → + and non-negative
+
+real “estimation parameter” λ. Except for the cases with an
+
+i.i.d. system matrix, the decoupling property of nonlinear
+
+estimators for a larger class of matrix ensembles has not
+
+yet been addressed precisely. In [7], the authors investigated
+
+this issue partially by studying the support recovery of sparse
+
+Gaussian sources. They considered the case of a source vector
+
+which is ﬁrst randomly measured by a squared matrix, and
+
+then, the measurements are sparsely sampled by an i.i.d. binary
+
+vector. Employing a MAP estimator for recovering, the RS
+
+decoupling principle was justiﬁed for the case in which the
+
+measuring matrix belongs to a large set of matrix ensembles.
+
+Although the class of matrices is broadened in [7], the result
+
+cannot be considered as a complete generalization of [5] and
+
+[6], since it is restricted to cases with a sparse Gaussian source and kn−1 ≤ 1. Another issue not investigated in the literature is the marginal joint distribution under the Replica Symmetry Breaking (RSB) assumption. In fact, the previous studies investigated the decoupling principle considering the RS ansatz; however, despite the RS validity in some particular cases, there are still several cases requiring further RSB investigations, e.g. [8], [9].
+In this paper, we address both the issues and broaden the scope of the decoupling principle stated in [6] to both a larger set of matrix ensembles, and the RSB ansätze. More precisely, we justify the decoupling property of the postulated MAP estimator when
+1) A is chosen from a large family of random matrices, 2) kn−1 takes any non-negative real number, and 3) the RS and RSB ansätze are considered.
+For this setup, we show that under all replica ansätze, the joint distribution of (xj , xˆj) in the large-system limit converges to the input-output distribution of a scalar system in which the source symbol is corrupted by effective noise and estimated by a single user MAP estimator. We determine the effective noise term and estimation parameter under the RSB assumption with b steps of breaking (bRSB), and show that the noise term under this assumption is given by the sum of an independent Gaussian random variable and b correlated terms. By reducing the assumption to RS, the correlated terms vanish, and the noise term becomes Gaussian. Thus, one can consider the decoupling principle of [6] to be a special case of the more general decoupling principle illustrated here.
+Notation: We represent vectors, scalars and matrices with bold lower case, non-bold lower case, and bold upper case
+Ê letters, respectively. The set of real numbers is denoted by ,
+and AT and AH indicate the transposed and Hermitian of A. Im is the m × m identity matrix, 1m is the matrix with all entries equal to one, and ⊗ denotes the Kronecker product. For a random variable x, px represents either the Probability Mass Function (PMF) or Probability Density Function (PDF), and Fx represents the Cumulative Distribution Function (CDF). We denote the expectation over x by Ex, and an expectation over all random variables involved in a given expression by E. For sake of compactness, the set of integers {1, . . . , n} is denoted by [1 : n], the zero-mean and unit-variance Gaussian PDF by π(·), and
+
+Dt := π(t)dt.
+
+(5)
+
+Whenever needed, we consider the entries of x to be discrete random variables; the results of this paper, however, are in full generality and directly extend to continuous distributions.
+
+II. PROBLEM FORMULATION
+
+Let the system in (1) satisfy the following constraints.
+
+(a) The number of observations k is a deterministic sequence of n such that
+
+lim
+n↑∞
+
+k n
+
+=
+
+1 r
+
+<
+
+∞.
+
+(6)
+
+(b) xn×1 is an i.i.d. random vector with each element being
+Ê distributed due to px over in which ⊆ . Ê (c) Ak×n is randomly generated over k×n ⊆ k×n, such
+that J = ATA has the eigendecomposition
+
+J = UDUT
+
+(7)
+
+where U is an orthogonal Haar distributed matrix and
+D is a diagonal matrix with the empirical eigenvalue distribution (density of states) converging as n ↑ ∞ to a deterministic distribution FJ. (d) zk×1 is a real i.i.d. zero-mean Gaussian random vector with variance λ0, i.e., z ∼ N (0, λ0Ik). (e) x, A, and z are independent.
+
+In order to estimate the source vector, the postulated MAP esti-
+
+mator as deﬁned in (4) is employed. The estimators postulates
+
+a non-negative estimation parameter λ and a non-negative util-
+
+ity function u(·) which decouples, i.e., u(x) =
+
+n i=1
+
+u(xi
+
+).
+
+Deﬁning the estimated vector xˆ := g(y), the conditional
+
+distribution of xˆj given xj for some j ∈ [1 : n] is denoted by
+pxjˆ(|nx). Thus, the marginal joint distribution of xj and xˆj at the mass point (vˆ, v) is written as
+
+pxˆj,xj (vˆ, v) = px(v)pxjˆ(|nx)(vˆ|v).
+
+(8)
+
+Considering the large-system limit, we deﬁne the asymptotic conditional distribution of xˆj given xj at (vˆ, v) as
+
+pjxˆ|x(vˆ|v)
+
+:=
+
+lim
+n↑∞
+
+pxjˆ(|nx) (vˆ|v ).
+
+(9)
+
+We also suppose the self averaging assumption which says
+(f) Given A of the form (7) with FJ, the limit in (9) exists and is almost surely constant in realizations of A.
+
+III. GENERAL DECOUPLING PRINCIPLE
+The main contribution of this study is to extend the scope of the decoupling principle. To illustrate the result, consider the following single user system: the input x is passed through the channel y = x + z where z ∼ pz|x for the given input x. The observation y is then given to a single user MAP estimator with the same utility function as for the vector estimator deﬁned in Section II, i.e. u(·), and an estimation parameter denoted by λs. Indicating the conditional distribution of the estimator’s output xˆ for the given input x by pxˆ|x, our general decoupling principle says that under a set of assumptions (a) the asymptotic conditional distribution pjxˆ|x is indepen-
+dent of the index j, and we have pjxˆ|x = pxˆ|x. (b) pz|x and λs are determined in terms of λ, λ0 and the
+statistics of x and A.
+The set of assumptions which yields the validity of the above statements are enforced within the large-system analysis. In the following, we brieﬂy illustrate our approach and determine the parameters of the single user system.
+
+IV. DERIVATION OF GENERAL DECOUPLING PRINCIPLE
+Before illustrating our derivation approach, let us deﬁne the R-transform. For a random variable t, the Stieltjes transform
+
+over the upper half complex plane is deﬁned as Gt(s) = E [t− s]−1. Denoting the inverse with respect to (w.r.t.) composition with G−t 1(·), the R-transform is Rt(ω) = G−t 1(ω) − ω−1 such that limω↓0 Rt(ω) = E t. The deﬁnition also extends
+to matrix arguments. Assuming a matrix Mn×n to have the eigendecomposition M = U diag[λ1, . . . , λn] U−1, Rt(M) is then deﬁned as Rt(M) = U diag[Rt(λ1), . . . , Rt(λn)] U−1.
+
+The derivation of the general decoupling principle is based
+
+on the moment method. To clarify the approach, consider the
+
+non-negative integers k and ℓ, and deﬁne the joint moment Mjk(,nℓ ) = E xˆkj xℓj , for j ∈ [1 : n]. After evaluating the limit of Mjk(,nℓ ) as n ↑ ∞, we show that for all k and ℓ the asymptotic
+joint moment is equivalent to the corresponding joint moment
+
+of the single user system. Consequently, using the uniqueness
+
+of the mapping from the set of integer moments’ sequences
+
+to the set of measures, under a set of conditions investigated
+
+in the classical moment problem [10], we conclude that both
+
+couples (xˆj , xj) and (xˆ, x) have a same distribution. We start with evaluating the limit of Mjk(,nℓ ). The evaluation is based on
+the nonrigorous method of replicas developed in the theory
+
+of spin glasses [2], and accepted as a mathematical tool in
+
+information theory. To do so, deﬁne the “weighted average
+joint moment” over the index set Ï ⊂ [1 : n] as
+
+Ï Ï Mk,ℓ(n)(xˆ; x) := E | 1 |
+
+xˆkw xℓw .
+
+Ï w∈
+
+(10)
+
+Ï Setting = [j : j + nη] for some η ∈ (0, 1], the asymptotic
+
+joint moment of jth entry can be written as
+
+Ï Mjk,ℓ
+
+:=
+
+lim
+n↑∞
+
+Mjk(,nℓ )
+
+=
+
+lim
+n↑∞
+
+lim
+η↓0
+
+Mk,ℓ(n)(xˆ;
+
+x).
+
+(11)
+
+Thus, the evaluation of the asymptotic moment reduces to
+
+taking the limits in the r.h.s. of (11) which needs the weighted
+
+average joint moment in (10) to be explicitly calculated for an
+
+arbitrary integer n. Alternatively, we can deﬁne the function
+
+Z(β, h) =
+
+Ï e−β[
+
+1 2λ
+
+y−Av
+
+] . 2+u(v) +hnMk,(ℓn)(v;x)
+
+(12)
+
+v
+
+with v ∈ n. Noting that xˆ = g(y) with g(·) deﬁned in (4),
+
+Ï Mk,ℓ(n)(xˆ; x)
+
+=
+
+lim lim
+β↑∞ h↓0
+
+1∂ n ∂h
+
+E
+
+log Z(β, h).
+
+(13)
+
+The logarithmic expectation in the r.h.s. of (13) is not a trivial
+
+task to do, and therefore, one bypasses the direct evaluation
+
+using the Riesz equality which for any random variable t states E log t = limm↓0 m−1 log E tm. Thus, regarding (11) and (13)
+
+Mjk,ℓ
+
+=
+
+lim lim lim lim lim
+n↑∞ η↓0 β↑∞ h↓0 m↓0
+
+1 n
+
+∂ ∂h
+
+log E [Z(β, h)]m m
+
+(14)
+
+Ï for = [j : j + nη]. In (14), we face two major difﬁculties:
+1) evaluating the real moments i.e., E [Z(β, h)]m, and 2) tak-
+
+ing the limits in the order stated. Basic analytical methods
+
+fail to address these challenges properly, and therefore, we
+
+invoke the nonrigorous method of replicas. The replica method
+
+suggests to evaluate the moment for an arbitrary integer m as
+
+an analytic function in m; then, assume that 1) the “replica
+
+continuity” holds which means that the function analytically continues from the set of integers to the real axis (or at least a vicinity of zero), and 2) the limits are exchangeable. Following the above prescription, we consider the ﬁrst assumption and ﬁnd E [Z(β, h)]m which for an integer m reduces to
+
+m
+E
+
+Ï e [ ] . −β
+
+1 2λ
+
+A(x−va)+z
+
+2+u(va) +hnMk,(ℓn)(va;x)
+
+(15)
+
+a=1 va
+
+In order to evaluate (15), one can initially take the expectation over z and A. Due to the lack of space, we leave the details for
+the extended version of the manuscript; however, we brieﬂy
+explain the strategy. After taking the expectations, and deﬁning the m × m “replica correlation matrix” Q such that [Q]ab = n−1(x − va)T(x − vb), (15) is given in terms of Q as
+
+E [Z(β, h)]m = Ex e−nG(TQ)enI(Q)dQ
+
+(16)
+
+Ê with dQ :=
+
+m a,b=1
+
+d[Q]ab,
+
+T
+
+:=
+
+1 2λ
+
+Im
+
+−
+
+β
+
+λ0 2λ2
+
+1m,
+
+and
+
+the
+
+integral being taken over m2 . For a given x, enI(Q) measures
+
+the probability weight of the set of replicas, {va}m a=1, in which the correlation matrix is Q; moreover, G(·) is deﬁned as
+
+β
+G(M) = Tr{MRJ(−2ωM)}dω + ǫn (17)
+0
+
+where Tr{·} denotes the trace, RJ(·) is the R-transform w.r.t. FJ, and ǫn tends to zero as n ↑ ∞. Here, one can employ the
+
+Laplace method of integration and replace the r.h.s. of (16)
+
+in the large-system limit with the integrand at its saddle point
+
+multiplied by some bounded coefﬁcient Kn; thus, as n ↑ ∞
+
+E [Z(β, h)]m =. Kne−n[G(TQ˜ )−I(Q˜ )]
+
+(18)
+
+at the saddle point Q˜ . Substituting (18) in (14), we have
+
+Mjk,ℓ
+
+=
+
+lim
+η↓0
+
+lim lim E
+β↑∞ m↓0
+
+v M[k1,:ℓm](v; x)E(Q˜ , x, v; β) v E(Q˜ , x, v; β)
+
+(19)
+
+where xm×1 = [x, . . . , x]T with x ∼ px, vm×1 ∈ m and
+
+E (Q˜ , x, v; β) = e−β(x−v)TTRJ(−2βTQ˜ )(x−v)−βu(v). (20)
+
+Here, one needs to ﬁnd the saddle point which is not a feasible task in general. The strategy for pursuing the analysis is to restrict the saddle point, i.e. Q˜ , to be of a special form, and ﬁnd the solution within the restricted set of matrices. This is where an additional assumption such as the RS or RSB assumption arises. It is clear that these restrictions do not lead us to the correct solution in general, and therefore, one needs to widen the set of replica correlation matrices to ﬁnd a more accurate solution. In the sequel, we consider different structures on the correlation matrix and ﬁnd the replica ansatz under those assumptions. However, considering (19), it is observed that “regardless of the structure” on Q˜ , the joint moment Mjk,ℓ is independent of the index j even before taking the limit η ↓ 0. Therefore, employing the moment method, we conclude
+
+Proposition 1 Let the vector system satisfy the constraints in Section II; moreover, assume the replica continuity to hold,
+
+λs0z
+
+x+
+
+y gmap[(·); λs, u] xˆ
+
+λs0z0
+
+λs1z1
+
+x+
+
++
+
+y gmap[(·); λs, u] xˆ
+
+Fig. 1: The decoupled scalar system under the RS ansatz.
+
+and the limits in (14) to exist and exchange. Then pjxˆ|x, as deﬁned in (9), does not depend on the index j.
+
+Proposition 1 states a more general form of the decoupling
+
+principle studied in previous works. In fact, the only assump-
+
+tions which need to be satisﬁed are the replica continuity and the exchange of limits; and, no structure of the correlation matrix is imposed. However, the decoupled scalar system does depend on the structure imposed on Q˜ . To ﬁnd the decoupled single user system, we start with the most primary structure which is imposed by considering the RS assumption.
+
+RS Assumption: Here, we restrict the search to the set of
+
+parameterized matrices which are of the form
+
+Q˜
+
+=
+
+q1m
+
++
+
+χ β Im.
+
+(21)
+
+Ê for some χ, q ∈ +. Substituting in (19), we have
+
+Mjk,ℓ = E gkxℓDz
+
+(22)
+
+where g := gmap[(y); λs, u] with y = x + λs0z and
+
+gmap[(y);
+
+λs,
+
+u]
+
+=
+
+arg
+
+min
+v
+
+1 2λs
+
+(y
+
+−
+
+v)2
+
++
+
+u(v)
+
+.
+
+Moreover, λs0 and λs are deﬁned as
+
+λs0 =
+
+RJ
+
+(−
+
+χ λ
+
+)
+
+−2
+
+∂ ∂χ
+
+[λ0
+
+χ
+
+−
+
+λq]
+
+RJ(−
+
+χ λ
+
+)
+
+λs =
+
+RJ
+
+(−
+
+χ λ
+
+)
+
+−1
+λ
+
+where q = E [g − x]2Dz, and χ satisﬁes
+
+(23)
+(24a) (24b)
+
+λs0χ = λsE [g − x]zDz.
+
+(25)
+
+(23) describes a single user MAP estimator with the postulated utility function u(·) and estimation parameter λs. Thus,
+
+Proposition 2 Let the assumptions in Proposition 1, as well
+
+as the RS assumption hold, and consider the single user system
+
+in Figure 1 for j ∈ [1 :
+
+wn]i,thpλjxˆ|s0x
+
+and λs as deﬁned in (24a) and as deﬁned in (9) describes the
+
+(24b). Then conditional
+
+distribution of xˆ given x in Figure 1 where gmap[(·); λs, u] is
+
+a single user MAP deﬁned in (23), and pz|x(z|x) = π(z).
+
+The results in the literature have always considered the RS
+
+ansatz, and can be recovered as special cases of Proposition 2. E.g., results of [6] are derived by setting RJ(ω) = (1 − rω)−1.
+The RS ansatz, however, does not provide a valid solution,
+
+in general. Parisi in [11] introduced the RSB scheme which
+
+widens the restricted set of saddle point matrices recursively. To illustrate the RSB scheme, let Qb be a basic structure for
+
+the replica correlation matrix; moreover, assume m to be a
+
+multiple of an integer ξ. Then, the correlation matrix can be grouped as a ξ × ξ matrix of blocks with each block being an
+
+Fig. 2: The decoupled scalar system under the 1RSB ansatz.
+
+m ξ
+
+×
+
+m ξ
+
+matrix.
+
+In
+
+this
+
+case,
+
+a
+
+new
+
+structure
+
+for
+
+the
+
+correlation
+
+matrix is obtained by setting the diagonal blocks to be Qb and
+
+the off-diagonal blocks to be κ1 m for some κ. In fact, the new ξ
+set of correlation matrices is constructed by imposing the RS
+structure block-wisely using Qb and κ1 m as basic blocks. The ξ
+RSB scheme can be recursively iterated: one can set the basic
+structure Qb and ﬁnd the new structure Qb1; then, by taking Qb1 as the new basic structure, a wider set of correlation matrices
+is found. Parisi considers Qb to have the RS structure.
+
+1RSB Assumption: Using the RSB scheme with one step of
+
+iteration, the structure of the correlation matrix is found as
+
+Q˜
+
+=
+
+q1m
+
++ pI mβ µ
+
+⊗ 1µ β
+
++
+
+χ β Im
+
+(26)
+
+Ê for some χ, p, q, µ ∈ +. Therefore, the joint moment reads
+
+Mjk,ℓ = E gkxℓdF(z1)Dz0
+
+(27)
+
+where g := gmap[(y); λs, u] with y = x + λs0z0 + and dF(z1) = ΛDz1 with Λ = [ Λ˜Dz1]−1Λ˜ and
+
+Λ˜ = e−µ
+
+1 2λs
+
+[(y−g)2
+
+−(y−x)2]+u(g)
+
+.
+
+λs1z1, (28)
+
+Moreover, by denoting ̺ := χ + µp, we have
+
+λs0 = λs1 = λs =
+
+RJ(−
+
+χ λ
+
+)
+
+−2
+
+∂ ∂̺
+
+[λ0̺
+
+−
+
+λq
+
++
+
+λp]
+
+RJ(−
+
+̺ λ
+
+)
+
+RJ(−
+
+χ λ
+
+)
+
+−2
+
+RJ(−
+
+χ λ
+
+)
+
+−
+
+RJ
+
+(−
+
+̺ λ
+
+)
+
+λµ−1,
+
+RJ(−
+
+χ λ
+
+)
+
+−1
+λ.
+
+, (29a) (29b) (29c)
+
+Here, q = E [g − x]2dF(z1)Dz0, and χ and p satisfy
+
+χ + µp =
+
+λs λs0 E
+
+[g − x]z0dF(z1)Dz0
+
+(30a)
+
+χ + µq =
+
+λs λs1 E
+
+[g − x]z1dF(z1)Dz0
+
+(30b)
+
+for some µ being a solution to the ﬁxed point equation
+
+µ 2λs
+
+µ
+
+λs1 λs
+
+q
+
+−
+
+µ
+
+λs1 λs
+
+p
+
++
+
+p
+
+−
+
+1 2λ
+
+̺ χ
+
+RJ(−
+
+ω λ
+
+)dω
+
+=
+
+= I(z1; x, z0) + DKL(pz1 π)
+
+(31)
+
+where I(·; ·) and DKL(· ·) indicate the mutual information and the so-called “Kullback-Leibler” distance respectively, and the random variables (x, z0, z1) ∼ px(x)π(z0) [Λπ(z1)]. Thus, one can conclude the following proposition.
+
+Proposition 3 Let the assumptions in Proposition 1, as well
+
+as the 1RSB assumption hold, and consider the single user
+
+system in Then, for
+
+Figure j ∈ [1
+
+:2nw],itphxjˆλ|xs0,iλns1(9a)nids
+
+λs as deﬁned in the conditional
+
+(29a)-(29c). distribution
+
+λs0 z0
+
+λs1 z1
+
+λsbzb
+
+x+
+
++
+
++
+
+y gmap[(·); λs, u] xˆ
+
+Fig. 3: The decoupled scalar system under the bRSB ansatz.
+
+of xˆ given x in Figure 2 where gmap[(·); λs, u] is a single user MAP estimator deﬁned in (23), pz0|x(z0|x) = π(z0), and
+
+pz1|x,z0 (z1|x, z0) = Λπ(z1)
+
+(32)
+
+with Λ = [ Λ˜Dz1]−1Λ˜ and Λ˜ deﬁned in (28).
+
+Here, the decoupled system differs from the system obtained under the RS ansatz within one additive tap which is intuitively approximating the interference caused by the coupling. In fact, the RS ansatz assumes the coupling caused by the system matrix and vector estimator to vanish as the system tends to its large limits; however, the 1RSB solution takes the coupling into account and approximates it with one tap of interference. This approximation may become more accurate, if we let the correlation matrix to be chosen from a larger set of matrices. bRSB Assumption: Iterating the RSB scheme with b steps,
+
+Q˜ = q1m +
+
+b
+
+pν I mβ µν
+
+⊗ 1 µν β
+
++
+
+χ β Im
+
+ν=1
+
+(33)
+
+Ê for some χ, q, {pν, µν}bν=1 ∈ +. Thus, we have
+
+b
+
+Mjk,ℓ = E gkxℓ dF(zν )Dz0
+
+(34)
+
+ν=1
+
+where g := gmap[(y); λs, u] with y = x +
+
+b ν=0
+
+λsν zν , and
+
+dF(zν ) = ΛνDzν. For ν ∈ [1 : b], Λν is a function of x and
+
+{zζ}νζ=0. Due to the page limitations, we leave the expressions
+
+of λs, {λsν }bν=0 and {Λν }bν=1 for the extended version.
+
+Proposition 4 Let the assumptions in Proposition 1, and
+
+the bRSB assumption hold; moreover, consider the single user system in Figure 3. Then, for j ∈ [1 : n], pjxˆ|x as deﬁned in (9) describes the conditional distribution of xˆ given x in Figure 3 where gmap[(·); λs, u] is a single user MAP estimator deﬁned
+in (23), pz0|x(z0|x) = π(z0), and
+
+pzν |x,{zζ}νζ=−01 (zν |x, {zζ }ζν=−01) = Λν π(zν )
+
+(35)
+
+for ν ∈ [1 : b]. The factor Λν depends on x and {zζ}νζ=0, and the coefﬁcients λs and {λsν}bν=0 are coupled due to a set of ﬁxed point equations and bounded as b ↑ ∞.
+
+Considering the bRSB ansatz, one concludes that the ansatz
+extends the decoupled system in Figure 2 by approximating
+the coupling interference with more taps. The approximation, however, stops to improve at some step b∗, if Λν = 1 for any integer ν > b∗. The extreme case is when for any ν ∈ [1 : b] in the bRSB ansatz Λν = 1. Here, the random variables {zν}bν=1 in Figure 3 become independent Gaussian, and therefore, the
+decoupled system reduces to Figure 1. In fact in this case, the bRSB solution, as well as any νRSB ansatz with ν ∈ [1 : b],
+
+reduces to the RS ansatz. Thus, one can consider the decoupled system under the RS ansatz to be a special case of the more general decoupled system given in Figure 3.
+V. CONCLUSION
+Decoupling seems to be a generic property of MAP estimators, as Proposition 1 justiﬁes it for any source distribution and a wide range of matrix ensembles. The validity of the result relies only on replica continuity; however, the equivalent single user system depends on the structure of the replica correlation matrix. Recent results in statistical mechanics have shown that failures in ﬁnding the exact solution via the replica method are mainly caused by the assumed structure, and not replica continuity. Inspired by the Sherrington-Kirkpatrick model of spin glasses, for which the ∞RSB ansatz has been proved to be correct, one may consider Figure 3 to be the general decoupled system as b ↑ ∞. However, in many cases an accurate approximation might be provided by a ﬁnite number of RSB steps. An extreme case is the RS ansatz where all the interference terms in the RSB decoupled system become independent and Gaussian. Thus, one concludes that the previous results in the literature were both special and extreme cases of the RSB decoupled system. The RSB decoupled system raises several issues which require further investigations. For example, nothing is known about the distance between the conditional distributions of the interference terms and independent Gaussian distributions in probability space. The distance variation w.r.t. the number of interference taps can then describe the improvement caused by increasing the number of RSB steps.
+REFERENCES
+[1] D. Guo, S. Verdú, and L. K. Rasmussen, “Asymptotic normality of linear multiuser receiver outputs,” Information Theory, IEEE Transactions on, vol. 48, no. 12, pp. 3080–3095, 2002.
+[2] S. F. Edwards and P. W. Anderson, “Theory of spin glasses,” Journal of Physics F: Metal Physics, vol. 5, no. 5, p. 965, 1975.
+[3] T. Tanaka, “A statistical-mechanics approach to large-system analysis of CDMA multiuser detectors,” Information Theory, IEEE Transactions on, vol. 48, no. 11, pp. 2888–2910, 2002.
+[4] R. R. Müller and W. H. Gerstacker, “On the capacity loss due to separation of detection and decoding,” Information Theory, IEEE Transactions on, vol. 50, no. 8, pp. 1769–1778, 2004.
+[5] D. Guo and S. Verdú, “Randomly spread cdma: Asymptotics via statistical physics,” Information Theory, IEEE Transactions on, vol. 51, no. 6, pp. 1983–2010, 2005.
+[6] S. Rangan, A. K. Fletcher, and V. Goyal, “Asymptotic analysis of MAP estimation via the replica method and applications to compressed sensing,” in IEEE Trans. on Inf. Theory, 2012, pp. 1902–1923.
+[7] A. M. Tulino, G. Caire, S. Verdu, and S. Shamai, “Support recovery with sparsely sampled free random matrices,” Information Theory, IEEE Transactions on, vol. 59, no. 7, pp. 4243–4271, 2013.
+[8] Y. Kabashima, T. Wadayama, and T. Tanaka, “A typical reconstruction limit for compressed sensing based on ℓp-norm minimization,” Journal of Statistical Mechanics: Theory and Experiment, vol. 2009, no. 09, p. L09003, 2009.
+[9] B. M. Zaidel, R. Müller, A. L. Moustakas, and R. de Miguel, “Vector precoding for gaussian MIMO broadcast channels: Impact of replica symmetry breaking,” Information Theory, IEEE Transactions on, vol. 58, no. 3, pp. 1413–1440, 2012.
+[10] N. I. Akhiezer, The classical moment problem: and some related questions in analysis. Oliver & Boyd, 1965, vol. 5.
+[11] G. Parisi, “A sequence of approximated solutions to the SK model for spin glasses,” Journal of Physics A: Mathematical and General, vol. 13, no. 4, p. L115, 1980.
+

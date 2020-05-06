@@ -1,0 +1,16 @@
+Title:          Research on a Tool Wear Monitoring Algorithm Based on Residual Dense Network
+Subject:        To accurately and efficiently detect tool wear values during production and processing activities, a new online detection model is proposed called the Residual Dense Network (RDN). The model is created with two main steps: Firstly, the time-domain signals for a cutting tool are obtained (e.g., using acceleration sensors); these signals are processed to denoise and segmented to provide a larger number of uniform samples. This processing helps to improve the robustness of the model. Secondly, a new deep convolutional neural network is proposed to extract features adaptively, by combining the idea of a recursive residual network and a dense network. Notably, this method is specifically tailored to the tool wear value detection problem. In this way, the limitations of traditional manual feature extraction steps can be avoided. The experimental results demonstrate that the proposed method is promising in terms of detection accuracy and speed; it provides a new way to detect tool wear values in practical industrial scenarios.
+Keywords:       tool wear; residual dense network; wavelet denoising; convolutional neural network
+Author:         Yiting Li, Qingsheng Xie, Haisong Huang and Qipeng Chen
+Creator:        LaTeX with hyperref package
+Producer:       pdfTeX-1.40.17
+CreationDate:   Wed Jun 19 16:28:28 2019
+ModDate:        Wed Jun 19 16:28:28 2019
+Tagged:         no
+Form:           none
+Pages:          19
+Encrypted:      no
+Page size:      595.276 x 841.89 pts (A4) (rotated 0 degrees)
+File size:      4796197 bytes
+Optimized:      no
+PDF version:    1.5

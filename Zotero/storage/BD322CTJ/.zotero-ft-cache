@@ -1,0 +1,634 @@
+Mechanical Systems and Signal Processing 104 (2018) 503–513
+Contents lists available at ScienceDirect
+Mechanical Systems and Signal Processing
+journal homepage: www.elsevier.com/locate/ymssp
+
+Predicting tool life in turning operations using neural networks and image processing
+T. Mikołajczyk a, K. Nowicki b, A. Bustillo c, D. Yu Pimenov d,⇑
+a Department of Production Engineering, UTP University of Science and Technology, Al. prof. S. Kaliskiego 7, Bydgoszcz 85-796, Poland b Department of Computer Methods, UTP University of Science and Technology, Al. prof. S. Kaliskiego 7, Bydgoszcz 85-796, Poland c Department of Civil Engineering, University of Burgos, Avda Cantabria s/n, Burgos, 09006, Spain d Department of Automated Mechanical Engineering, South Ural State University, Lenin Prosp. 76, Chelyabinsk 454080, Russia
+
+article info
+Article history: Received 21 June 2017 Received in revised form 26 October 2017 Accepted 14 November 2017
+Keywords: Tool life prediction Image analysis Tool wear Neural networks
+
+abstract
+A two-step method is presented for the automatic prediction of tool life in turning operations. First, experimental data are collected for three cutting edges under the same constant processing conditions. In these experiments, the parameter of tool wear, VB, is measured with conventional methods and the same parameter is estimated using Neural Wear, a customized software package that combines ﬂank wear image recognition and Artiﬁcial Neural Networks (ANNs). Second, an ANN model of tool life is trained with the data collected from the ﬁrst two cutting edges and the subsequent model is evaluated on two different subsets for the third cutting edge: the ﬁrst subset is obtained from the direct measurement of tool wear and the second is obtained from the Neural Wear software that estimates tool wear using edge images. Although the complete-automated solution, Neural Wear software for tool wear recognition plus the ANN model of tool life prediction, presented a slightly higher error than the direct measurements, it was within the same range and can meet all industrial requirements. These results conﬁrm that the combination of image recognition software and ANN modelling could potentially be developed into a useful industrial tool for low-cost estimation of tool life in turning operations.
+Ó 2017 Elsevier Ltd. All rights reserved.
+
+1. Introduction
+Increasing the scope of automated turning processes will at all times have to respond to the highest requirements in terms of reliable predictions of tool life. Tool-life assessment usually requires signiﬁcant time and material resources and is therefore a relatively expensive procedure. Hence, the importance of accurately predicting tool life and the cutting- edge replacement schedule, before defects or catastrophic wear stop the process, even more so as accurate tool life is crucial for optimizing cutting productivity and the cost of turning processes. Tool life depends directly on the level of tool cutting edge wear. If we are to control the surface conditions of the cutting edge and the prediction of machining time, then the level of cutting-edge wear must be very carefully established. There is a considerable body of research on cutting-edge wear that report prediction methods for tool-life and cutting-condition with the aim of preventing catastrophic wear.
+⇑ Corresponding author.
+E-mail addresses: tami@utp.edu.pl (T. Mikołajczyk), krzysztof.nowicki@utp.edu.pl (K. Nowicki), abustillo@ubu.es (A. Bustillo), danil_u@rambler.ru (D. Yu Pimenov).
+https://doi.org/10.1016/j.ymssp.2017.11.022 0888-3270/Ó 2017 Elsevier Ltd. All rights reserved.
+
+504
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+Recent publications on the subject include reports on studies of wear resistance and turning tool wear [1–5]. Soliman et al. [1] studied the parameters of cutting-edge wear for work-pieces with and without TiN with respect to the cutting time coating in various modes of dry turning. The cutting edge durability of coated tools has been found to be 4.5–5 times greater than that of uncoated tools. Jawaid et al. [2] studied the parameters of cutting-edge wear in the turning of Ti-6246 titanium alloy at various cutting speeds and feed rates. An optical microscope was used to measure tool wear and to determine tool life, both of which varied signiﬁcantly at different feed rates and cutting speeds. Mrkvica et al. [3] discussed the tool life of Pramet Tools Ltd., studying varied intensities of tool wear at various feed rates and cutting speeds in the turning of an Inconel 718 alloy. Sadílek et al. [4] performed real-time monitoring of cutting tool wear on an XCSRNR2525M-1207SEN turning tool, by measuring impedance layers applied to Silicon Nitride Ceramic KS6000 inserts. Kupczyk and Komolka [5] studied the high durability of cutting insert edges made of WC-5 nanocrystalline cemented carbides in the turning of EN-ISO 42CrMo4 toughening steel. However, no real-time monitoring of these parameters may be found in the studies of tool wear and cutting edge durability described in [1–3,5]. The real-time electrical resistance measurement used in [4] requires the use of special tools, which signiﬁcantly limits its use.
+There are various papers that have described the monitoring of tool wear and the life of turning tools [6–12]. Rehorn et al. [6] offered a review of sensors and signal processing methodologies used for tool condition monitoring in turning, drilling and milling. Cakir and Isik [7] used the tool life and condition monitoring system to study variations in the cutting forces when turning AISI 1050 steel with coated and uncoated tungsten carbide ISO P25 tools. Sahin [8] compared the tool life of ceramic and cubic boron nitride (CBN) cutting tools when machining hardened bearing steels using the Taguchi method. Gadelmawla et al. [9] determined the correlation between the texture of machined surfaces and machining time. Krolczyk et al. [10] carried out a study to determine the life of carbide-coated tools and the tool point surface topography. Antonialli et al. [11] monitored tool life and tool wear of Inconel 625, and the resulting surface roughness following taper turning in comparison with straight turning was evaluated. Kundrák et al. [12] offered a mathematical model for tool life and its experimental assessment in the turning of 100Cr6 bearing steel with CBN tools at various cutting speeds.
+Today, a whole range of neural network and Artiﬁcial Intelligence (AI)-based methodologies [13–38] have been developed that model the correlation between the input (process data) and the output (tool life or tool wear) parameters of the turning process. Ezugwu et al. [13] predicted tool life and failure modes in turning grey cast iron (grade G-14) with a mixed-oxide ceramic cutting tool (type K090). Tool life and failure mode for each experiment and the corresponding data were used to train an Artiﬁcial Neural Network (ANN), in this case a Multi-Layer Perceptron (MLP), using the back-propagation algorithm. Sick [14] assessed on-line and indirect tool-wear monitoring in turning with ANNs, comparing the methods applied in the publications and the methodologies used to select certain methods for the performance of simulation experiments, to evaluate the results and for their presentation. Abu-Zahra and Yu [15] used discrete wavelet transformations of ultrasound waves to measure the gradual wear of carbide inserts during turning. A three-layer MLP architecture was developed that yielded the best correlation (95.9%) of the ultrasound measurements with the level of tool wear. Scheffer et al. [16] conducted a comparative evaluation using ANNs and hidden Markov models (HMMs) for modeling complex correlations between the input set of sensor signal functions and tool life during turning. Ojha and Dixit [17] assessed tool wear by ﬁtting a best-ﬁt line on the data in the steady wear zone and establishing the time until tool failure by extrapolation. ANNs are often used to predict lower, upper, and most likely estimates of tool life. Silva et al. [18] used an artiﬁcial intelligence system for condition monitoring that is able to detect when a tool wears out. Natarajan et al. [19] expanded the use of the backpropagation feed from ANN to predict tool life in turning. Özel et al. [20] developed a multiple linear regression model and ANN models for predicting surface roughness and tool ﬂank wear when ﬁnishing the turning of AISI D2 steels (60 HRC) using ceramic wiper (multi-radii) design inserts. Sarma and Dixit [21] compared the performance of a mixed oxide ceramic tool in dry and air-cooled turning of grey cast iron, taking into account tool wear, surface roughness of the machined piece, forces and cutting vibration. Pal et al. [22] offered an ANN-based sensor fusion model for a tool-wear monitoring system in turning processes. A wavelet packet tree approach was used for the analysis of the acquired signals, namely cutting strains in tool holder and motor current, and the extraction of wear-sensitive features. D’Addona et al. [23] used cognitive modelling of tool-wear progress based on ANN supervised training derived from investigational tool-wear measurements during industrial turning of Inconel 718 aircraft engines. They obtained a dependable trend of tool-wear curves for optimal utilization of tool life and stepped increases in productivity, while preserving the surface integrity of the machined parts. Attanasio et al. [24,25] compared Response Surface Methodology (RSM) with ANN ﬁtting techniques for tool-wear prediction in longitudinal turning of AISI 1045 steel rods. These papers have all shown that the ANN models provide better approximations than RSM in the prediction of the amount of the tool-wear parameters. Finally, although ANN is the most common AI technique used for tool-wear prediction in turning [26], other AI techniques have been tested for this industrial task: Gajate et al. [27] presented a two model-based approach for tool-wear monitoring on the basis of neuro-fuzzy techniques. A fourinput (i.e., time, cutting forces, vibrations and acoustic emissions signals) single-output (tool wear rate) model was designed and implemented on the basis of three neuro-fuzzy approaches (inductive, transductive and evolving neuro-fuzzy systems). Yiqiu et al. [28] tested Support Vector Machines (SVM) to predict tool wear, considering texture features of the surface as inputs with better generalization capabilities compared with ANN models.
+Tool images as a source of data for assessing tool wear or tool life are usually used in the direct approach [29–38]. Jammu et al. [29] covered the use of unsupervised neural networks for tool breakage detection in turning assisted by a number of sensors. Pfeifer and Wiegers [30] discussed the advantages of machine vision as a direct measurement technique. Kerr et al. [31] described the use of digital image-processing techniques in the analysis of worn cutting-tool images for assessing their
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+505
+
+degree of wear and their remaining useful life. Castejón et al. [32] used 1383 images obtained using a CNC parallel lathe and a computer vision system for statistical system learning and estimation of the wear level in cutting inserts, in order to predict their useful working time before replacement. Barreiro et al. [33] studied the use of different moments to describe tool-wear images and to classify the tool condition in wear classes. The novelty of the study by Alegre et al. [34] is found in its use of contour signatures of the wear region as the input to two classiﬁcation techniques, k-nearest neighbor and a neural network. D’Addona and Teti [35] implemented the procedure for the processing of cutting-tool images obtained during tests. D’Addona et al. [36] developed an Artiﬁcial Neural Network (NN) for automatic tool-wear recognition. Karam et al. [37] developed an ANN-based online cognitive system to predict tool life in turning operations. Mikołajczyk et al. [38] described ANN-based automatic image analysis for assessing tool wear. Their results promised a good correlation between the new methods and the commonly used optically measured VB index, with an absolute mean relative error of 6.7% for the entire life range of the tools.
+The purpose of this study is to build a bridge between both research lines: the development of AI-based models for image processing and the development of reliable AI-based models for wear prediction. The objective of this study is therefore the validation of a 2-step model for predicting the life of a turning tool that uses cutting-edge wear parameters obtained by image processing as inputs for an AI-based model. Artiﬁcial neural networks will be used to create such models, because of their extensive and reliable use in similar tasks.
+The industrial advantage of such a proposal is clear: an automated tool will mean that manual and expensive tool-wear measurements will be unnecessary and, once the real-time cutting-edge wear parameter of the tool is known, the machine operator will be able to adjust the programmed cutting path, to avoid distortion of the machined dimensions due to tool wear. Besides, this 2-step system will mean signiﬁcant automation and simpliﬁcation of the procedure for determining the cutting-edge life.
+
+2. Methods and materials
+2.1. Research problem
+The research problem can be described in terms of how to predict tool life based on measurements of the tool-wear parameter, VB, in turning. Three trial tests were conducted on another edge. The in-process wear of two edges yielded results that were the data inputs to train the ANN edge-wear models based on the VB parameter value. The results of observing the third edge were used to analyze tool-life predictions based on partial results of edge wear. Conventional measurements were taken by an operator using a standard method and an automated analysis of edge wear was performed with the Neural Wear software [38].
+
+2.2. Experimental setup and measurement protocol
+Machining experiments were performed on specimens of C45 carbon steel in the normalized state. The chemical compositions of the selected materials are speciﬁed in Table 1.
+The workpiece was a cylinder with a diameter of 120 mm. All cutting parameters employed for the turning processes and the characteristics of the tool edges in use are speciﬁed in Table 2. For the turning process experiment, a modiﬁed universal lathe SNB400 (Romania) was used, equipped with a variable spindle speed control utilizing the TPC 60 inverter.
+Turning was carried out for 1–2 min depending on the total tool operating time. The ﬁrst ﬁve minutes of operating time were used as one-minute turning series. Two-minute turning sessions were applied throughout 4–12 min of the tool life. Finally, after 12 min of tool life, one-minute operating sequences were used.
+After each work cycle, the cutting insert was removed from the holder and moved to the imaging station, where the ﬂank and rake sides of the insert were digitalized. The resulting image ﬁles were then saved to the computer hard drive. At the same time, the VB wear indicator value was read.
+Measurements were carried out until the cutting edge-life indicator, VB, reached a value of 0.4 mm. Three cutting inserts were tested in succession with this method.
+The cutting edge image was recorded using a camera type CCD-FS-5612p at 684 Â 512 resolution (S-VHS PAL, without overscan), digitized using the Aver card, using the Aver compression module for image compression (Fig. 1). An optical camera zoom of 100Â was used. Finally, the image was converted to 256 grayscale windows bitmap ﬁle (BMP) format. Edge view was used for the measurement of VB by an operator using special MultiScan software.
+
+Table 1 Chemical compositions of material of the machined workpiece.
+
+Material C45
+
+Microstructure Perlite + Ferrite
+
+Chemical composition %
+
+C
+
+Mn
+
+0.45
+
+0.65
+
+Si 0.25
+
+Cr 0.20
+
+Ni 0.20
+
+S 0.04
+
+506
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+Table 2 Speciﬁcations of machining conditions.
+
+Workpiece Machining
+
+material
+
+operation
+
+Cutting parameters
+
+Rake angle,
+c, deg
+
+Back angle,
+a, deg
+
+Angle of the main cutting edge, k, deg
+
+C45
+
+Longitudinal
+
+À6
+
+6
+
+À6
+
+turning with S20
+
+uncoated carbide
+
+Major cutting edge angle, kr, deg
+45
+
+Tool included
+angle, er,
+deg
+90
+
+Corner radius, re, mm
+0.4
+
+Cutting speed for turning, V, m/min
+
+Feed rate, f, mm/ rev
+
+220
+
+0.067
+
+Depth of cut, ap, mm
+0.6
+
+Fig. 1. Diagram of measurement and image capture system.
+This approach obtained highly accurate measurements, although the measurements were taken by one person and therefore had an element of subjectivity. By doing so, it was possible to maintain a constantly updated image for the interpretation of tool wear.
+The image analysis was performed on a PC. Customized software was used to simulate the operation of the SCBC neural network.
+The cutting edge image, acquired before the turning process, was digitized because an initial sample is needed so that the network can distinguish between the background image and the cutting edge image.
+The tool-wear research technique has previously been presented in a previous paper [38]. Edge wear was measured in two ways: directly in view of the edge and indirectly through computer analysis using a trained neural network. For this task, a specially developed Neural Wear software program (Fig. 2) [38] was used. In this software, the Single CategoryBased neural network Classiﬁer was used to process the tool image data; basically, a Kohonen network with a threshold activation function that analyzes the individual lines of the image to accelerate the recognition cycle of the wear ﬁeld rather than
+
+Fig. 2. Neural Wear software used to analyze images of third edge wear.
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+507
+
+the whole image. For example, images of the worn edge were analyzed to show the best parameters to search for the worn areas using Neural Wear. The output of this analysis was the number of pixels that belonged to a worn area. An image analysis of edge wear for different working times was prepared with these settings. A calculated parameter of correlation between the number of pixels and the VB index was used for comparative purposes (Fig. 3).
+Based on an analysis of neighborhood size inﬂuence presented in [38], an eight-pixel neighborhood was used to analyze the worn edge images. As an example, the analysis of tool wear using the optimized settings of Neural Wear software is presented in Fig. 3.
+
+2.3. Artiﬁcial neural networks modeling procedure
+
+Edge-wear measurements were used to predict the lifetime of the cutting edge using ANNs. As described in the Introduction, ANNs were chosen because they are the most common AI technique for tool-wear prediction in turning operations [26]. The WEKA data-mining tool [39] was used in this research to build all the AI models. ANNs are built from many interconnected processing units that are called neurons, because of their functional analogies with human neurons. Different typologies exist in artiﬁcial neural networks, the most common of which is the Multilayer Perceptron [40]. A multilayer perceptron organizes the neurons in layers: in the input layer each neuron receives only one input: usually the value provided by a sensor. In the second layer, called the hidden layer, each neuron receives as many inputs as there are neurons in the input layer; in this research, only two inputs are considered for each experiment: the edge number (x1) and the VB (x2), as will be explained later on; then the neuron will calculate its output using an activation function and a different weight for each input [41], ﬁnally it will transfer this value to the output layer where there is one neuron for each output or state to be predicted, dependent on whether the output is either a continuous or a discrete variable. Fig. 4 shows an example of a real neural network of the dataset presented in this research. The weight of each input for a neuron (expressed as Wij in Fig. 4) is calculated by a back–propagation algorithm with two main parameters: momentum and learning rate [41]. This architecture has demonstrated its capability to model non-linearly-separable datasets [42].
+The activation function, U(x), of the neurons in the input and hidden layer of the MLPs used in this work is shown in Eq. (1). This activation function is a hyperbolic tangent that belongs to the family of sigmoid functions. In Eq. (1), x represents a neuronal input. Only MLPs with one hidden layer are considered in this study, due to the reduced number of inputs.
+
+UðxÞ ¼ tanhðxÞ
+
+ð1Þ
+
+The output of the neuron, y(x1,x2), in the output layer is a linear combination of the outputs of n neurons in the hidden layer (n = 2 in this case), as shown in Eq. (2). The values of w0ij are the weights of each connection of the network, as indicated
+in Fig. 4, and are calculated by the model during the training phase.
+
+X2
+
+yðx1; x2Þ ¼ w01iUðxiÞ
+
+ð2Þ
+
+i¼1
+
+In the MLPs used in WEKA software the weights of each neuron are learned from the training set in an iterative process.
+This process minimizes the error using the steepest descent, while the gradient is determined using the backpropagation algorithm: the change in weight, DWi, in the ith iteration is computed by multiplying the gradient by one parameter of the MLP, the learning rate lr, and adding the previous weight change multiplied by another parameter called the momentum m, as shown in Eqs. (3) and (4).
+
+Wi ¼ WiÀ1 þ DWi
+
+ð3Þ
+
+DWi ¼ Àlr Â gradient þ m Â DWiÀ1
+
+ð4Þ
+
+The dataset generated from the turning experiments has one output (tool lifetime) and one input (the VB index). However, one of the main disadvantages of reducing the number of changing conditions in a cutting process to be modeled with AI techniques, which in turn is a requirement to maintain experimental costs, is the loss of accuracy of these techniques.
+
+Fig. 3. Example of edge images before and after analysis using Neural Wear software (neighborhood 8 pix, width = 200 px), (a) before analysis, Time – 14 min, VB = 0.378 mm, (b) after Neural Wear, Time – 14 min, wear area – 16318 px, VBNW = 0.416 mm.
+
+508
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+Fig. 4. Example of an MLP for the experimental dataset presented in this research.
+One reason is that the predictive capabilities of any AI technique improve when many inputs are considered, because all of them are designed for noisy and multivariable environments as often happens in real life. In this research, the main objective is to reduce the number of inputs to be measured or monitored, in satisfaction of industrial requirements. By doing so, however, many variables that play an important role in the turning process are not taken into account. The number of the edge has also been considered as a second input for the ANNs, as at least one partial solution to this lack of direct information on the process. This strategy is at no-extra cost, because the process engineer should only label each new datum with the number of the cutting edge that has been used and the AI technique will, at the very least, have to differentiate the behavior of each edge (due to quality inhomogenities, differences in coatings, etc.). The use of small datasets for training artiﬁcial intelligence models is an open research topic that has merged many recent publications for different manufacturing problems [43,44]. These proposals attempt to solve the problem of insufﬁcient instances using two approaches: cross-validation schemes and ensembles. Ensembles are combinations of more than one prediction model at the same time that achieve more stable and accurate predictions that are reliable solutions to many manufacturing problems. Unfortunately, most of the existing ensemble techniques are only suitable, if the dataset has many different inputs, while in our case the wear problem is deﬁned with only two inputs to avoid the extra-cost of additional sensors, so only a cross-validation scheme can assure the accuracy of the ANN models, even though the number of instances is limited.
+The dataset is split into two groups to calculate the weights of each connection in an ANN: the training set -that includes the instances that will be used to train the model- and the validation set -that includes the rest of the dataset instances, which are used to measure the accuracy of the model. The instances used at the validation-stage have not been used during the training-stage, to avoid over ﬁtting: the prediction model will exactly calculate the weights for the training instances assuring a very high accuracy for the training dataset, but producing poor predictions for new instances with different conditions. Splitting the dataset into two subsets permits the two capabilities of the prediction model to be evaluated: the capability to adapt to known situations (training subset accuracy) and the generalization capability to deal with new situations (validation subset accuracy). In this research, the two ﬁrst edges generated 30 training instances, while the third edge produced 15 instances that were used for validation purposes.
+3. Results and discusion
+In this Section, ANN capability to predict tool life is discussed; ﬁrstly, the ANNs are trained using the direct edge-wear measurements of two tools; secondly, the ANN model is validated using the direct edge-wear measurements of a third tool; ﬁnally, the same ANN model is validated using the estimated edge wear for the third tool, using the software tool developed in a previous paper [38]; the results are then sequentially presented in graphs and tables.
+3.1. ANN training using direct measurement of edge wear
+Once the experimental test was ﬁnished, the actual tool life was calculated, based on the result of the tool life of the full worn edge. The value of the VB parameter was calculated from the conventional method presented in Section 2.2. Table 3 shows the actual values of tool life and the measured VB parameter, while Fig. 5 shows the same results in the form of graphs.
+Subsequently, the MLPs were trained using the data extracted from the experiments with edge number 1 and edge number 2 to predict the tool life; a process explained in Section 2.3. As previously explained, MLPs have three parameters that should be tuned to ﬁnd their optimal values: number of neurons in the hidden layer, momentum, and learning rate. A grid search was then performed on the main parameters of each prediction model, to ﬁnd the right combination. The most accurate conﬁguration was found for 2 neurons in the hidden layer, with a learning rate of 0.01 and a momentum of 0.5. Table 3 also collects the predicted value of this MLP for each training condition and the difference between the actual and the predicted value; the differences are in the range of À0.9 to 1.6 min with a Root Mean Squared Error (RMSE) of 0.85 min. These errors can be visualized in Fig. 6, where both actual and predicted tool life are presented. It is interesting to point out that the
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+509
+
+Table 3 Measurements of VB index values of edges number 1 and 2 used for training the neural network for the prediction of tool life.
+
+Number of edge
+
+Cutting time [min]
+
+VB [mm]
+
+Actual tool life [min]
+
+Predicted tool life [min]
+
+Differenceof time [min]
+
+Relative error [%]
+
+1
+
+0
+
+1
+
+1
+
+1
+
+2
+
+1
+
+3
+
+1
+
+4
+
+1
+
+6
+
+1
+
+8
+
+1
+
+10
+
+1
+
+12
+
+1
+
+13
+
+1
+
+14
+
+1
+
+15
+
+1
+
+16
+
+1
+
+17
+
+2
+
+0
+
+2
+
+1
+
+2
+
+2
+
+2
+
+3
+
+2
+
+4
+
+2
+
+6
+
+2
+
+8
+
+2
+
+10
+
+2
+
+12
+
+2
+
+13
+
+2
+
+14
+
+2
+
+15
+
+2
+
+16
+
+2
+
+17
+
+0.000 17 0.182 16 0.196 15 0.210 14 0.224 13 0.252 11 0.266 9 0.280 7 0.308 5 0.322 4 0.336 3 0.350 2 0.357 1 0.378 0 0.000 17 0.168 16 0.196 15 0.210 14 0.224 13 0.266 11 0.280 9 0.294 7 0.308 5 0.350 4 0.364 3 0.378 2 0.385 1 0.420 0
+
+18.544 14.587 13.889 13.101 12.223 10.214 9.105 7.949 5.589 4.435 3.328 2.287 1.796 0.453 18.635 15.743 14.609 13.919 13.140 10.277 9.173 8.021 6.842 3.391 2.344 1.375 0.922 À1.001
+
+1.544 À1.413 À1.111 À0.899 À0.777 À0.786 0.105 0.949 0.589 0.435 0.328 0.287 0.796 0.453 1.635 À0.257 À0.391 À0.081 0.140 À0.723 0.173 1.021 1.842 À0.609 À0.656 À0.625 À0.078 À1.001
+
+8.3 9.7 8.0 6.9 6.4 7.7 1.2 11.9 10.5 9.8 9.9 12.5 44.3 – 8.8 1.6 2.7 0.6 1.1 7.0 1.9 12.7 26.9 18.0 28.0 45.5 8.5 –
+
+NN Process use
+Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training Training
+
+Fig. 5. Predicted and actual tool life for both cutting edges: (a) for Edge 1, (b) for Edge 2.
+
+Fig. 6. Comparison of actual and predicted values of tool life for optical measurements of VB for Edge 3.
+
+510
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+correlation between wear and cutting time is not linear during the ﬁrst minute of the turning process. At the same time, it achieves greater linearity in the rest of the cutting process; this dual behavior will determine the way the MLPs adapt themselves to the wear process, providing a higher error at the beginning of the cutting process (0–2 min).
+
+3.2. ANN validation using direct measurement of edge wear
+The MLP, trained with data extracted from Edge 1 and 2, was validated with data measured with Edge 3; the prediction results are shown in Table 4. The actual tool-life values and the predicted tool life are presented graphically in Fig. 6. The RMSE for these predictions is 0.678 min; an error margin that is in the same range as the RMSE for the validation data presented in Section 3.1 (0.85 min). This difference is due to a wear process of greater irregularity in the training dataset than in the validation dataset, a real possibility when working with small datasets. It is important to outline that the ANN model is very accurate for the three cutting edges under evaluation in the ﬁnal range of the cutting time; or, the higher values of this cutting time. That range would be the most important in any industrial application of this model, because the machine operator would have to change the tool within that range, before tool breakage damaged the workpiece, or before the wear level could no longer assure the speciﬁed geometry of the ﬁnal workpiece.
+
+3.3. ANN validation using neural wear software for estimation of edge wear
+Images of the wear zone of edge number 3 were analyzed using Neural Wear software that automatically calculated the VB parameter based on image recognition. The results of the ﬂank wear values of the VB index for the third edge are presented in Table 5. These results were compared with the results of the automation analysis of tool wear, VBnn, using the sum of the pixels qualiﬁed, as in the wear area, by Neural Wear software. The wear coefﬁcients, VB and VBnn, are compiled in Table 5 and graphically shown in Fig. 7. The average and maximum absolute differences between the measured and computed data are 0.016 mm and 0.046 mm, respectively.
+The maximum relative error was 20.6% for the case of 2 min (Table 5), while the average relative error was 6.7%. Although the average value of the relative error was relatively low, it presented a relatively high dispersion, a fact that will affect the ANN model described below.
+The values of VBNW, presented in Table 6, were used to predict tool life using neural networks trained on conventional measurements carried out for cutting-edge numbers 1 and 2. A comparison of the results of tool-life assessment obtained by experimentation and analysis of the neural network VBNW ratio predictions are shown in Table 6. The results of the analysis are presented in Fig. 8.
+A maximum error was speciﬁed in relation to the predicted tool life of 2.1 min with an average error of 1.10 min. Figs. 7 and 8 show that the ANN prediction model is very sensitive to VB errors, but, again, the ANN model is able to predict the most important wear condition: the last one (16 mm) for industrial use. A comparison of neural network output error during processing of the VB index and tool wear from Neural Wear – VBNW is presented in Fig. 9. Some conclusions can be extracted from Fig. 9: ﬁrst, the software tool presents a higher error in the calculation of tool wear than manual measurement of the wear, the ANN model shows higher errors in all cases (RMSE, mean error and maximal error) than in the training and validation subsets that include only tool wear values obtained from direct measurement. But, although the use of the software tool increases the error, it is still within the same range as the manual measurements (no more than 0.7 min in RMSE, 0.4 min in mean error and 0.3 min in maximal error). These results suggest that the combination of image recognition software and ANN modelling can be a useful industrial tool for low-cost estima-
+
+Table 4 Measurements of VB index values of edge number 3 used for validation based on the trained ANN.
+
+Number of edge
+
+Cutting time
+
+VB [mm]
+
+Actual tool life [min]
+
+Predicted tool life [min]
+
+Difference of time [min]
+
+3
+
+1
+
+0.182 15
+
+3
+
+2
+
+0.224 14
+
+3
+
+3
+
+0.252 13
+
+3
+
+4
+
+0.266 12
+
+3
+
+5
+
+0.280 11
+
+3
+
+6
+
+0.287 10
+
+3
+
+7
+
+0.308 9
+
+3
+
+8
+
+0.322 8
+
+3
+
+9
+
+0.336 7
+
+3
+
+10
+
+0.343 6
+
+3
+
+11
+
+0.350 5
+
+3
+
+12
+
+0.364 4
+
+3
+
+13
+
+0.371 3
+
+3
+
+14
+
+0.378 2
+
+3
+
+15
+
+0.392 1
+
+3
+
+16
+
+0.406 0
+
+15.749 13.948 12.317 11.368 10.338 9.797 8.092 6.915 5.733 5.149 4.572 3.455 2.919 2.401 1.424 0.533
+
+0.749 À0.052 À0.683 À0.632 À0.662 À0.203 À0.908 À1.085 À1.267 À0.851 À0.428 À0.545 À0.081 0.401 0.424 0.533
+
+Relative error [%]
+4.8 0.4 5.5 5.6 6.4 2.1 11.2 15.7 22.1 16.5 9.4 15.8 2.8 16.7 29.8 –
+
+ANN Process use
+Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation Validation
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+511
+
+Table 5 Wear indicators for tool-cutting edge number 3 resulting from optical measurements and wear image analysis using Neural Wear software [38].
+
+Number of edge
+3 3 3 3 3 3 3 3
+
+Cutting time T, min
+2.00 4.00 6.00 8.00 10.00 12.00 14.00 16.00
+
+Flank wear, VB, mm
+0.224 0.266 0.287 0.322 0.343 0.364 0.378 0.406
+
+Wear area, number of pixels
+6963 10096 10945 13000 12070 14152 16318 16346
+
+Flank wear, VBnn, mm
+0.178 0.258 0.279 0.332 0.308 0.361 0.416 0.417
+
+Abs. diff. dVB, mm
+À0.046 À0.008 À0.008 0.010 À0.035 À0.003 0.038 0.011
+
+Relative error %
+20.6 3.1 2.6 3.1 10.2 0.7 10.2 2.8
+
+Fig. 7. Comparison of tool wear measured as VB and as normalized image pixel count using Neural Wear [38].
+tion of tool life in turning operations. The results that are presented are only valid for those speciﬁc cutting conditions, because the cutting parameters remained unchanged in the experiment. Edge-wear gradients during cutting time depend on the cutting parameters although other data would require new learning processes. However, the procedures presented here permit tool-life prediction, if the current settings are maintained for the cutting parameters.
+4. Conclusions
+The overall picture from the literature review would suggest that AI-based models are suitable for two main tasks related to the automation of wear prediction in turning operations: image processing to evaluate existing tool wear and wear prediction considering the previous behavior of similar tools. By merging these two research lines, a two-step method has been presented in this paper for the automatic prediction of tool wear in turning operations. First, the VB parameter of tool wear was measured by conventional means for three cutting edges under the same constant turning conditions. Second, an ANN model was trained with the data collected from the ﬁrst two cutting edges and the generated model was evaluated on the third cutting edge. The comparison of predicted values and real wear values showed a high level of accuracy, especially in the range of high wear levels; the most important under industrial conditions. Third, the ANN model was trained to predict tool life considering an automatically estimated VB, using an image-processing tool that included an ANN model. Although this complete-automated solution presents a higher error, it is within the same range as direct measurement and meets indus-
+
+Table 6 Results of VBNW tool wear data calculated using the Neural Wear software for the validation of the neural network.
+
+Number of edge
+
+Cutting time [min]
+
+VBNW Actual tool life [mm] [min]
+
+Predicted tool life [min]
+
+Difference of time [min]
+
+Relative error NN process
+
+%
+
+use
+
+3
+
+2
+
+3
+
+4
+
+3
+
+6
+
+3
+
+8
+
+3
+
+10
+
+3
+
+12
+
+3
+
+14
+
+3
+
+16
+
+0.178 14 0.258 12 0.279 10 0.332 8 0.308 6 0.361 4 0.416 2 0.417 0
+
+15.89 11.93 10.42 6.08 8.10 3.70 À0.038 À0.094
+
+1.89 À0.073 0.42 À1.92 2.10 À0.30 À2.04 À0.094
+
+11.9 0.6 4.1 31.6 25.9 8.1 a5363.2 –
+
+Validation Validation Validation Validation Validation Validation Validation Validation
+
+a The relative error might not be taken into account for a cutting time of 14 min, because the predicted value (divisor in the division sum) is very close to zero.
+
+512
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+Fig. 8. Comparison of experimental and neural network results of a tool life estimation (edge No. 3, VBNW index).
+
+Fig. 9. Comparison of neural network output error during processing VB index and tool wear from Neural Wear - VBNW.
+trial requirements, especially because of its highly accurate predictions for the highest tool-wear values. The database should for practical use be supplemented with other edge-wear cases for neural learning to predict tool life, because the edge-wear gradient depends on the cutting conditions (mainly speed, feed rate, and workpiece material). The edge-wear recognition software -Neural Wear- recognizes the image of the edge as an input and will if possible classify the level of edge wear with no further research. The results are then fed into the ANN based tool-life prediction system.
+Future research lines will be focused on improving the accuracy level of this 2-step approach. Two strategies will be followed: ﬁrst improvements to the accuracy of the image-processing tool will be done by enlarging the ANN model training dataset with new instances collected under different turning conditions, new cutting edges etc.; second, the accuracy of the tool-life prediction model will be increased by testing other AI-based models such as regressor ensembles.
+Acknowledgments
+The research forms part of the South Ural State University Project 5-100, 2016-2020, aiming to increase the competitiveness of leading Russian universities in the international context of global research projects and educational centers. The work was supported by Act 211 Government of the Russian Federation, contract No. 02.A03.21.0011.
+References
+[1] F.A. Soliman, O.A. Abu-Zeid, M. Merdan, On the improvement of the performance of high speed steel turning tools by tin coatings, Wear 119 (1987) 199–204, https://doi.org/10.1016/0043-1648(87)90109-8.
+[2] A. Jawaid, C.H. Che-Haron, A. Abdullah, Tool wear characteristics in turning of titanium alloy Ti-6246, J. Mater. Process. Technol. 92–93 (1999) 329– 334, https://doi.org/10.1016/S0924-0136(99)00246-0.
+[3] I. Mrkvica, R. Konderla, M. Faktor, Turning of Inconel 718 by cemented carbides, Key Eng. Mater. 496 (2012) 138–143, https://doi.org/10.4028/ www.scientiﬁc.net/KEM.496.138.
+[4] M. Sadílek, J. Kratochvíl, J. Petru˚ , R. Cˇ ep, T. Zlámal, D. Stancˇeková, Cutting tool wear monitoring with the use of impedance layers | [Nadzor trošenja reznog alata upotrebom otpornih slojeva], Teh. Vjesn. 21 (2014) 639–644.
+[5] M.J. Kupczyk, J. Komolka, High durability of cutting insert edges made of nanocrystalline cemented carbides, Int. J. Refract. Metals. Hard Mater. 49 (2015) 225–231, https://doi.org/10.1016/j.ijrmhm.2014.07.003.
+[6] A.G. Rehorn, J. Jiang, P.E. Orban, State-of-the-art methods and results in tool condition monitoring: a review, Int. J. Adv. Manuf. Technol. 26 (2005) 693– 710, https://doi.org/10.1007/s00170-004-2038-2.
+
+T. Mikołajczyk et al. / Mechanical Systems and Signal Processing 104 (2018) 503–513
+
+513
+
+[7] M.C. Cakir, Y. Isik, Detecting tool breakage in turning aisi 1050 steel using coated and uncoated cutting tools, J. Mater. Process. Technol 159 (2005) 191– 198, https://doi.org/10.1016/j.jmatprotec.2004.05.006.
+[8] Y. Sahin, Comparison of tool life between ceramic and cubic boron nitride (CBN) cutting tools when machining hardened steels, J. Mater. Process. Technol. 209 (2009) 3478–3489, https://doi.org/10.1016/j.jmatprotec.2008.08.016.
+[9] E.S. Gadelmawla, F.A. Al-Mufadi, A.S. Al-Aboodi, Calculation of the machining time of cutting tools from captured images of machined parts using image texture features, Proc. Inst. Mech. Eng. B J. Eng. Manuf. 228 (2014) 203–214, https://doi.org/10.1177/0954405413481291.
+[10] G.M. Krolczyk, P. Nieslony, S. Legutko, Determination of tool life and research wear during duplex stainless steel turning, Arch. Civ. Mech. Eng. 15 (2015) 347–354, https://doi.org/10.1016/j.acme.2014.05.001.
+[11] A.Í.S. Antonialli, A. Magri, A.E. Diniz, Tool life and tool wear in taper turning of a nickel-based superalloy, Int. J. Adv. Manuf. Technol. 87 (2017) 2023– 2032, https://doi.org/10.1007/s00170-016-8568-6.
+[12] J. Kundrák, A.P. Markopoulos, T. Makkai, Assessment of tool life and wear intensity of CBN tools in hard cutting, Key Eng. Mater. 686 (2016) 1–6, https://doi.org/10.4028/www.scientiﬁc.net/KEM.686.1.
+[13] E.O. Ezugwu, S.J. Arthur, E.L. Hines, Tool-wear prediction using artiﬁcial neural networks, J. Mater. Process. Technol. 49 (1995) 255–264, https://doi. org/10.1016/0924-0136(94)01351-Z.
+[14] B. Sick, On-line and indirect tool wear monitoring in turning with artiﬁcial neural networks: a review of more than a decade of research, Mech. Syst. Signal Process. 16 (2002) 487–546, https://doi.org/10.1006/mssp.2001.1460.
+[15] N.H. Abu-Zahra, G. Yu, Gradual wear monitoring of turning inserts using wavelet analysis of ultrasound waves, Int. J. Mach. Tools. Manuf. 43 (2003) 337–343, https://doi.org/10.1016/S0890-6955(02)00274-2.
+[16] C. Scheffer, H. Engelbrecht, P.S. Heyns, A comparative evaluation of neural networks and hidden Markov models for monitoring turning tool wear, Neural. Comput. Appl. 14 (2005) 325–336, https://doi.org/10.1007/s00521-005-0469-9.
+[17] D.K. Ojha, U.S. Dixit, An economic and reliable tool life estimation procedure for turning, Int. J. Adv. Manuf. Technol. 26 (2005) 726–732, https://doi. org/10.1007/s00170-003-2049-4.
+[18] R.G. Silva, S.J. Wilcox, R.L. Reuben, Development of a system for monitoring tool wear using artiﬁcial intelligence techniques, Proc. Inst. Mech. Eng. B J. Eng. Manuf. 220 (2006) 1333–1346, https://doi.org/10.1243/09544054JEM328.
+[19] U. Natarajan, V.M. Periasamy, R. Saravanan, Application of particle swarm optimisation in artiﬁcial neural network for the prediction of tool life, Int. J. Adv. Manuf. Technol. 31 (2007) 871–876, https://doi.org/10.1007/s00170-005-0252-1.
+[20] T. Özel, Y. Karpat, L. Figueira, J.P. Davim, Modelling of surface ﬁnish and tool ﬂank wear in turning of AISI D2 steel with ceramic wiper inserts, J. Mater. Process. Technol. 189 (2007) 192–198, https://doi.org/10.1016/j.jmatprotec.2007.01.021.
+[21] D.K. Sarma, U.S. Dixit, A comparison of dry and air-cooled turning of grey cast iron with mixed oxide ceramic tool, J. Mater. Process. Technol. 190 (2007) 160–172, https://doi.org/10.1016/j.jmatprotec.2007.02.049.
+[22] S. Pal, P.S. Heyns, B.H. Freyer, N.J. Theron, S.K. Pal, Tool wear monitoring and selection of optimum cutting conditions with progressive tool wear effect and input uncertainties, J. Intell. Manuf. 22 (22) (2011) 491–504, https://doi.org/10.1007/s10845-009-0310-x.
+[23] D. D’Addona, T. Segreto, A. Simeone, R. Teti, ANN tool wear modelling in the machining of nickel superalloy industrial products, CIRP J. Manuf. Sci. Technol. 4 (2011) 33–37, https://doi.org/10.1016/j.cirpj.2011.07.003.
+[24] A. Attanasio, E. Ceretti, C. Giardini, C, Analytical models for tool wear prediction during AISI 1045 turning operations, Procedia CIRP 8 (2013) 218–223, https://doi.org/10.1016/j.procir.2013.06.092.
+[25] A. Attanasio, E. Ceretti, C. Giardini, C. Cappellini, Tool wear in cutting operations: experimental analysis and analytical models, J. Manuf. Sci. E.-T. ASME 135 (2013) 051011, https://doi.org/10.1115/1.4025010.
+[26] A. Siddhpura, R. Paurobally, A review of ﬂank wear prediction methods for tool condition monitoring in a turning process, Int. J. Adv. Manuf. Technol. 65 (2013) 371–393, https://doi.org/10.1007/s00170-012-4177-1.
+[27] A. Gajate, R. Haber, R.D. Toro, P. Vega, A. Bustillo, Tool wear monitoring using neuro-fuzzy techniques: a comparative study in a turning process, J. Intell. Manuf. 23 (2012) 869–882, https://doi.org/10.1007/s10845-010-0443-y.
+[28] Q. Yiqiu, T. Jia, L. Libing, Z. Yu, C. Yingshu, A tool wear predictive model based on SVM, in: 2010 Chinese control and decision conference (2010) 1213– 1217. https://doi.org/10.1109/CCDC.2010.5498161.
+[29] V. Jammu, K. Danai, S. Malkin, Unsupervised neural network for tool breakage detection in turning, CIRP Ann. Manuf. Technol. 42 (1993) 67–70, https://doi.org/10.1016/S0007-8506(07)62393-2.
+[30] T. Pfeifer, L. Wiegers, Reliable tool wear monitoring by optimized image and illumination control in machine vision, Measurement 28 (2000) 209–218, https://doi.org/10.1016/S0263-2241(00)00014-2.
+[31] D. Kerr, J. Pengilley, R. Garwood, Assessment and visualisation of machine tool wear using computer vision, Int. J. Adv. Manuf. Technol. 28 (7–8) (2006) 781–791, https://doi.org/10.1007/s00170-004-2420-0.
+[32] M. Castejón, E. Alegre, J. Barreiro, L.K. Hernández, On-line tool wear monitoring using geometric descriptors from digital images, Int. J. Mach. Tools. Manuf. 47 (2007) 1847–1853, https://doi.org/10.1016/j.ijmachtools.2007.04.001.
+[33] J. Barreiro, M. Castejón, E. Alegre, L.K. Hernández, Use of descriptors based on moments from digital images for tool wear monitoring, Int. J. Mach. Tools. Manuf. 48 (2008) 1005–1013, https://doi.org/10.1016/j.ijmachtools.2008.01.005.
+[34] E. Alegre, R. Alaiz-Rodríguez, J. Barreiro, J. Ruiz, Use of contour signatures and classiﬁcation methods to optimize the tool life in metal machining, Estonian J. Eng. 15 (2009) 3–12, https://doi.org/10.3176/eng.2009.1.01.
+[35] D.M. D’Addona, R. Teti, Image data processing via neural networks for tool wear prediction, Procedia CIRP 12 (2013) 252–257, https://doi.org/10.1016/ j.procir.2013.09.044.
+[36] D.M. D’Addona, D. Matarazzo, A.M.M. Sharif Ullah, R. Teti, Tool wear control through cognitive paradigms, Procedia CIRP 33 (2015) 221–226, https:// doi.org/10.1016/j.procir.2015.06.040.
+[37] S. Karam, P. Centobelli, D.M. D’Addona, R. Teti, Online prediction of cutting tool life in turning via cognitive decision making, Procedia CIRP 41 (2016) 927–932, https://doi.org/10.1016/j.procir.2016.01.002.
+[38] T. Mikołajczyk, K. Nowicki, A. Kłodowski, D.Yu. Pimenov, Neural network approach for automatic image analysis of cutting edge wear, Mech. Syst. Signal Process. 88 (2017) 100–110, https://doi.org/10.1016/j.ymssp.2016.11.026.
+[39] M. Hall, E. Frank, G. Holmes, B. Pfahringer, P. Reutemann, I.H. Witten, The WEKA data mining software: an update, ACM SIGKDD Explorations Newsletter 11 (2009) 10–18, https://doi.org/10.1145/1656274.1656278.
+[40] J.R. Quinlan, Learning with continuous classes, in: Proc. of the 5th Australian Joint Conference on Artiﬁcial Intelligence, 92m Singapore (1992) 343–348. [41] C.M. Bishop, Neural Networks for Pattern Recognition, Oxford University Press, Inc, New York. NY. USA, 1995. [42] G. Cybenko, Approximation by superpositions of a sigmoidal function, Math. Control, Signals Syst. 2 (1989) 303–314, https://doi.org/10.1007/
+BF02551274. [43] D.C. Li, H.Y. Chen, Aggregating predictions of multi-models for the small dataset learning tasks in the TFT-LCD process, Int. J. Adv. Manuf. Technol.
+Article in the press (2017) 1–11. https://doi.org/10.1007/s00170-017-1041-3. [44] J. Maudes, A. Bustillo, A.J. Guerra, J. Ciurana, Random Forest ensemble prediction of stent dimensions in microfabrication processes, Int. J. Adv. Manuf.
+Technol. 91 (1) (2017) 879–893, https://doi.org/10.1007/s00170-016-9695-9.
+

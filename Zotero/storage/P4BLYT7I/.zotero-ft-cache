@@ -1,0 +1,736 @@
+The International Journal of Advanced Manufacturing Technology https://doi.org/10.1007/s00170-019-04349-y
+ORIGINAL ARTICLE
+
+Tool remaining useful life prediction method based on LSTM under variable working conditions
+Jing-Tao Zhou1 & Xu Zhao1 & Jing Gao1
+Received: 21 April 2019 / Accepted: 23 August 2019 # Springer-Verlag London Ltd., part of Springer Nature 2019
+Abstract Tool remaining useful life prediction is important to guarantee processing quality and efficient continuous production. Tool wear is directly related to the working conditions, showing a complex correlation and timing correlation, which makes it difficult to predict the tool remaining useful life under variable conditions. In this paper, we seek to overcome this challenge. First, we establish the unified representation of the working condition, then extract the wear characteristics from the processing signal. The extracted wear features and corresponding working conditions are combined into an input matrix for predicting tool wear. Based on this, the complex spatio-temporal relationship under variable working conditions is captured. Finally, using the unique advantages of the long short-term memory (LSTM) model to solve complex correlation and memory accumulation effects, the tool remaining useful life prediction model under variable working conditions is established. An experiment illustrates the effectiveness of the proposed method.
+Keywords Variable working conditions . Tool remaining useful life prediction . Long short-term memory . Hilbert-Huang Transform
+
+1 Introduction
+Tool life is the sum of the cutting time from the moment a new tool is cut until the tool is scrapped. In a flexible production line, tool life prediction is important for workpiece surface quality and production efficiency. In the actual application scenario, tool life prediction in the mass production process has achieved some results [1]. For small batch and multivariety production manufacturing conditions, unlike mass production, the working conditions of the tool change frequently and its life is often difficult to evaluate. Overfrequent tool change would increase the processing time,
+* Jing-Tao Zhou Zhoujt@nwpu.edu.cn
+Xu Zhao 651928960@qq.com
+Jing Gao 1094200428@qq.com
+1 Key Laboratory of Contemporary Design and Integrated Manufacturing Technology, Ministry of Education, Northwestern Polytechnical University, Xi’an, Shaanxi Province, China
+
+while it is also difficult to guarantee the machining quality [2]. Furthermore, the common industrial practice of replacing or regrinding machining tools per conservative schedule is not cost-effective. Additionally, this method is not suitable for working conditions where the tool changes frequently [3]. Therefore, an effective tool remaining useful life prediction method is helpful for small batch and multi-variety production processes.
+Generally, tool condition monitoring methods can be divided into direct and indirect methods. Direct methods measure the amount of tool wear using optical or image detection [4]. Although direct methods are intuitive and have high measurement accuracy, they are susceptible to environmental interference and require downtime detection. This is not flexible or mature enough in a growing dynamic manufacturing environment [1, 3, 5, 6]. Therefore, indirect methods have been widely used. Indirect methods establish a mapping relationship between the tool wear state and signal characteristics. Physical signals of the process are collected and intelligent algorithms are used to identify the tool wear state. Analysis of the current wear value provides the basis for tool maintenance [7].
+At present, the tool wear prediction research based on indirect methods often requires the process parameters to be
+
+Int J Adv Manuf Technol
+
+unchanged (or assumed to be unchanged) during the process. Usually, one or more sets of different levels of main process parameters are given for an experiment. Then, the effect of working condition variables on the tool wear is evaluated. This method is not optimized for variable working conditions and its application is limited. Under variable working conditions, the process of using the tool is more complicated. We have summarized two points:
+1. The interaction of multiple working conditions in space. This interaction refers to the relationship between the tool wear state and the working conditions within a certain time period. The same tool may process multiple workpieces in its life cycle. The working conditions, such as cutting parameters, workpiece materials and machine factors can vary. The relationship between different working conditions and wear is complicated and difficult to analyze. Tool wear is not caused by a specific factor, but by the interaction of multiple factors in multiple processes.
+2. The correlation of the tool state in time. Tool wear state is the cumulative result of the previous changes of the wear characteristics and operating conditions. The different tool wear conditions in the previous period and the change of the machining behavior in the future time period directly affect the future wear state. The tool wear state of each process is affected by factors such as machine equipment, processing technology, processing environment, and raw materials. As the manufacturing process progresses, the tool wear state affected by the upstream process factors will propagate to the downstream process.
+In order to predict the tool remaining useful life under variable working conditions with complex space-time relationship, this paper uses the LSTM network to model the wear process under variable working condition. LSTM [8] is a recurrent neural network (RNN) architecture. RNNs are “fuzzy” in the sense that they do not use exact templates from the training data to make predictions, but rather like other neural networks use their internal representation to perform a highdimensional interpolation between training examples. Thus, such fuzzy prediction does not suffer from the curse of dimensionality and is therefore much better at modeling real-valued or multivariate data than exact matches [9]. We use LSTM for high-dimensional modeling, eliminating redundant working condition parameters and extracting appropriate working condition factors for feature learning. On the other hand, due to the correlation of the tool state in time, the future wear state is the cumulative result of the previous wear characteristics change and operating conditions change. The LSTM model has a unique advantage in long-term memory information. Because of its special unit structure, it can handle longdistance dependence problems in sequence data and can solve gradient problems better. Therefore, we try to use LSTM to
+
+deal with the complex space-time relationship between working conditions and wear characteristics changes.
+In summary, we have built a unique method framework to solve the problem of tool remaining useful life prediction under variable conditions.
+First, collect the working conditions and machining signals during the cutting process. Second, extract the tool wear characteristics from the machining signal. Finally, the LSTMbased model is established to learn the complex space-time relationship of the tool wear process under variable working conditions. In turn, tool remaining useful life under current working condition is obtained.
+The remaining sections are organized as follows: In the next section, we present the literature review on tool selection and transfer learning. After that, in Section 3, we generalize our approach and explain its principles. The experiment is described in Section 4. In Section 5, we show the experimental results and discuss the effectiveness of the method. Finally, concluding remarks are given in Section 6.
+2 Related work
+2.1 Tool wear monitoring method
+At present, a large number of studies are carried out without changing the working conditions, concluding that the cutting speed, feed, and the depth of cut are the parameters with the most influence on tool wear process [10]. Also, many physical model methods or numerical (finite element) methods are being refined [11–15]. However, most of the above similar methods have limitations on wear assumptions. Karuppusamy et al. proposed a system to monitor tool wear by using the captured image of the cutting tool tip and using a linear regression model to calculate tool wear [16]. Daddona et al. proposed a method that uses images of the cutting tool’s worn-zone to train the artificial neural network (ANN) and then to perform the DNA-based computing (DBC). It is demonstrated that the ANN can predict the degree of tool-wear from a set of tool-wear images processed under a given procedure whereas the DBC can identify the degree of similarity/ dissimilar among the processed images [17]. Many researchers have conducted extensive research on tool condition monitoring [18–20] using different sensing functions (cutting force, spindle power, torque, acceleration, current and acoustic emission, etc.) to collect information for early detection. These attempts have achieved varying degrees of success in practical applications. For example, a Gaussian mixture regression (GMR) model was proposed to realize continuous tool wear prediction based on features extracted from cutting force signal [21]. Kothuru et al. provided a solution to detect the wear conditions of the gear milling cutter in the cutting of
+
+Int J Adv Manuf Technol
+
+workpiece materials with hardness variations using audible sound signals [3].
+The research above solved the tool wear problem by traditional modeling or machine learning under the constant working conditions. But the above method can’t be used in multiple varieties, small batch production situation due to the frequent change of the tool working condition. Therefore, it is of great interest to solve the tool wear problem under variable conditions.
+Zhang et al. developed the mapping time-variant model between tool wear and cutting parameters on difficult-tomachine materials. For the first time, time is added as a factor of the experiment design in order to consider time variant [22], but this is still an experimental attempt. Xie et al. found that the dimensionless cutting force time domain features are not sensitive to the change of cutting parameters, but sensitive only to change of the tool wear state [23]. Therefore, the tool wear state monitoring can be realized in variable parameter milling. Fan [24] uses a backpropagation artificial neural network to establish the mapping relationship between tool wear state and surface cutting temperature characteristic value and cutting condition parameters, so that the monitoring system can identify the tool state under variable cutting conditions and improve the flexibility of online monitoring of tool wear.
+The methods above are to study tool wear under the condition of variable cutting parameters. All are based on the experimental method or the traditional modeling method; the flexibility of the application is poor; when other working conditions other than cutting parameters change, the model is not applicable; therefore, the tool wear under varying working conditions needs to be further studied.
+2.2 Signal processing technology
+In terms of indirect method tool wear feature extraction, how to accurately quantify the relationship between monitoring signals and the amount of wear is a difficulty in tool condition monitoring (TCM) [25]. The most common methods include Fourier transform and wavelet transform, time series analysis, etc. Wang et al. used the Fourier transform method to extract the frequency domain characteristics of the vibration signal and the acoustic emission signal. Combined with the statistical features of the time domain and the time-frequency domain features, a hidden Markov model is adopted to obtain the continuous wear value [26]. Lin et al. used wavelet transform to extract the energy of signals in different frequency bands as feature vectors. The relationship between the feature vector and tool wear was learned by a stacked auto-encoder network, and finally, the tool wear state prediction was realized. Alonso and Salgado used singular spectrum analysis (SSA) to extract information regarding flank wear from the measured sound signals [27]. Joseph et al. used empirical mode decomposition (EMD) to decompose the multi-component sound signal into
+
+multiple intrinsic mode functions. The instantaneous frequencies with time and their amplitudes were obtained by applying Hilbert transform on each intrinsic mode function (IMF), so that cutting tool flank wear prediction is possible using emitted sound by Hilbert-Huang Transform (HHT) [28].
+In fact, Fourier transform and the wavelet transform can only deal with linear non-stationary signals and are not adaptive. Since the monitoring signal is usually nonlinear and nonstationary, HHT is based on local features of the signal and can be decomposed adaptively. It is especially suitable for analyzing nonlinear non-stationary signals and therefore has a better application prospect.
+2.3 LSTM network applications
+LSTM is a variant network structure of RNN. It has unique advantages in the long-term memory of information and is therefore particularly suitable for dealing with time series problems. Wang et al. used the LSTM network to predict the fault time series based on the historical fault data of complex systems [29]. It verified that the established LSTM prediction model has strong applicability and higher accuracy in fault time series analysis. Ren et al. proposed a Chinese word segmentation method based on a LSTM network [30]. The results show that the LSTM network model–based method can obtain better performance than traditional machine learning methods. Wang et al. proposed a dynamic prediction method for tool life based on online learning [31]. Using the LSTM network as a model, the online learning module is integrated to enable the model to automatically update parameters during the machining process to achieve accurate prediction of tool life. Ma et al. propose a novel architecture of neural networks, LSTM NN, to capture nonlinear traffic dynamic in an effective manner [32]. Adlen et al. use the deep-length long-term memory network to deal with the advantages of time series and uses the stator currents of a three-induction induction motor captured in a steady state to realize real-time safety monitoring of the induction motor [33].
+The update inside the LSTM network will be determined based on whether the state at the previous moment is memorized and by the input at the current time. Due to its unique “memory” advantage, LSTM networks are becoming more widely used in various fields.
+3 Principle explanation
+The tool remaining useful life prediction method we propose is based on the LSTM network. The schematic diagram is shown in Fig. 1.
+This method is proposed for the same type of tool. First, we establish a unified representation of the working conditions according to the factors affecting the tool wear and then
+
+Int J Adv Manuf Technol
+
+Fig. 1 Schematic diagram of the tool remaining useful life prediction method
+
+extract the wear characteristics from the machining signal. The extracted wear characteristics and corresponding working conditions are combined with an input matrix to capture the complex spatiotemporal relationships under variable working conditions and lay a foundation for the subsequent prediction model. Finally, we use the LSTM network to learn the mapping relationship between the working scenes and the wear feature labels under variable conditions. The whole process can be divided into two stages: the training process and the application process.
+(1) Training process
+Collect the data of the whole life cycle processing process of the tool as the historical data to train the model, and set the total processing time length to D.
+Step 1: The data collected during the processing is divided into working condition factors and D processing signals, such as working condition factors including process parameters and workpiece information. The machining signal is a torque signal. Step 2: The time window length is fixed to win _ hht, and the working condition and machining signal are divided into a number L of data segments in time series. Step 3: The HHT is applied to each segment of the machining signal Ti to extract the tool wear characteristics of the segment Fi . Step 4: The working condition segment Coni and corresponding tool wear feature Fi are used as input, and the
+
+tool wear feature Fi + 1 of the next time segment is used as output to train the LSTM network.
+(2) Application process
+Step 1: Taking the working condition segment Cont and the machining signal segment Tt in the new process with a time segment length of t , the machining signal segment Tt is processed using the HHT to obtain the tool wear feature Ft for the t time segment. Step 2: By inputting the working condition segment Cont and corresponding tool wear feature Ft into the trained LSTM network, the tool wear feature Ft + 1 of the next time segment t + 1 can be predicted. Step 3:Calculate the similarity S between Ft + 1 and the tool wear characteristics of the t-time period before the tool is scrapped, if S ≥ threshold, determine the tool remaining life to be 0. if S < threshold,the predicted tool wear characteristic Ft + 1 and the current working condition Cont are taken as the next input matrix, and the process is repeated until the similarity reaches the set threshold. At this time, the tool remaining life is calculated according to the number of iterations.
+3.1 Working condition information
+In the actual machining process, there are many factors affecting the tool wear, such as workpieces, machine tools, and process parameters, which makes the tool wear prediction
+
+Int J Adv Manuf Technol
+
+P ¼ ðn; Δx; Δy; Δz; f Þ
+
+ð2Þ
+
+where n represents the spinde speed, f represents the feed rate and delta x, delta y and delta z represent the x , y and z coordinate difference of the adjacent time respectively.
+
+(2). Workpiece information sub-conditions
+
+Fig. 2 Schematic diagram of the relationship between the torque signal and the tool wear
+
+process extremely complicated. Therefore, we represent the working condition factors under variable working conditions in the form of working condition vectors, which are divided into four sub-vectors of process parameter, workpiece information. Then, the working condition vector Con can be expressed as:
+
+Con ¼ ðP; WÞ
+
+ð1Þ
+
+(1). Process parameter sub-conditions
+Tool machining under different process parameters will result in different machining effects and have direct impact on tool wear. The main process parameters in the cutting process mainly include cutting speed (spindle speed), depth of cut, and feed rate. The process parameter sub-vector P is expressed as:
+
+The workpiece’s material properties strength, hardness and thermal conductivity affect the cutting temperature, which in turn affects the tool wear. The influence of factors such as the clamping strength of the workpiece rigidity factor on the tool wear during machining is also prominent. Workpiece information sub-vector W is expressed as:
+
+W ¼ ðK; μs; E; Rm; τ; HRA; e; Ak; CÞ
+
+ð3Þ
+
+where K represents the thermal conductivity, μsrepresents the friction coefficient, Erepresents the positive elastic modulus, Rmrepresents the tensile strength, τrepresents the shear strength, HRArepresents Rockwell hardness, erepresents elongation, Ak represents impact toughness, and C represents clamping strength.
+
+3.2 Tool wear feature extraction
+The process monitoring signal can reflect the tool wear after the actual machining starts, tool wear prediction model needs to distinguish the degree of tool wear, which means to obtain the wear label for the data set. Since the real monitoring signal is often nonlinear and non-stationary, the HHT is based on local features of the signal and can be adaptively decomposed, so it is especially suitable for analyzing nonlinear nonstationary signals. Therefore, we use the HHT to obtain the characteristics of the tool wear.
+The process monitoring signal can reflect the tool wear after the actual machining starts. Common signals include
+
+Fig. 3 Tool wear prediction LSTM model structure
+
+Table 1 Experimental equipment
+Equipment
+Machine tool CNC system Modular boring tool shank Boring tool blade Blank KOMET dynamic data
+acquisition system
+
+Items
+DMG125H Machine left Siemens 840D 21A.JT50.50-60 CCMT060204-EMF QT500-7GB/T1348-1988 Sampling frequency: 20 Hz
+
+Int J Adv Manuf Technol
+
+cutting force, vibration, acoustic emission (AE), torque signal and so on. Among them, the torque signal has lower sensitivity to tool wear than the cutting force signal, but has the advantages of low cost, convenient installation and measurement, and does not affect normal processing. In this paper, the torque signal is used as the process monitoring signal, and the relationship between the torque signal and the tool wear is shown in Fig. 2. It can be seen from the figure that under the same processing conditions, the torque is different in different wear stages. Therefore, the torque signal can be used as a process monitoring signal for tool wear.
+Each IMF obtained by the EMD of the torque signal has a corresponding physical meaning. The studies in [28, 34] proved the sensitivity of the processing signal IMF amplitude and HHT marginal spectrum for the tool wear process. Therefore, this paper selects the amplitude average of the IMF decomposed by EMD and the larger amplitude point in the HHT edge spectrum as the wear characteristics.
+Set the wear feature extraction window length win _ hht, T represents the torque signal collected by the tool D during its entire life cycle lifetime and the torque signal can be expressed as:
+
+T ¼ ½T 1; T 2; …; T L
+
+ð4Þ
+
+TL ¼ lifetime
+
+ð5Þ
+
+win hht
+
+where Ti represents the torque signal of the i-nd time segment, i = 1, 2, …, L
+For each signal segmentation matrix Ti, first, Ti is decomposed into IMF by EMD, and then, the IMF component sensitive to wear variation is transformed by HHT to obtain an edge spectrum corresponding to the IMF component. The amplitude average A of the IMF, which is sensitive to tool
+
+Fig. 4 Blank
+
+wear, and the maximum amplitude point I of the edge spectrum constitute the tool wear feature vector F. Wear feature item Fi can be obtained for each signal segmentation matrix Ti:
+
+Fi ¼ ½Ai; Ii
+
+ð6Þ
+
+3.3 Construction of input matrix and output matrix
+
+Set the time window length of the input data to , set the initial
+
+time of this time window to m, and the input of the win _ con
+
+network to :Xm
+
+!
+
+Xm ¼
+
+Conm Fm
+
+Conmþ1 F mþ1
+
+… …
+
+Conmþwin con Fmþwin con
+
+ð7Þ
+
+where Coni(m ≤ i ≤ m + win _ con) indicates the working condition factor corresponding to the i-th segment, and Fi(m ≤ i ≤ m + win _ con) is the wear characteristic corresponding to the i-th segment.
+
+Table 2 Blade parameters
+
+Blade model
+
+Coating material Tip radius Front Relief
+
+(mm)
+
+angle angle
+
+CCMT060204-EMF Titanium-nitride 0.4 EB1220
+
+6°
+
+7°
+
+Fig. 5 Site processing device
+
+Int J Adv Manuf Technol
+
+Table 3. Experimental process parameters
+
+Group Feed Rotating speed Feed rate
+
+number number (r/min)
+
+(mm/min)
+
+TOOL1 35 TOOL2 40 TOOL3 30 TOOL4 28
+
+600–960 700 800–1300 1000
+
+70–96 40–260 100 100
+
+Cutting depth (mm)
+0.25–0.60 0.25 0.25 0.10–0.90
+
+working condition correlation, wear characteristics can be
+
+used to measure tool wear in working scenes. When the initial
+
+time of time window win _ con is m, the output of the network
+
+is wear feature Ym:
+
+Â
+
+Ã
+
+Y m ¼ Fmþ1 Fmþ2 … Fðmþ1Þþwin con
+
+ð8Þ
+
+3.4 LSTM model and training
+
+Owning to wear characteristics obtained under the variable Variable working conditions have a complex space-time relaworking conditions based on the indirect method have tionship. In space, the relationship between different working
+Table 4 Data collection table
+
+Torque signal
+
+Working conditions
+
+Processing Total
+
+time˄s˅
+
+processing
+
+TOOL1 segment 1 segment 2
+TOOL2 segment 1 segment 2
+TOOL3 segment 1 segment 2
+TOOL4 segment 1 segment 2
+
+rotating speed˖690r/min feed rate:69.3mm/min cutting depth:0.3mm rotating speed˖693r/min feed rate:69mm/min cutting depth:0.3mm rotating speed˖700r/min feed rate:182mm/min cutting depth:0.25mm rotating speed˖700r/min feed rate:185mm/min cutting depth:0.25mm rotating speed˖1049r/min feed rate:100mm/min cutting depth:0.25mm rotating speed˖1056r/min feed rate:100mm/min cutting depth:0.25mm rotating speed˖1000r/min feed rate:100mm/min cutting depth:0.25mm rotating speed˖1000r/min feed rate:100mm/min cutting depth:0.3mm
+
+time˄s˅
+
+2
+
+4
+
+2
+
+2
+
+4
+
+2
+
+2
+
+4
+
+2
+
+2
+
+4
+
+2
+
+Int J Adv Manuf Technol
+
+Table 5 Working condition of sample 5
+
+Experiment Rotating speed Feed rate
+
+number
+
+(r/min)
+
+(mm/min)
+
+1
+
+690
+
+80
+
+2
+
+693
+
+80
+
+400
+
+714
+
+80
+
+Δx Δy Δz (mm) (mm) (mm)
+
+0
+
+0
+
+0.001 0
+
+−
+
+0
+
+0.0-
+
+01
+
+− 0.0033
+0
+− 0.0038
+
+conditions and wear is complicated and difficult to analyze. Tool wear is not caused by a specific factor, but by the interaction of multiple factors in multiple processes. We use LSTM for high-dimensional modeling, eliminating redundant working condition parameters and extracting appropriate working condition factors for feature learning. On the other hand, due to the correlation of the tool state in time, the future wear state is the cumulative result of the change of the previous wear characteristics and the operating conditions. Due to its special memory cell structure, LSTM can handle the temporal correlation of working conditions and wear characteristics.
+In summary, LSTM model has unique advantages in solving problems with complex correlations and memory accumulation effects. Therefore, according to the changing characteristics between working conditions and wear under variable working conditions, the LSTM model is used to solve the remaining useful life prediction problem in this scenario. The tool remaining useful life prediction LSTM model structure is shown in Fig. 3.
+
+Set up the LSTM network and set the length of its window to win _ con. L is calculated by Eq.(5).The input of the model is X:
+
+X ¼ fX 1; X 2; …; X Lg
+
+Xi ¼
+
+Coni Fi
+
+Coniþ1 F iþ1
+
+… …
+
+!
+
+Coniþwin con Fiþwin con
+
+Y
+
+ð9Þ ð10Þ
+
+The corresponding theoretical output is :
+
+Y ¼ fY 1; Y 2; …; Y Lg Â
+Y i ¼ Fiþ1 Fiþ2 …
+
+Ã Fðiþ1Þþwin con
+
+ð11Þ ð12Þ
+
+Then, input X into the LSTM hidden layer. As can be seen from Fig. 3, the hidden layer contains L LSTM cells connected in time before and after. The output through the hidden layer is P:
+
+P ¼ fP1; P2; …; PLg
+
+ð13Þ
+
+Pi ¼ LSTM ðX i; Ci−1; H i−1Þ
+
+ð14Þ
+
+where Ci − 1 and Hi − 1 represent the state and output of the previous LSTM cell, respectively, and LSTM represents the forward propagation algorithm of the LSTM cell.
+The mean square error (MSE) is selected as the error calculation formula, and the loss function of the training process can be defined as loss:
+
+loss
+
+¼
+
+L
+∑
+
+ðPi−Y iÞ2=L Â win
+
+con
+
+ð15Þ
+
+i¼1
+
+Fig. 6 EMD decomposition of torque signal
+
+Int J Adv Manuf Technol
+
+taken as the next input matrix, and the process is repeated until the similarity reaches the set threshold. At this time, The number of iterations is l, and the remaining tool life is RL:
+
+RL ¼ l Â win hht Â win con
+
+ð16Þ
+
+where win _ hht(win _ hht = t)is the length of the time segmentation window of the machining signal, and win _ con is the length of the window of the LSTM network.
+
+(a) HHT marginal spectrum of IMF3
+(b) HHT marginal spectrum of IMF4 Fig. 7 HHT marginal spectrum. a HHT marginal spectrum of IMF3. b HHT marginal spectrum of IMF4
+
+4 Experimental setup
+Due to the limitations of experimental equipment conditions and cost, the experiments under variable working conditions of this paper only collect part of the working condition data under different cutting parameters and do not cover workpiece material change data. However, this does not affect the logic of the method and the deduction of the model. The experimental equipment and materials are shown in Table 1.
+The detailed parameters of the blade are shown in Table 2. The blank used in the experiment is shown in Fig. 4. The hole depths of No. 4, No. 7, No. 8, No. 9, and No. 10 are 80 mm, and the diameter of the bottom hole is 57.55 mm. No. 3 and No. 5 holes have a depth of 40 mm and a bottom hole diameter of 57.55 mm. The No. 1 and No. 2 holes have a depth of 31 mm and the bottom hole has a diameter of 57.55 mm. The on-site processing equipment is shown in Fig. 5. A total of four sets of blade life experiments were performed in the experiment. The process parameters are shown in Table 3.
+
+Taking the minimum loss function as the optimization goal, given the random number of seeds, the initial learning rate and the number of training steps, the Adam optimization algorithm is used to continuously update the network weights, and finally, the LSTM hidden layer network is obtained.
+3.5 Tool remaining useful life prediction
+The judgment basis for the scrapping of the tool is as follows: when the tool flank wear reaches the blunt standard, the tool is considered to be scrapped.
+Knowing the current operating condition segments Cont and processing signal segments Tt, tool wear characteristics Ft + 1 of the next time segment are first predicted. Calculate the similarity S between Ft + 1 and the tool wear characteristics of the t-time period before the tool is scrapped, if S ≥ threshold, determine the tool remaining life to be 0. if S < threshold,the predicted tool wear characteristic Ft + 1 and the current working condition Cont are
+
+5 Results and discussion
+After the experiment, the working condition data files collected by the KOMET system are imported into the MySQL database. Each tool selects two working condition segments to display the collected data. The results are shown in Table 4.
+For experiment 1, the machining time of TOOL1 is 128 min and the time is divided into 20 s, so that 384 torque signal segments and corresponding working condition segments are obtained. Each segment is used as a training sample.
+
+Table 6 The top three large values of the HHT marginal spectrum
+
+Experiment IMF 1st amplitude 2nd amplitude 3rd amplitude
+
+number
+
+number value
+
+value
+
+value
+
+1
+
+3
+
+0.203
+
+0.199
+
+0.163
+
+4
+
+0.399
+
+0.326
+
+0.243
+
+Int J Adv Manuf Technol
+
+The fifth sample is taken as an example to illustrate the construction of the model input.
+(1)Working condition of sample 5 Working conditions include: Rotating speed; Feed rate; Δx; Δy; Δz; specific parameters are shown in Table 5: (2) Torque signal feature extraction of sample 5 The tool wear characteristics are extracted from the torque signal of sample 5. The extracted terms are the IMF amplitude average and the top three large values of the HHT marginal spectrum. In Fig. 6, eight IMF maps are obtained by
+
+decomposing the torque signal segments by EMD. Among them, IMF3 and IMF4 are sensitive to tool wear. Therefore, Hilbert marginal spectrum analysis is performed on IMF3 and IMF4. The analysis results are shown in Fig. 7:
+As can be seen from Fig. 6, the amplitude average of IMF3 in sample 5 of TOOL1 is 8.4*10-5, and the amplitude average of IMF4 is 1.4*10-4. The first three large amplitudes of the corresponding HHT edge spectrum are shown in Table 6.
+The input matrix x400x13 constructed by sample 5 is:
+
+2 690 80 0
+
+0
+
+‐0:0033
+
+8:4*10−5
+
+1:4*10−4
+
+0:203
+
+0:199
+
+0:163
+
+0:399
+
+0:326
+
+3 0:243
+
+x400Â13
+
+¼
+
+664
+
+693 …
+
+80 …
+
+0:001 …
+
+0 …
+
+0 …
+
+8:4*10−5 …
+
+1:4*10−4 …
+
+0:203 …
+
+0:199 …
+
+0:163 …
+
+0:399 …
+
+0:326 …
+
+0:243 …
+
+775
+
+714 80 ‐0:001 0 ‐0:0038 8:4*10−5 1:4*10−4 0:203 0:199 0:163 0:399 0:326 0:243
+
+In this paper, the accuracy of the prediction model is verified by cross-validation method. Three groups of four experiments are used as the training set, and one group is used as the test set. The cross-validation scheme is shown in Table 7.
+The tool remaining useful life prediction model uses a LSTM model. The number of hidden layer nodes is 64. The model uses the Adam optimization method for the training model; the batch size is 5; the loss function is the MSE.
+Taking the No. 1 verification scheme as an example, that is, the data samples of TOOL1, TOOL2, and TOOL3 are used as training sets, and the data samples of TOOL4 are used as test sets. The curve of the MSE value changing with the number of training epochs during the training is shown in Fig. 8. The number of training epochs is 3,500. Although the loss function curve is noisy during training, this is due to poor data quality, but it eventually converges to 0.01367.
+
+The above processes are repeated for the verification
+
+schemes No. 2, No. 3, and No. 4, and the MSE value curves
+
+of the tool remaining useful life prediction model are shown in
+
+Fig. 9a, b, and c.
+
+It can be seen from Fig. 9 that the loss function of the
+
+second, third and fourth verification schemes converge
+
+after training the LSTM network for a certain number of
+
+epochs. The MSE values are 0.00954; 0.01298; 0.01673,
+
+respectively.
+
+When the LSTM network training is completed, the test set
+
+data is put into the trained LSTM network and the predicted
+
+result and the actual result are yielded as shown in Table 9.
+
+For regression prediction problems, we use R-squared to
+
+evaluate the model as follows.
+
+ 2
+
+∑ y−^y
+
+R2 ¼ 1−  2
+
+ð17Þ
+
+∑ y−y
+
+Table 7 The cross-validation scheme
+
+Serial number
+
+Training set
+
+1
+
+TOOL1
+
+TOOL2
+
+TOOL3
+
+2
+
+TOOL1
+
+TOOL2
+
+TOOL4
+
+3
+
+TOOL1
+
+TOOL3
+
+TOOL4
+
+4
+
+TOOL2
+
+TOOL3
+
+TOOL4
+
+Test set TOOL4 TOOL3 TOOL2 TOOL1
+Fig. 8 the MSE value curve of No. 1 verification scheme
+
+Int J Adv Manuf Technol (a) the MSE value curve of No. 2 verification scheme (b) the MSE value curve of No. 3 verification scheme
+
+Table 9 Comparison of predicted and actual values on test points
+
+Verification scheme Serial
+
+number
+
+number
+
+Actual value Predicted value
+
+(min)
+
+(min)
+
+2
+
+1
+
+44
+
+40
+
+2
+
+29
+
+28
+
+3
+
+14
+
+14
+
+3
+
+1
+
+48
+
+40
+
+2
+
+33
+
+32
+
+3
+
+18
+
+18
+
+4
+
+1
+
+48
+
+38
+
+2
+
+33
+
+34
+
+3
+
+18
+
+16
+
+closer the predicted value is to the true value, i.e. the better the model fits. Therefore, the R-squared evaluation of the test points in this paper is obtained as R2 = 0.7806.
+From Figs. 8 and 9, it can be seen that the model training process has a good fitting effect. It can converge faster in the training period and is finally at a lower level. At the same time, from the prediction results in Table 8 and Table 9 we know that there is a certain mismatch between the predicted and the true amount of remaining life time. In general, however, tool remaining useful life prediction under variable working conditions can be achieved.
+
+6 Conclusion
+
+(c) the MSE value curve of No. 4 verification scheme
+Fig. 9 The MSE value curves of the tool remaining useful life prediction model. a The MSE value curve of No. 2 verification scheme. b The MSE value curve of No. 3 verification scheme. c The MSE value curve of No. 4 verification scheme
+
+The numerator represents the sum of the squared difference between the true value and the predicted value. The denominator represents the sum of the squared differences between the true value and its mean. The closer the result is to 1, the
+
+Table 8 Comparison of predicted and actual values (No. 1 verification scheme)
+
+Serial number
+
+Actual value (min)
+
+Predicted value (min)
+
+1
+
+52
+
+40
+
+2
+
+37
+
+28
+
+3
+
+22
+
+20
+
+In this paper, we propose a method for predicting tool remaining useful life under variable working conditions based on the LSTM network. First, we establish a unified representation of the working conditions according to the factors affecting the tool wear. Then, we extract the wear characteristics from the process monitoring signal. The extracted wear characteristics and other working conditions are constructed into a matrix to capture the complex spatiotemporal relationships under variable working conditions. Owning to the unique advantages of the LSTM model in solving problems with complex correlations and memory accumulation effects, we establish the tool remaining useful life prediction model under variable working conditions. Finally, the experiment illustrates the effectiveness of the proposed method. However, due to experimental conditions and other limitations, the quality of experimental data may have some adverse effects on the accuracy of prediction. Future work will focus on more in-depth exploration of the various stages of the approach to optimize the accuracy of the forecast.
+Funding information The work is financially supported by the National Defense Basic Scientific Research program of China through approval no. JSCG2016205B006 and the National Science and Technology Major Project of China through approval no. 2012ZX04011041.
+
+Int J Adv Manuf Technol
+
+References
+1. Attanasio A, Ceretti E, Giardini C (2013) Analytical models for tool wear prediction during AISI 1045 turning operations. Procedia Cirp 8(11):218–223
+2. Ji W, Shi J, Liu X, Wang L, Liang SY (2017) A novel approach of tool wear evaluation. J Manuf Sci Eng 139(9):091015
+3. Kothuru A, Nooka SP, Victoria PI & Liu R. 2017 “Application of audible sound signals for tool wear monitoring and workpiece hardness identification in gear milling using machine learning techniques.” ASME 2017 International Design Engineering Technical Conferences and Computers and Information in Engineering Conference, Volume 10.
+4. Mikolajczyk T, Nowicki K, Klodowski A, Pimenov YD (2017) Neural network approach for automatic image analysis of cutting edge wear. Mech Syst Signal Process 88:100–110
+5. Kurada S, Bradley C (1997) A review of machine vision sensors for tool condition monitoring. Comput Ind 34(1):55–72
+6. Zhang C, Zhang J (2013) On-line tool wear measurement for ballend milling cutter based on machine vision. Comput Ind 64(6):708– 719
+7. Nan X, Duan M, Gao Y, Zheng P (2017) Tool wear prediction approach based on power sensor. J Tongji Univ 453:420–426
+8. Hochreiter S, Schmidhuber J (1997) Long short-term memory. Neural Comput 9(8):1735–1780
+9. Graves A (2013). “Generating sequences with recurrent neural networks.” Computer Science
+10. Munozescalona P, Diaz N, Cassier Z (2011) Prediction of tool wear mechanisms in face milling AISI 1045 steel. J Mater Eng Perform 21(6):797–808
+11. Chinchanikar S, Choudhury SK (2015) Predictive modeling for flank wear progression of coated carbide tool in turning hardened steel under practical machining conditions. Int J Adv Manuf Technol 76:1185–1201
+12. Yang S, Zhu G, Xu J, Fu Y (2013) Tool wear prediction of machining hydrogenated titanium alloy Ti6Al4V with uncoated carbide tools. Int J Adv Manuf Technol 68(1):673–682
+13. Cheon S, Kim N (2016) Prediction of tool wear in the blanking process using updated geometry. Wear 352-353:160–170
+14. Braglia M, Castellano D (2014) Diffusion theory applied to tool-life stochastic modeling under a progressive wear process. J Manuf Sci Eng-Trans Asme 136(3):031010
+15. Braglia M, Castellano D (2015) Improving tool-life stochastic control through a tool-life model based on diffusion theory. J Manuf Sci Eng-Trans Asme 137:4
+16. Karuppusamy NS, Pal Pandian P, Lee H-S and Kang B-Y. (2015) “Tool wear and tool life estimation based on linear regression learning.” international conference on mechatronics and automation 1721.
+17. Daddona D, Ullah AM, Matarazzo D (2017) Tool-wear prediction and pattern-recognition using artificial neural network and DNAbased computing. J Intell Manuf 28(6):1285–1301
+18. Rangwala S, Dornfeld D (1990) Sensor integration using neural networks for intelligent tool condition monitoring. J Eng Indu 112(3):219
+
+19. Byrne G, Dornfeld D, Inasaki I, Ketteler G, König W, Trti R (1995) Tool Condition Monitoring (TCM) — The Status of Research and Industrial Application. CIRP Ann 44(2):541–567
+20. Wilcox SJ, Reuben RL, Souquet P (1997) The use of cutting force and acoustic emission signals for the monitoring of tool insert geometry during rough face milling. Int J Mach Tool Manu 37(4): 481–494
+21. Wang G, Qian L, Guo Z (2013) Continuous tool wear prediction based on Gaussian mixture regression model. Int J Adv Manuf Technol 66(9):1921–1929
+22. Zhang, Peipei, and Y. Guo. (2016) Mapping time-variant modelling of tool wears and cutting parameters on difficult-to-machine materials. Proceedings of the 10th World Congress on Engineering Asset Management (WCEAM 2015). Springer International Publishing.
+23. Qinglu X, and Guofeng W. (2016) “Changed parameters of milling tool wearing condition monitoring research.” J Mech Sci Technol (12):1842-1847.
+24. Wei F. (2008)“Research on tool state identification based on infrared temperature measurement.” Shanghai jiaotong University.
+25. Yu J, Liang S, Tang D, Liu H (2016) A weighted hidden Markov model approach for continuous-state tool wear monitoring and tool life prediction. Int J Adv Manuf Technol 91(1-4):1–11
+26. Xiaoqiang W, Zhang Yun, Huamin Z, and Yang F. (2016)“Tool wear continuous monitoring based on hidden Markov model.” Mod Mach Tool Autom Proc Technol, (10):87-90.
+27. Alonso FJ, Salgado DR (2005) Application of singularspectrum analysis to tool wear detection using sound signals. Proc Instit Mech Eng Part B: J Eng Manuf 219(9):703–710
+28. Emerson Raja J, Kiong LC, and Soong LW (2011)“Emitted sound amplitude analysis using Hilbert Huang Transformation for cutting tool flank wear prediction.” International Conference on Computing & Communication Systems Springer, Berlin, Heidelberg.
+29. Xin W, Ji W, Chao L, Haiyan Y, Yanli D, and Wensheng N. (2018) “Fault time series prediction based on LSTM recurrent neural network.” J Beijing Univ Aeronaut Astronaut, (4):772-784.
+30. Zhihui R, Haoyu X, Songlin F, Han Z, Jun S (2017) Sequence marking Chinese word segmentation based on LSTM network. Comp Appl Res 34(5):1321–1324
+31. Qiang W, Yingguang L, Xiaozhong H, Changqing L, Haiji C (2019) Dynamic prediction method of nc machining tool life based on online learning. Aerospace Manuf Technol 62(07):49–53
+32. Ma XL, Tao ZM, Wang YH, Yu HY, Wang YP (2015) Long shortterm memory neural network for traffic speed prediction using remote microwave sensor data. Trans Res Part C: Emerg Technol 54: 187–197
+33. Adlen K, Abderrezak M, Ridha K, Batouche M (2018) Real-time safety monitoring in the induction motor using deep hierarchic long short-term memory. Int J Adv Manuf Technol 99(9–12):2245–2255
+34. Huibin S, Weilong N, Junyang W (2015) Tool wear feature extraction based on Hilbert-Huang Transform. J Vib Shock 34(4):158– 164
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+

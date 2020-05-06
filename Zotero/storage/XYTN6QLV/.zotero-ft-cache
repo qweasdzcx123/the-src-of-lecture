@@ -1,0 +1,718 @@
+applied sciences
+Article
+Research on a Surface Defect Detection Algorithm Based on MobileNet-SSD
+Yiting Li, Haisong Huang *, Qingsheng Xie, Liguo Yao and Qipeng Chen
+Key Laboratory of Advanced Manufacturing Technology, Ministry of Education, Guizhou University, Guiyang 550025, China; tgl226537@163.com (Y.L.); qsxie@gzu.edu.cn (Q.X.); yaoliguo1990@163.com (L.Y.); cqplll@gmail.com (Q.C.) * Correspondence: huang_h_s@126.com; Tel.: +86-139-851-46670
+Received: 26 August 2018; Accepted: 13 September 2018; Published: 17 September 2018
+Abstract: This paper aims to achieve real-time and accurate detection of surface defects by using a deep learning method. For this purpose, the Single Shot MultiBox Detector (SSD) network was adopted as the meta structure and combined with the base convolution neural network (CNN) MobileNet into the MobileNet-SSD. Then, a detection method for surface defects was proposed based on the MobileNet-SSD. Speciﬁcally, the structure of the SSD was optimized without sacriﬁcing its accuracy, and the network structure and parameters were adjusted to streamline the detection model. The proposed method was applied to the detection of typical defects like breaches, dents, burrs and abrasions on the sealing surface of a container in the ﬁlling line. The results show that our method can automatically detect surface defects more accurately and rapidly than lightweight network methods and traditional machine learning methods. The research results shed new light on defect detection in actual industrial scenarios.
+Keywords: surface defects; meta structure; convolution neural network; MobileNet-SSD
+
+1. Introduction
+Intellisense and pattern recognition technologies have made progress in robotics [1–3], computer engineering [4,5], health-related issues [6], natural sciences [7] and industrial academic areas [8,9]. Among them, computer vision technology develops particularly quickly. It mainly uses a binary camera, digital camera, depth camera and charge-coupled device (CCD) camera to collect target images, extract features and establish corresponding mathematical models, and to complete the processing of target recognition, tracking and measurement. For example, Kamal et al. comprehensively consider the continuity and constraints of human motion. After contour extraction of the acquired depth image data, the Hidden Markov Model (HMM) is used to identify human activity. This system is highly accurate in recognition and has the ability to effectively deal with rotation and deﬁciency of the body [10]. Jalal et al. use Texture and shape vectors to reduce feature vectors and extracts important features in facial recognition through density matching score and boundary ﬁxation, so as to manage key processing steps of face activity (recognition accuracy, recognition speed and security) [11]. In [12], vehicle damage is classiﬁed by a deep learning method, and the recognition accuracy of a small data set was up to 89.5% by the introduction of transfer learning and an integrated learning method. This provides a new way for automatic processing of vehicle insurance. Zhang et al. combine the four features of color, time motion, gradient norm and residual motion to identify the position of each frame in video. The method uses weighted linear combination to evaluate the different combinations of these features and establishes a precise hand detector [13]. With the continuous improvement of computer hardware and the deepening of research on complex image classiﬁcation, the application prospect of computer vision technology will be more and more extensive.
+
+Appl. Sci. 2018, 8, 1678; doi:10.3390/app8091678
+
+www.mdpi.com/journal/applsci
+
+Appl. Sci. 2018, 8, 1678
+
+2 of 17
+
+Surface defect detection is an important issue in modern industry. Traditionally, surface defects are often detected in the following steps: ﬁrst, pre-processing of the target image by image processing algorithms. Image pre-processing technology can process pixels accurately. By setting and adjusting various parameters according to actual requirements, the image quality can be improved by de-noising, changing brightness and improving contrast, laying a foundation for subsequent processing; second, carry out histogram analysis, wavelet transform or Fourier transform. The above transformation methods can obtain the representation of an image in a speciﬁc space, which is convenient for the artiﬁcial designing and extracting feature; ﬁnally, the image is classiﬁed according to its features using a classiﬁer. Common methods include thresholding, decision trees or support vector machine (SVM). Most of the existing surface defect detection algorithms are based on machine vision [14–19]. Considering the mirror feature of ceramic balls, [17] obtains the stripe distortion image of defective parts according to the principle of the fringe reﬂection and locates the defect positions by reverse ray tracing. The research method is suitable for surface defect detection of ceramic balls and other phases, but fails to achieve high accuracy due to the selection and design of radiographic models in reverse ray tracing. Jian et al. realize the automatic detection of glass surface defects on cell phone screens through fuzzy C-means clustering. Speciﬁcally, the image was aligned by contour registration during pre-processing, and then the defective area was segmented by projection segmentation. Despite the high accuracy, the detection approach consumes way too much time (1.6601 s) [18]. Win et al. integrate a median-based Otsu image thresholding algorithm with contrast adjustment to achieve automatic detection of the surface defects on titanium coating. The proposed method is simple and, to some extent, immune to variation in light and contrast. However, when the sample size is large, the optimal threshold calculation is too inefﬁcient and the grey information is easily contaminated by dry noise points [19]. To sum up, the above surface detection methods can only extract a single feature, and derive a comprehensive description of surface defects from it. These types of approaches only work well on small sample datasets, but not on large samples and complex objects and backgrounds in actual production. To solve this problem, one viable option is to improve the approach with deep learning.
+In recent years, deep learning has been successfully applied to image classiﬁcation, speech recognition and natural language processing [20–22]. Compared with the traditional machine learning method, it has the following characteristics: deep learning can simplify or even omit the pre-processing of data, and directly use the original data for model training; deep learning is composed of multi-layer neural networks, which solve the defects in the traditional machine learning methods of artiﬁcial feature extraction and optimization. So far, deep learning has been extensively adopted for surface defect detection. For example, in [23], Deep Belief Network (DBN) was adopted to obtain the mapping relationship between training images of solar cells and non-defect templates, and the comparison between reconstructed images and defect images was used to complete the defect detection of the test images. Cha et al. employ a deep convolution neural network (CNN) to identify concrete cracks in complex situations, e.g. strong spots, shadows and ultra-thin cracks, and proves that the deep CNN outperformed the traditional tools like Canny edge detector and Sobel edge detector [24]. Han et al. detect various types of defects on hub surfaces with residual network (ResNet)-101 as the base net and the faster region-based CNN (Faster R-CNN) as the detector and achieves a high mean average precision of 86.3% [25]. The above studies fully verify the excellent performance of deep learning in detecting surface defects. Nevertheless, there are few studies on product surface defect detection using several main target detection networks in recent years, such as YOLO (You Only Look Once), SSD (Single Shot MultiBox Detector) [26] and so on. The detection performance of these networks in surface defect detection needs to be further veriﬁed and optimized.
+This paper presents a surface defect detection method based on MobileNet-SSD. By optimizing the network structure and parameters, this method can meet the requirements of real-time and accuracy in actual production. It was veriﬁed in the ﬁlling line and the results show that our method can automatically locate and classify the defects on the surface of the products.
+
+Appl. Sci. 2018, 8, 1678
+
+3 of 17
+
+2. Surface Defect Detection Method
+Appl. Sci. 2018, 8, x FOR PEER REVIEW
+
+3 of 17
+
+2.1. Image Pre-Processing
+2.1. Image Pre-Processing There are two purposes of image pre-processing: one is to enhance image quality to ensure sharp
+contraTshtearnedarﬁelttweroopuutrnpooissees, osuf icmhaagseapdroep-ptirnogcehsissitnogg:roanme iesqtuoaelnizhaatniocne iamnadggerqauyaslcitayletotreannssufroermshaatripon tcooenntrhaasnt caendcofnilttrearsot,uotrnaodisoep, tsiuncghmasetahdoodpstisnugchhiastsomgreadmiaenqﬁulatleizriantigonanadndadgarpaytivsceaﬁleltterrainnsgfotormreamtioonve ntooiesen.hTahneceseccoonntrdasist,toorsaedgmopetnint gthme eimthaogdestsoufcahcialistamteesduiabnsefqiluteernint gfeaatnudreadexatprtaicvteiofnil,tesruicnhgatsotrhermesohvoeld sneogimsee. nTtahteiosne,ceodngdeissegtomseengtmateionnt athned irmegaigoen tsoegfmaceilnittaatteiosnu.bIsneqtuheisntpafepaetru, rdeateaxternahctaionnce, msuecnht aansd dthefreecsthoalrdea spelgamnneinntgatwioenr,e ecdargreiedseogumteinntavtiieown oafntdhe rfeegatiounressoegf ma ecnotnattaioinne.r Imnouththisinpaapﬁelrli,ngdalitnae, seunchhanacsesmtaebnitliatyn,dmdoenfeocttoanroeausplsahnanpienganwderae lciamrriiteedd onuutminbverieowf oimf tahgeefse.atTuhreesporfea-pcrooncteasisnienrgmﬂoouwthis iilnlusatrfailtleindginliFnieg,usruec1h. as stability, monotonous shape and a limited number of images. The preprocessing flow is illustrated in Figure 1.
+
+Figure 1. The ﬂow of image pre-processing. NMS = non-maximum suppression. Figure 1. The flow of image pre-processing. NMS = non-maximum suppression.
+2.1.1. Data Enhancement 2.1.1. Data Enhancement
+The defect images on the sealing surface of a container in the ﬁlling line were collected by a
+CCDTchaemdeerfae.ctAimtoagtaelsoofn4t0h0e simeaalignegsswurefraecetaokf eanc,ocnotavienreinr gindtheefefciltlsinligkleinberweaecrheecso,lldeecntetds,bbyuarrCsCaDnd
+acbarmaseiroan. sA. Ttohtealimofa4g0e0siwmeargeecsownevreerteadketno,tchoevseirzinegofd3e0fe0c×ts l3ik00e basretahcehtersa,idneinngtsi,nbpuurrts.aSnudchabarassizioencsa.n rTehdeucime tahgeescowmerpeuctoinngvelortaedditnottrhaeinsiinzge owfi3th00ou×t3l0o0siansgthtoeotrmaiuncinhgininfoprumtsa.tSiounchfraomsiztehceainmraegdeusc.eTthheen, dcaotma peuxptianngsilonadwians ptrearifnoirnmg ewdittohoinuctreloassientghetonoumbuecrhoifnifmoramgaetsioandfrpormepathre tihmeadgaetsa.seTthfeonr, Kd-afotald cerxopsas-nvsaiolindawtaiosnp.eDrfourrminegddtoatiancerxepaasnestihoenn, uthmebfeorlloofwiminaggeasctainodnspwreepraeretatrhgeedteadta:sreottfaotrioKn-,fohlodrcizrosnst-al mvaiglirdaattiioonn,. vDerutricinagl mdiagtraatieoxnp,asncsaiolinn,g,thtaengfoelnlotiwalintgranascftoiornmsatwioenreantadrgheotreidz:onrtoatlatﬂioipn., Ihnortihziosnwtaaly, tmheigCraNtiNonc,ovuelrdticlaelarmnigmraotrieonin, vscaarliianngt, itmanaggeenfteiaaltutrraenssafonrdmpartieovnenant dovheorr-iﬁztotnintagl. fTlihpe. Iinmtphliesmweanyt,atthioen mCeNthNodcoouflddatlaeaerxnpamnosrioeninisvsahrioawntn iimn aTgaeblefe1a:tures and prevent over-fitting. The implementation method of data expansion is shown in Table 1:
+
+Table 1. The implementation method of data expansion.
+
+Data Expansion Mode Rotation
+
+Changes From 0° to 10° random rotation of images
+
+Horizontal migration
+
+Horizontal migration images, and the offset value is 10% of the length of the images
+
+Vertical migration
+
+Vertical migration images, and the offset value is 10% of the length of the images
+
+Appl. Sci. 2018, 8, 1678
+
+4 of 17
+
+Table 1. The implementation method of data expansion.
+
+Data Expansion Mode Rotation
+Horizontal migration
+Vertical migration Scaling
+Tangential transformation
+Horizontal ﬂip
+
+Changes From 0◦ to 10◦ random rotation of images
+Horizontal migration images, and the offset value is 10% of the length of the images
+Vertical migration images, and the offset value is 10% of the length of the images
+Enlarge the images to 10% scale
+Stretch the pixel points horizontally. The stretch value is 10% of the pixel points to the vertical axis distance
+The images are randomly inverted with a horizontal axis as the symmetry axis
+
+The K-fold cross validation method divides the expanded dataset C into K discrete subsets. During network training, a subset was selected as the test set, while the rest (K-1) subsets were combined into the training set. Each training outputs a classiﬁcation accuracy of the network model on the selected test set. The same process was repeated K times to get the mean accuracy, i.e., the true accuracy of the model.
+
+2.1.2. Defect Area Planning
+The defect samples contain lots of useless background information that may affect the recognition quality of the detection algorithms. Our defect samples carry the following features: the defects concentrated on the sealing surface, whose round shape remains unchanged. In view of these, the Hough circle detection was used in the pre-processing phase to locate the edge of the cover, and mitigate the impact of useless background on the recognition accuracy. The Hough circle transform begins with the extraction of edge location and direction with a Canny operator. The Canny operation involves six steps: RGB to gray conversion, Gaussian ﬁltering, gradient and direction computation, non-maximum suppression (NMS), double threshold selection and edge detection. Among them, Gaussian ﬁltering is realized by the two-dimensional (2D) Gaussian kernel convolution:
+
+K
+
+=
+
+1 2πσ2
+
+e−
+
+x2 +y2 2σ2
+
+(1)
+
+The purpose of Gaussian ﬁltering is to smoothen the image and remove as much noise as possible. Then, the Sobel operator was introduced to obtain the gradient amplitude and its direction, which can enhance the image and highlight the points with signiﬁcant changes in neighboring pixels. The operator contains two groups of 3 × 3 kernels. One group is transverse detection kernels, and the other is vertical detection kernels. The formula of the operator is as follows:
+
+
+
+
+
+−1 0 +1
+
+
+
+
+
++1 +2 +1
+
+Gx
+
+= 
+
+−2
+
+0
+
++2
+
+ 
+
+∗
+
+A,
+
+Gy
+
+= 
+
+0
+
+0
+
+0 ∗A 
+
+(2)
+
+−1 0 +1
+
+−1 −2 −1
+
+where A is a smooth image; Gx is an image after transverse gradient detection; and Gy is an image after vertical gradient detection. The gradient can be expressed as:
+
+|∇ f | = mag(∇ f ) = ( ∂ f )2 + ( ∂ f )2 1/2
+
+(3)
+
+∂x
+
+∂y
+
+Appl. Sci. 2018, 8, 1678
+
+5 of 17
+
+The gradient direction can be expressed as:
+
+a(x, y) = arctan( Gy )
+
+(4)
+
+Gx
+
+During edge detection, the NMS was adopted to ﬁnd the maximum gradient of local pixels by
+
+comparing the gradients and gradient directions. After obtaining the binary edge image, the Hough
+
+circle transform was employed to detect the circles. Under the coordinate system (c1, c2, r), the formula
+
+of Hough circle transform can be described as:
+Appl. Sci. 2018, 8, x FOR PEER REVIEW
+
+5 of 17
+
+(x−c1)2 + (y−c2)2= r2
+
+(5)
+
+（x-c1）2 + ( y-c2 )2 =r2
+
+(5)
+
+wthhroewureghh(ecret1h,（ce2cf)1o,ilcsl2o）twheiisncgtehnsetteecrpensot:feﬁrthroseft,cttehhneetecneroncntoe-orzrecdrooionrpadotieninsa;ttesasni;ndatnrhdiesirtmheaisgretahdaeiruerastd.riaTuvhse.erTsdheeedte,dcaetntieodcntliiownneaswseragesmalieznetds
+
+alonrgeatlhizeegdrtahdrioeungthdtihreecftoilolonw(rinagdisutespds:irfeircstti,otnh)e annodn-tzheerooppopionstsitiendthireecimtioangeaarreedtrraavwenrs.eTd,haenidntleinresection
+
+poinsteogfmtehnetsseaglomnegntthseisgrtahdeiecnirtcdleirceecntitoenr.(rTahdeiuns, tdhieremctiaoxni)maunmd tchiercolpepisosoibtetadiinreecdtiboyn saerettidnrgawthne. Tthhreeshold valuitenh.teeArthsfterecertsihothonladpt,ovitanhlteuoerf.etAchtefatsneerggtumhlaaetrn, trtsheigesirtoehncetsacainrrgcelueglacerennreteergrai.toTendhsebanry,etthgheeenmmearxaaitxmeidmubmuymctihrrcealedmiisauxosib.mtTauhimneesdriazbdeyiuossef.tttTihnhegeimage wassnizoermofathliezeimdatgoe3w00as×no3r0m0a×liz3ed. Ftoig3u0r0e×23s0h0o×w3.sFtihgeurreeg2isohnoawl sptlhaenrneignigonparlopcleasnsn.ing process.
+
+(a)
+
+(b)
+
+(c)
+
+(d)
+
+(e)
+
+(f)
+
+(g)
+
+(h)
+
+(i)
+
+(j)
+
+(k)
+
+(l)
+
+FiguFriegu2r.e (2a.)(aO) rOigrignianlalimimaaggee;; ((bb)) GGauussssiiaannssmmootohthimimagaeg; e(c;)(Xc) dXiredcitrioecntailognraaldgiernatdgieranpthg; r(adp) hY; (d) Y
+direcdtiiroenctaiol ngarladgireandtiegnrat pghr;a(peh);A(me)pAlitmupdleitiumdaegiem; (afg)eA; n(gf)leAimngalgee;im(ga)gNe;on(g-)mNaxoinm-mumaxivmaulume svuapluperession grapshup; p(hre)ssEidongegrdaepthe;ct(iho)nEcdhgaertd;e(tie)ctMioanxcimhaurtm; (ic)irMclaexidmeutemcticoirnc;le(jd) eMtecatxioimn;u(mj) Mciarcxliempumosictiirocnleof the origpinoasiltgiornapofht;h(eko)rCiguinttailnggr;a(plh) ;N(ko)rCmuatltiiznagt;i(ol)nN. ormalization.
+
+2.2. 2D.2e.feDctefDectetDecetteioctnioMn ModoedleBl BasaesdedoonnMMoobbiilleeNNeett--SSSSDDNNetewtworokrk
+
+2.2.12..2P.1ri.nPcripncleipsleosf oMf MoboibleilNeNetetFFeeaattuurree EExtraaccttiioonn
+TheTMheoMbiolebNileeNtent entewtwoorkrk[2[277]] wwaass ddeevveellooppeeddtotoimimprpovroevtehethreearl-etiaml-etimpeerfopremrfaonrcme aonf cdeeeopf deep learnleianrgninugnduenrdelirmliimteidtedhahradrdwwaarreeccoonnddiittiioonnss..TThhisisnentewtowrkorckancarnedruecdeutchee tnhuemnbuermobfepraorafmpeatrearsmeters withwoiuthtosuatcrsiaﬁcrciifnicginagcaccucruarcayc.y.PPrerevviioouuss ssttuuddiieesshhaavveeshsohwown nthtaht aMt oMbiolebNileetNoentlyonnelyednse1e/d33s 1of/3th3eof the parapImmaraeagtmeerNesteeotr-sf10Vo0fi0sVucilasaulsasgilfeigcoeamotimoenterttyraysgkgrsro.ouupp --1166 ((VVGGGG-1-16)6)totoacahciehvieevtehethsaemseamclaescsilfaicsastiiﬁocnaaticocnuraaccycuinracy in ImageNeFti-g1u0r0e03clsahsoswiﬁscathtieonbatsaicskcso.nvolution structure of MobileNet. Conv_Dw_Pw is a deep and
+sFepigaurarbele3csohnovowlustitohne sbtrauscitcurceo.nIvt oisluctoimonpossterducotfudreepothf -MwiosebillaeyNerest.(DCwo)navn_dDpwoi_nPt-wwiisse alaydeeresp and sepa(rPawb)l.e TcohnevDowlutiaoren sdtereupctucornev. oItluistioconaml plaoyseerds oufsdinegpt3h-×w3isekelarnyeelrss, (wDhwil)eatnhde pPowinta-rwe icsoemlamyoenrs (Pw). The cDonwvoalruetidoeneapl lacyoenrvs oulsuintgio1n×a1l lkaeyrenreslsu. Esainchg c3on×vo3lukteironnerless,uwlthisilteretahtedPbwy tahreebcaotcmhmnoornmcaolinzavtoiolnutional layearlsguorsiitnhgm1an×d 1thkeearcntievlast.ioEnacfuhncotinonvorelucttiifoiend rleinseurlut nisitt(rReeaLteUd).by the batch normalization algorithm
+and the activation function rectiﬁed liner unit (ReLU).
+
+without sacrificing accuracy. Previous studies have shown that MobileNet only needs 1/33 of the parameters of Visual geometry group -16 (VGG-16) to achieve the same classification accuracy in ImageNet-1000 classification tasks.
+Figure 3 shows the basic convolution structure of MobileNet. Conv_Dw_Pw is a deep and separable convolution structure. It is composed of depth-wise layers (Dw) and point-wise layers (Pw). The Dw are deep convolutional layers using 3 × 3 kernels, while the Pw are common Appl. Sci. 201c8o,n8v, o1l6u7t8ional layers using 1 × 1 kernels. Each convolution result is treated by the batch normalization algorithm and the activation function rectified liner unit (ReLU).
+
+6 of 17
+
+Figure 3. TFhigeurbea3s.iTchceobnavsioc lcuontivoonluatliosntarlusctrtuucrtueroe fofMMoobbiilleeNNeet.tD. wDw= d=epdthe-pwtihse-wlayiesres.laPwye=rsp.oPinwt-w=isepoint-wise
+layers. BN = batch normalization. Conv = convolution. ReLU6 = rectified liner unit 6.
+layers. BN = batch normalization. Conv = convolution. ReLU6 = rectiﬁed liner unit 6.
+
+In this paper, the activation function ReLU is replaced by ReLU6, and the normalization is carried out by the batch normalization (BN) algorithm, which supports the automatic adjustment of data distribution. The ReLU6 activation function can be expressed as:
+
+y = min(max(z, 0), 6)
+
+(6)
+
+where z is the value of each pixel in the feature map. The deep and separable convolutional structure enables the MobileNet to speed up the training
+and greatly reduces the amount of calculation. The reasons are as follows: The standard convolution structure can be expressed as:
+
+GN = ∑ KM,N ∗ FM
+
+(7)
+
+M
+
+where KM,N is the ﬁlter; and M and N are respectively the number of input channels and output channels. During the standard convolution, the input image, including the feature image, FM means input images, including feature maps, which use the ﬁll style of zero padding.
+When the size and channels of input images respectively are DF∗DF and M, it is necessary to have N ﬁlters with M channels and the size of DK∗DK before outputting N feature images of the size DK∗DK. The computing cost is DK∗DK∗M ∗ N ∗ DF∗DF.
+By contrast, the Dw formula can be expressed as:
+
+Gˆ M = ∑ Kˆ 1,M∗FM
+
+(8)
+
+where Kˆ 1,M is the ﬁlter. FM has the same meaning as Formula (7). When the step size is one, the ﬁlling of zero ensures that the size of the characteristic graph is invariable after the application of deep and
+
+separable convolutional structure. When the step size is two, zero ﬁlling ensures that the size of the
+
+feature graph obtained after the application of deep and separable convolutional structure becomes
+
+half of the input image/feature graph; that is, the dimensional reduction operation is realized.
+
+The deep separable convolution structure of MobileNet can obtain the same outputs as
+
+those of standard convolution based on the same inputs. The Dw phase needs M ﬁlters with
+
+one channel and the size of DK∗DK. The Pw phase needs N ﬁlters with M channels and the
+
+size of 1 × 1. In this case, the computing cost of the deep separable convolution structure is
+
+DK∗DK∗M ∗ DF∗DF+M ∗ N ∗ DF∗DF,
+
+about
+
+1 N
+
++
+
+1 D2K
+
+of
+
+that
+
+of
+
+standard
+
+convolution.
+
+Besides, the data distribution will be changed by each convolution layer during network training.
+
+If the data are on the edge of the activation function, the gradient will disappear and the parameters
+
+will no longer be updated. Similar to the standard normal distribution, the BN algorithm adjusts the
+
+data by setting two learning parameters, and prevents gradient disappearance and the adjustment of
+
+complex parameters (e.g., learning rate and dropout ratio).
+
+2.2.2. SSD Meta Structure
+SSD network is a regression model, which uses features of different convolution layers to make classify regression and boundary box regression. The model solves the conﬂict between translation invariance and variability, and achieves good detection precision and speed.
+
+Appl. Sci. 2018, 8, 1678
+
+7 of 17
+
+Appl. SInci. e20a1c8h, 8s, exlFeOctRePdEEfeRaRtuEVreIEmWap, there are K frames that differ in size and width-to-height 7raotfi1o7. These frames are called the default boxes. Figure 4 expresses default boxes on feature maps of different
+
+coonntvhoelusetiaolinnagl slauyrefarcse. EofacahcodnetfaaiunletrbionxthperefdililcintsgtlhineeB. Tchlaessscsacloeroefatnhde dtheefafuolut rbpoxoessitifoonr epaacrhamfeaettuerrse.
+
+Hmeanpcies, cBo∗mkpu∗twed∗ahs:class score and 4 ∗ k ∗ w ∗ h position parameters must be predicted for a w ∗ h
+
+feature image. This requires (B + 4) ∗ k ∗ w ∗ h convolution kernels of the size 3 × 3 to process the
+
+feature map. regression and
+
+Then, the bounding
+
+bcoonxvreogluSretkis=osniSomnrie.nsH+uSeltrmseam,xsBh--S1oismuislnde(tkbt-oe1f)toa,ukr(ekbn∈eac[a1s,umtsh]e)ethﬁenrael
+
+feature are four
+
+for classiﬁcat(i9o)n typical defects on
+
+ticwwshoihecndoesttrmreheoa-plltmioutnh-tghieesedsftiughaarihsefr:atnncreueasmtsoifobosaef rcfaoeoranf=ttfuae{Sir1anek,te2=uvr,r3eieS,nc0mtm.ot5ihnra,es0p+.ﬁsi3n;l3Sl}amitnnhmagwdxe−−letiSrnrSae1memi.anuixnTisn,(hekgdeS−samtconi1nadg)lae,ertnoee(sfekptrtaa∈hetrexea[p1dmd,eemeerfifatmae]u)urlestlntbtthbosao,xtxethecsasef.nosTrabhemeeanesceh,ftei.fvaeIecanhtkuodirrnededfemasru(ao9tlpo)ft
+
+wbohxerceanmbiesdthesecrniubmedbaesr: of feature maps; and Smax, Smin are parameters that can be set. In order to
+
+control the fairness of feature vectors in thewtraka=inSikngaarnd test experiments, the same ﬁve kinds of
+
+wbwoihdxetcrhae-ntowb-ahkeediisgeshthctreribawetiidodsathsa:ro=f d{e1fa, 2u,l3t ,b0o.5x,e0s.;3a3n}dhwhwakakak=he==rakeSSSkuiksk/s/√te√hdaaeartrrhoegigenhet roaftededfeafualutlbt obxoexse.s.
+
+Then,
+
+each
+
+de(f1a0u)lt (10)
+
+wherNe wexakt,isathdefwauidltthboxf dSe'kfa=ulStkbSok+x1ess;haonudldhakbies athdedhedeigwhht eonf dthefeauwltidbtohx-teos-.height ratio is one. The
+
+TcehnetecNerneotxfeter,aoacfhdedaecfeahfuadulteltfbabouoxlxt Sbiksox=(iis+f(0ki.+5|Sfk0k,|.S5j+k,f+0jk+|.1f50k.|s5)h),,oaaunnlddd
+
+be |ffkk
+
+aids dtheedswizheeonf | is the size of
+
+tthhee Kw-tihdtfhe-attou-rheeuignhitt, the K-th feature unit,
+
+ratio
+i,j ∈
+i, j ∈
+
+is
+[0,
+[0,
+
+one.
+
+|ffkk
+
+]
+|].
+
+T. Theheinitnetresrescetcitoinonovoevrerunuinoinon(I(oIUoU) b) ebtewtweeenenaraeraeaAAanadndaraeraeaB Bcacnanbebceaclaculclualtaetdedasa:s:
+
+IoUIoU==aaaarreerreeaaaa((((AAAA))
+
+∩aarreeaa(B(B) ) ∪aarreeaa(B(B) )
+
+(1(11) )
+
+If the IoU of default box and calibration box (Ground-truth Box) is greater than 0.5, it means the default box matches the calibratioonn bbooxx ooff tthhaatt ccaatteeggoorryy..
+The SSD is aann eenndd--ttoo-end ttrraining model. The overall loss function of the training contains the conﬁfidence loss LLccoonnf((ss,,cc) oofftthheecclalassssiiﬁficcaattiioonnrreeggrreessssiioonnaannddtthhee ppoossiittiioonn lloossss ooff tthhee bboounding box rreeggrreessssiioonn LLlolocc((rr,,ll,,gg)).. TThhiiss ffuunnccttiioonn ccaann bbee ddeessccrriibbeedd aass::
+
+( ) L(Ls,(rs,,rc,,cl,,lg,g))==
+
+11 NN
+
+(LLccoonnff((ss,,cc))++ααLLlloocc((rr,,ll,,gg)))
+
+(1(122) )
+
+wwhheerree ααisisaappaararammeeteterrtotobbaalalanncceeththeeccoonnﬁfdideenncceelolossssaannddppoossiittiioonnlloossss;;ssaannddrr aarree tthhee eeiiggeennvveeccttoorrss
+ooff ccoonnﬁfiddeenntt lloossss aanndd ppoossiittiioonn lloossss,, rreessppeeccttiivveellyy;; cc iiss tthhee ccllaassssiiﬁficcaattiioonn ccoonnﬁfiddeennccee;; ll iiss tthhee ooffffsseett ooff pprreeddiicctteedd bbooxx,, iinncclluuddiinngg tthhee ttrraannssllaattiioonn ooffffsseett ooff tthhee cceenntteerr ccoooorrddiinnaattee aanndd ssccaalliinngg ooffffsseett ooff tthhee hheeiigghhtt aanndd wwiiddtthh;; gg iiss tthhee ccaalliibbrraattiioonn bbooxx ooff tthhee ttaarrggeett aaccttuuaall ppoossiittiioonn;; aanndd NN iiss tthhee nnuummbbeerr ooff ddeeffaauulltt bbooxxeess tthhaatt mmaattcchh tthhee ccaalliibbrraattiioonn bbooxxeess ooff tthhiiss ccaatteeggoorryy..
+
+Figure 4. Default boxes on feature maps.
+2.2.3. Surface Defect Detection Algorithm Based on MobileNet-SSD Model
+In the filling line, the sealing surface is easily damaged by friction, collision and extrusion in the recycling and transport of pressure vessels. The common defects include breaches, dents, burrs and abrasions on the sealing surface. In this paper, the MobileNet-SSD model can greatly reduce the number of parameters, and achieve higher accuracy under the limited hardware conditions. The
+
+Appl. Sci. 2018, 8, 1678
+
+8 of 17
+
+2.2.3. Surface Defect Detection Algorithm Based on MobileNet-SSD Model
+In the ﬁlling line, the sealing surface is easily damaged by friction, collision and extrusion in the
+recycling and transport of pressure vessels. The common defects include breaches, dents, burrs and
+aAbprpal.sSicoi.n2s01o8n, 8t,hxeFsOeRalPinEEgRsuRErfVaIcEeW. In this paper, the MobileNet-SSD model can greatly reduce the num8 obf e1r7 of parameters, and achieve higher accuracy under the limited hardware conditions. The complete
+mcoomdpellectoenmtaoindselfocuornptaairntss:ftohueripnaprutst:lathyeerinfopruitmlapyoerrtinfogrtihmeptaorrgtientgimthaegeta, rthgeetMimobaigleeN, tehtebMasoebnileetNfoert ebxatsreacntientgfiomr aegxetrfaecattiunrgesi,mthaegeSSfDeaftourrecsla, stshiﬁecaStSiDon froergrcelsassisoinficaantidonboruengdreesdsiboonx arengdrebsosiuonndaendd bthoex oreugtpreustsiloaynearnfdorthexepoourttpinugt ltahyeedreftoercteixopnorretsinugltsth. e detection results.
+TThhiiss mmooddeell ssuuppppoorrttss ffaasstt aanndd aaccccuurraattee ddeetteeccttiioonn bbeeccaauussee tthhee ssttrruuccttuurree ooff MMoobbiilleeNNeett rreedduucceess tthhee ccoommpplleexxiittyyooffccoommppuutitningg. .HHoowwevevere,rt,htehestrsutrcutuctrueroefoPfwPwchacnhgaensgtehsethdeistdriisbturitbiountioofnoouftpouuttpduattadoaftaDowf. TDhwis. mThayiscmauasye acaloussseoaf ploresscisoifonp.rTecoissioolnv.e Tthoissporlvoeblethmis, tphreofbullelym-c, otnhneefcutelldy-lcaoynenrsecwteedre laabyaenrsdowneerde, aanbdanedigohntedst,aannddaredigchotnsvtaonludtairodnaclolnavyoelrustwioenrael aladydeerds wweitrhe athdedaeidmwtiothwtihdeeanimthetorewciedpetnivtehﬁeerledceopfttihvee ffeiealtduroefitmheagfeea, taudrjeusitmthageed, aatdajudsistttrhibeudtiaotna adnisdtreibnuhtainocneatnhde ternahnaslnacteiotnheintvraarnisalnactieoonfitnhveacrliaasnsciﬁecoaftitohne tcalaskss. iTfiocaptrieovnetnatskth. eTodipsraepvpeenatrtahnecediosfatphpeegarraadncieenotf, tthhee BgrNadlaieynetr, athnedBaNctilvaayteior nanfdunaccttiiovnatRioenLUfu6nwctieorne iRnetrLoUd6ucweedrteoineatrcohdluacyeedr otof tehaechadladyeedr sotfruthcetuarde.dIendasdtrduitcitounr,et.hIne tawdod-iltaioyner, tfheeattuwreo-ilmayaegrefienatMuroebiilmeNageet ainndMtohbeilfeoNuert-laanyderthfeeaftouurre-liamyeargfeeaintutrheeimadadgeedinstthaendadarddedcosntavnodluartdiocnoanl vlaoyluetrisoncoanl lsatiyteurtsecdoansfteiatututerde iamfaegateupryeriammaigde(Fpiygruarme i5d).(KFiegrunreels53).×K3erinneslsiz3e ×w3erienasdizoeptwederaesathdeopcotendvoalsutthioencaolnkveornlueltsiotnoacloknevronlevles stoeleccotnevdoflevaetusreelemcteadpsf.eaTthuerecomnavposl.utTiohneaclornevsuollutstiwonearel rteaskuelntsaws ethree ﬁtankaelnfeaastuthree ffoinr acllafsesaitﬁucraetifoonr rcelagsrseisfsicioantioanndrebgoruesnsdioend abnodx breogurnesdseidonb.ox regression.
+
+FFiigguurree 55.. MMoobbiilleeNNeett--SSiinnggllee SShhoott MMuullttiiBBooxx DDeetteeccttoorr ((SSSSDD)) nneettwwoorrkk ffeeaattuurree ppyyrraammiidd..
+AA 330000 ×× 330000imimaaggeewwaasstatakkeennaassththeeininppuut.t.ThTehesisxixlalyaeyresrosfotfhtehepypryarmamididrersepsepceticvteivlyelcyocnotnaitnai4n, 46,, 66,, 66,,66, 6anadnd66ddeefafauultltbbooxxeess. .BBeessidideess, ,ddififffeerreenntt33 ××33kkeerrnneellsswweerree aaddoopptteedd ffoorr ccllaassssiiﬁficcaattiioonn aanndd llooccaattiioonn wwiitthh tthheesstteepplleennggtthhooffoonnee..TThheennuummbbeerrssiinnbbrraacckkeettsswweerreetthheeaammoouunnttooff33×× 33 fﬁilltteerrss tthhaatt aarree aapppplliieeddaarroouunnddeeaacchhllooccaattiioonniinntthheeffeeaattuurreemmaapp..IIttssnnuummbbeerrwwaasstthheeaammoouunnttooffddeeffaauultltBBooxx×× nnuummbbeerr ooff ccaatteeggoorriieess ((ccllaassssiiﬁficcaattiioonn)) aanndd tthhee aammoouunntt ooffddeeffaauullttBBooxx×× 44((llooccaattiioonn)),, rreessppeeccttiivveellyy.. TThhee ggeenneerraall ssttrruuccttuurree ooff MMoobbiilleeNNeett--SSSSDD iisssshhoowwnniinnTTaabbllee22..
+
+Table 2. General structure of MobileNet-SSD. ※ = the feature image to be used in classification regression and bounded box regression.
+
+Convolution Conv0_BN_ReLU6(3 × 3)
+Conv1_Dw_Pw(3 × 3) Conv2_Dw_Pw(3 × 3) Conv3_Dw_Pw(3 × 3) Conv4_Dw_Pw(3 × 3)
+
+Step Input Output
+
+2
+
+3
+
+32
+
+Dw:1 32
+
+64
+
+Dw:2 64 128
+
+Dw:1 128 128
+
+Dw:2 128 256
+
+Appl. Sci. 2018, 8, 1678
+
+Appl. Sci. 2018, 8, x FOR PEER REVIEW
+
+9 of 17 9
+
+Table 2. General structure of MobileNet-SSD. ※C=otnhve7f_eDatwur_ePiwm(a3ge× t3o) be useDd win:1class5i1ﬁ2cation 512
+
+regression and bounded box regression.
+
+Conv8_Dw_Pw(3 × 3)
+
+Dw:1 512 512
+
+Convolution
+
+CoSntvep9_Dw_Pw(I3n×pu3t)
+
+DOwut:p1ut 512
+
+512
+
+Conv0_BN_ReLU6(3 × 3) Conv1_Dw_Pw(3 × 3)
+
+Conv210_Dw_Pw(33× 3) CoDnwv1:11_Dw_Pw(332× 3)
+
+Dw3:21 512
+
+512
+
+Dw6:41 512 512
+
+Conv2_Dw_Pw(3 × 3) Conv3_Dw_Pw(3 × 3) Conv4_Dw_Pw(3 × 3) Appl. Sci. 2018, 8, x FOR PEER REVCIoEnWv5_Dw_Pw(3 × 3)
+
+CoDnwv1:22_Dw_Pw(364× 3) ※CDDonwwv::2113_Dw_Pw11(32288× 3) ConvD14w_:11_BN_ReLU265(61 × 1)
+
+Dw12:28 512 Dw2152:168 1024
+1256 9 1of02147
+
+1024 1024 256
+
+Conv6_Dw_Pw(3 × 3) ※CCoonnvv77__DDww_P_wPw(3(×3 ×3)3)
+CCoonnvv88__DDww_P_wPw(3(×3 ×3)3) Conv9_Dw_Pw(3 × 3)
+
+※ConDv1w4:_22_BN_ReL2U566(3 × 3) ※CDDCoonwwnv::DDDv11151www_5:::1_11155_211B_22BNN_R_Re55Le11LU22555U6111(62221(3××1)3)
+
+2512 256 1551122 512 2512 128
+
+512 128 256
+
+CCoonnvv109__DDww__PPww(3(3××33) ) Appl. Sci. 2018, 8, x FOR PEER REVCIoEonWnvv1110__DDww_P_wPw(3(×3 ×3)3) Appl. Sci. 2018, 8, x FOR PEER REVI※ECCWCCooononnvnvv1v112173___DDDwwww__P__PwPPwww(3(3((×33×××33)33)))
+
+CDownv:D11w6_:1511_2BN_Re5L12U5162(1x1) ※CDDDCowonwwnv:::1DDDv11171www_6:::51_12551_2112B_22BNN_R_Re555Le111LU222155U06112(62241(3××1)3)
+
+1125501122249
+
+o2f 5167 128
+
+11092o4f 17256
+
+128 256 64
+
+AAA6nli36nli36nli6nldhdhdhdht3thwat3thwat3thwat3thwaacacacacSSSSeeeennnhhhhhhhhllll..nnnn,,,,ssss....pppeeeeeeeeooooeeeeaaaa11aaaammmmeeeeiiieeeeeeeeppp6666EEEEggggiiiidddd6nl3padht3thwaacttttsssstttttttssss..rrrrSrrrr6nli3patetstdht3thwaacggggaaaalllenhheeeiiiSltttthhhh.n,s....enxxxxaaaahffffhhhhssssnnnneeoddddxxxxreeeeepIIaaaalaaan.n,s.a1alecccceomhhhhreeieeeSSSessssa1mmaiiiio6ElppppttttIIIIAOOOOmeeeeegiedtiseeeffffeiiiitnnnnllleeeeo6tEstttte.rgisffffedrtcccgsiiiiaaaaannnneeeetddddttttennnntsoooo.iiiirrxthniiiigaxawwwwiiiieeeefevvvvsnttttdiiixeuieIddddaxaazzzthansuuuuttttsxappppcfttttoooosncd...xhcccceIerrrraleeeeaeeeerrrrggggsimiptcIAOhrrrresrrrruuuueggdeeeefTTTTiensaaalei222omirpttIAOaaaamesaaafnnnnrrrrifaaaaaaaaaneiccccndtttttleiiinaaaao.timf6666iians000edwieeetenviiiinntttorrrr.ieeeedaaaanmmmmttttaztttisuttttwieptssssorrrrvtcrrrrmmmmiiiidraesssszeeee111eiiirBhagsutptoiiiieeiiiirnnnncriiiiuccccrgeesTerBsnnnnbbbbaaaaPPgaddddoooaaaatartariooooooou888naaaargetoooTaacxxxxtainassssaao6enttttoreeeetaaashcteeeeeiibbbbaytrlllle,,,aaaaiiiittttiiii6aennnmtrrteeestmmmmnnnnesssssreeeiynnnnppppeeeetrremiwamtsetifeeeemmmmhdnnnnteeeennnnwisirerttttwwi888nact3dfdtnrdsta3sBidrimooiecsellllggggifnhbaPfffdoieaiodddnniottttoacwwwwmsornhhbxaP,,,,odeeeeeeee,,,wwwwoaaaoswwwlooaaaaccggggorrrrta.n.ensttttoxdppppeeeee2222ebeeeeeaslaitionatwreaer1aaaanxxxmianseseaooooerrrrbnttttpeaaaaetttteeeelraitietimnwremeuuuurnmennwsetEnmptedtfttdfoooo,,,,oaaaaselllleloooogemccccnhhhhiseeeepfsenwiiiii.ggggsseetsrdsbbbbtollllggggeffffwFFFlegweoe,afesssseeeeewndmmmmwoiacgtillllrtwtnnnnfCCCCoooostss,prrrrxeegwrrrr2ewiiiiacgeeeerpIaeeeeOOOttanmttttcaaaappiiiiccctorrrrrr2mbtRRRRsuaaeeetere0000msiigggkkkkuiitanneeeesIOAtttttomrtpcggggaetnnnneddddo,ahilooucheteeeecnnuiffffooootgnestﬁheesssscleeeebo,abbbbalggchhhhhfRRRenlaoi....chenooooiiiiseilgsehhhhmebeeeellgieeeeefennnnnCosr9999aiseevvvvarssssweeeessssreoffffthmmmmmitegginnnnlsnnnnutoeagnntptcCoasoripoooorriReiiinitffff0edimmmmFeiggkllllssssdoooontetttaPPPissssktereeees5555RggurndnaaaaT0ssssooooiggukanehetfnsbfolllltusttttvvvvrgessnsssndbxxxxhaannnne.uuuugeUUniiiisoiefoiiEEEtttteshdrrrrblllleaaaaoeebehallll.neae9eoivrgselllltshhfoooomqttggnenneoaaaaemhhhheeeaaaaa____neeeetttte9rrnfcoev,sersiiiiifeeeemEEEnftuuuu.aaappppgnmnFilllllgggglesoaehtsconebbbb5biaaaaafnnosmnnnnFopppplasnnnnooccccPrrrrtoluoe0uqsnnnnntlssssBBBBxntttttxetv5seeeetsa※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※ ※xttttsRRRotnnnnuqaiUiTqsrsliteeeetaaaattttvrlasexheessssoooorrrnkkkklsluhttttUi....riiilbitesi.worlarrrringpeauhreiiiiadddddalrCCCCCCCCCCCCs_metNNNNeoelcittoem9ooooeeeeuaaaasddduagpggggppppgalussssgheona_hdCCCCentRRRoooo((((buuuuooooeeeeeiDDDDoeaduanpenelpglsooooonaaaawcrulnsCCCCCCCCCCCCCCCChBtebqbetiea※ ※ ※ ※nthhhhddddnr00005pnnnnnncffffrnooooooooooooueeeee※ ※ ※ ※nsBtarnreatneeeeeiciEEEdddd2e※ ※ ※nnnnts.msor____ktccccnhttttstnnnn.innnn,oooo※ ※ ※ ※rffffeatrbbbraw(lsistorkderCCCuoiuuuuNet....,.iaaaaaettttthhhhooooooooooooooooddddCCCCCCCCCCCCooeardlorrrrgpnnnnnnnnnnnnosisVVVeeeeidttttrC,6.CeaNeRRRR,0oai2222(uaaaamoyDetDoeadieCCCCCCCCCCCaaaagpeddddnnnnsigocassssiaiiiddddtsttttoCCCCga(uohhhheDumlllllhide0ebbbbrrrrCCCCnoannnnnnnnnnnnnnnnnanfssssneeeetooote※rcCCCCt,avvvvvvvvvvvvCcaaaloe.nIII,,,,diCCCCllllhhhhnhooooooooooood0_cnsCCCCcccclllltsfnoneeeene※bbbbofeiiiievvvvbnaaaaoooiiii2dnEEEyr_cooooooooouekutssssaaaa.oeeeenrnyyyyenooooRafatthoooodCCCbnrvvvvvvvvvvvvvvvvnnnsssissssore111111111111tnnnnpo6iAAAAccccuoooo.dR2nnnnnnnnnnnnoeeeesaaLLLLtFee0000hoootdooooCllllorCCandnoooonnnrrrr,seeWWWtiiiin6ki1111tdRtoooox2tnnnntannnnnnnnhnpflkgaobrrdCwwwwaaaasnnnnhdooooidseti4574574574571111111111111111f,innnnvvvSSSSahnno,hnnnnggggnelspppphyyyylooortttnnnnbi....rChvvvvvvvvvvvviclnnnns0edUUUUevvvttttib,uuuu6666viavgn,apnnnnieignttttlnnnnhossssoo5555cltsavvvvvvvve,otyyyyfpeeeeigetyboi____________orrrr4567456745674567nsaivvvvshhhhsatv111snggggnAcfsoae,hhhhvvvvooootmmmmvvvvnnneyeoLrrrr.0ht111111111111e111le____evvvsseeeehdvoor1niAc1nnnnond))))bbbbnttttnoddddvvvvdeaaaahnnLrrri0t5tl89898989neeeeu6666111111111111________________CCCCowtrauUiihoc1reeee457111danSeeeen1111....n457ogtpgtyciiii,,,,tt.hhhh012012012012eeeeo1111rwiiiiavvv1111aaaahhoeUt45711mmmeun6lhS_enngtllllpyCddddtooooa.sn)nnnn77775irrrr________veuyllllvvh____________2222222222222222aeiiiiyuUeth6,u6----rC__r45674567cne___thulebsg5uoooo____________f3333hyyyyyTTTT____mvellllmiiiin,reeeennnnnc111_r4567_6nli3patetstdht3thwaaceheaaaaB....eoMMMMppppgenleh____)botDDDDDDDDmvxxxxt_dsratBBBBBBBBBBBB________________rrSe1eeeeStiiiiccccssss89c_111e6es111e___CaeenCseeenhhhhhe)bpyssstedaDDDDDDDDDDDD____sr.tBBBBennnnpalCissss,est6hs012e1111___nChi1.nb,s.nnnnahhhhaignnnnhggggemfeeose1reBBBB.DDDDN2222hhhhlrrrrBBBBBBBBBBBBBBBBotnid___dddd,otttttttth2e1niir__1taaiml1___a2222ic6NNNNNNNNNNNNaxxxxLl...hmatsm-eirrrrlDDDDtiiiideewwwwwwwweoeeaaaannirrol______32222iyrT_o6oooovvvvEloooomLinDiNNNNrrrraeo-_enroooogisoeeeggggdteeeea____dddda.etBBBsMapDwwwwwwwwwwwwvtto_3qyrT_DDreeeexthlmiiiissssisn.,tBBB____reeeeeNNNNNNNNNNNNNNNNneppppgicsrnea.ttttgaMepeiEwwwwiaaaaerxsiDDD_BBB_____uiBhBbbbbendcllllicstxsbbbbBBBBthn7777nnnnidnn____________snccccdexhniaxEngcfnwwwwsndooooNNNsassssxD_tessssBiBn________hIggggarBBBBaldsutat-taiiiindh0000nLi____sgeNNNxa.aoooocgahiiiissssBrqheDrBBBBdiRd____________wwtaDteheNseeeeeooooc____iomeNNNixorviiiiNNNNRRRRRRRRRRRR.sN_______________rattttpptttttIAOiiiiergso,,,,gdlaredDnnnnifaiD____PPPPPPPPwwwidnllerrrrlcoevoisNr....tuuuuRRRRmeNNNNttffffolfipgllllgled___ddddaaaarnnnntphhhhiEantttt.ewadet____PPPPPPPPPPPPwanaAdht3hwaacnsssseunaneiso.DDDDi2222eeNNNNbxxxxlRRRRRRRRRRRRRRRRpglnb7tiensbCeeeelo___hcgeeeeiiiirwieavPPPPwatttttoeeeeeeeeeeeesa_iiiihhhhsMbe__lhgd____wwwwwwwwCabzRRR7onaisCut___dc0nnn_errrrssssptolnwooPPPPllllscipasneeeeeeeem.sseeeereeeeiaDgrTonnnnhhhh...___espewwwwwwwwwwwwoeriBsgAgieieo0_LNNNN_essssiRRR____tttoiroistRrimLLLLLLLLLLLLeia,eueeeeeeeeeeeeeeeellllacRRRRnlgeg_TrrrrPPnffffwwwwwwwweeaoeeeeeeee_CrtnoiRRR____set.wtuRiaafeee,0lpnnnnLLLLnldddddossssranEnehtamaathrciiiifCti_PPPawwwwdsssstirCcsTTTTras.DuRggggeeee2aaaa((((((((fxRRRRh6leeeeeqirdatnoshLLLLLLLLLLLLLLLLouUestreiie_PriesitddddyUUUUUUUUUUUUeeetnnnnrgairDheeeenlLLL2edddixweRRRRie,,,,wwa((((((((((((mttct.deeeedoetc33333333eioniiiiirssrertthttttaPleeenDaiyhddddUUUUreee.aaaaeemxeief____nh.((((scccccswwwifggggeh,,,,2nehhhhnNersL333333333333sieouieDPlbnDooooLLLLneeieLLLeUUUUUUUUUUUUUUUUeeeenlccnh.ariiiirwcnhf((((wbaPggggUUUdaeettttNoccccesaaC3333Siiiisottttdu6soLLLlnornLeeeelcadidisreeeerrrrsopr666666666666IOfewxidePPPPgleewsaaaaT.eeeettttfsaogsddddrrrre××××××××3333a((no----ageffffUqnLeeeetdseLLLLthhhhnnnniUUUUi6666igifsfeelwsooooTsdbdUUUcnycadigneleadlaiadtit××××××××××××dddd,(((neqhhhhwrceLLLLorect33mnisSSSS((((((((((((666cffff6666666666666666eeeeeruldstnUUUmpesnidUffffillllﬁaodwies,(_××××Tcgppppetwwwweigmnne,c.ipheynie333aaaa,,utwwwwc((((rtuodUuethaeeeeoeUUUUept111111111111oiiiirrr.s_cgilhg..6g33333333××××(tceeeeag,fhet6666csssse3,r(((uiiiserdteeesssso((((((((((((((((lSSSStaaaaUUUUwer1111i666r(t,argcn333333333333PlcccceetauwccethdiaTdrht××wtttttrrrrhrrrriacgs-111ttorf2cceuTaddddeNrtih666n(a33333333333333336iapPiiii))))))))3333ncccca((((noedr2ermtmhssssdaeeaaidresat×××d-fieThuatnnnnanhDDDDaaaa6iheuuuuiaaaahS××××××××××××xxxx(((fBtg6666oeuo1rmeeee3333))))))))))))toooosssssaefaltxxxxe03333i×dvmooooilIIIIoohpwurtceueSe(((naattttf6666mtew(iiiitcseo))))rflo,eheeeeaagch111srir×××lcpowi33×cheetimiissgdsadieiiiioooobbbbw(ex1esssss××××××××××××××××((((1111bSssshnddddea))))ooooelgdf111eiheiri1ellllddd×nlei333eicsebtsnnnnc7pfuuuuieohenmsba((((trrS111111111111tnalggggc××××tdsccccqnssss1nrsnCo3333sr3ollllcio))c8ttttrietﬁeseon1ppppisxtrreticC.ed))))seaUUUUaaaatnnnnnDsaat3333aiuiai×××xnnnnceeriastee3)))osRstaaaaxre_ne0uuuuoyyyytttnooIoaaaaiiiiiybguk))))))))))))t3333333333333333vvvvnDuaepltttt,aiIuiia111×××xnnnnttucise3-)osccccigosnxn)dertnsooeIonpelgrensczzzzssssfrrrrotooootiUiobasieanmd××××neo1eeeeppppsnen)boohxyyyyf....tDal8dS.Cs.yyyy3333oixu))))))))))))))))g)))nouiolbaolighcccclllls××××oooo1s111ddne)goaulecusladdnniaaaae9eeeeltevt,usnweueseeeefpmooooo,t.111g,iengen,ttttnnnnnnwaaaa)cUanCCCCsnosoooo,glcn))))oUrtuuuueeeedsSit※※※※Uattttpf,ytmFrai2)Ua)))n3333lvnresnbolllltosnwwwwnlt,Dntnnnn;;;;e5wceanalxcta,,,,ruytsaoairt)))3333vaiiiieqfrtffffetsssszTsrqinoluuuutvddddgcdrrrrwuepasffffllllxhDyrac.nstuttttUyo,hiaoooozs))))roiooooteoclaroctlhaepgedtisungyatttc.lnnnnseeeessssanssssbeiylg))))lssssFhecolcoeougttttttnutauahyeeeCaoi_hdmlaooooeottttte_iiiisruaehhhhei※netteCogoruannnnp,wwwwstnrlannnngeeommmmCttttiiiillorhaaaacDDDDDDDDDDDDDDDDDDDDewhhhhhon;ueeabisOee※ntnnnnlaiiiiaaaaa,rrrridnsnrpRinclfpcresu0iwnsBtaenffffu;idkhhhhnePrfnlirrrrooooferlee,※gtooooaansgeeeeintfrdsoaowtssssiureatdrrrreeeegrweferslngpoetsiiiisorkeeeesmmmmenescesti.ggggiaRsowkkkkder.oaaaarllllloizwwwwwwwwwwwwwwwwwwwwtr;esthiidnriiiiesffffosNteeeeeinnnnte,ccccitgwshnnnniiiihsnnnn12121212121212121212121212121212ttmnoea9dppppngwpvtdssinemsitiafiiinmootaDDDDDDhonignsh(tttthuooetDonipaddddrrhntweeessssno....mstainetstafaDDaaaasupppphcCmafnnnntwohsoroeniPrhsdtttt0h,,,,ettttno5tiiiieeeeeaaaafhaarepffffoscfrrrrreehh::::::::::::::::::::nosdianynidw_emsctovtectannssssignnnnn,eeeeeohhhhkseefn-SSSSeeesrettttbuaenli1111121111112111211121wwwwwwteeeeEiaaaaenmioooooeeeefraculai.ellllnoceeeegnisttttllllnkao12121212-tlshodtﬁarplwweileletii6iiiioefoaaaaeeRanhcss2ntaimhtaenna12121212yyyyddddan_urtdrrrrkpntarddfspppphhhh.sggggeeeeeaaaai-eidoEoutaddddsitnlnoooogsssshnssssiodualoptbr,thsbien.llllnasameioiriapn,fcpnmmmmariiiiiiiitsna::::::,ncerglhalntBt,etie,,,,claiasmt※※※※petnaaaabtttRfheeeeaSieriiiiteeeetsg::nnaeeeeini111121nnnnnnnnennnaetudoseooooftssael,srewneypotlhsortkatSeppppeotvvvvtvevs21sttttuuuume,hannidoAcearlcnset1111etliLcyrrrrddtCCC111111110utannnnlyyyyNrmcccpohbrpigmiieaikaoeanidtd.siiiiasonsggggppppysdppppCt5555552512125555552512125555121255551212rRitortjrpwhuaolgsewheaslottttoiiiitiidyyyy1aaaaaoenSomiiosttrrrrsaerrrr,,,,vvvvgCCCCpgyot6666CCC00000000ja.iiiiudl,ohheeeeUittttthhairtduee12222111mniiiCaaaaesetrrrrec.nfhutooonne※Cnusi51111115125251111115125251111252511112525ti,oiuEffffdllllyntttteaeeeeteeeee_cipcersl7tttttvneonesssshtnnuolrrrrn2222eon※fttttgito222222224444elheeeeom1trrrrotaaaarrntieee11pnyvstjeiiiieeeeectehupihhhheaoteeeehoooodCCCnuSnnn2222226286862222226286862222868622228686)bie1ttdaVhhhhtgpesrrfptggggti11essssnyaaaats555555112RCfaue6stcn_Ciasccccolttttti,,,,,,,,nisCCzeyaaifdne44444444gpsrp.rt,dvCiiii5251212ti,600hitennniddddhsaetaeivletttttymaibCyeofassssrnnnnriiipyrt,hhhhsvCletdo600ivvvnmmmmirt11111512525annnncrrrraaaaIwelleeeei2eflilhttLneoooeae3333-sgCanewwwwffffclttrnsahhhhert2bnnntDv1512525vwwwweo224aefliiiiyrTatElmrieiaesklooiaaaaeen,gtsareniesa.reeeeey2ohMpnotrceeer224evvvvrd22222628686eeeenrxrlllleaht_111gednnnnsAceatocicsneeeeo,,,,idlennnoffffehLdnoeceiEat,l,sssssd2628686tseo44geeeerhWgiiaaaasnt1aillllosmmmmaaan1deenniiienssssdhcunhit,g,tllllhhhhaw44ooooafBscihoqihrBsd4571111ttddddneeeemdd0000yyyynradeiunmmmmsiiiiifpxyetdddd.tan3gvvvfwfsipllllhdrhUiiiitia’’’’oDun6mssssnrawiedsnmigcn,ovortsd3avonttttwfivvglteedyhhiernrrrriiiif___esssswrwrrrr4567mmmmaffffiueh....eilsdtntaegNnp,,,,opge,ovopppptieiiiiftrﬁrgiiia111aeaoo_saeeflllllir5555eabnonal2l11111111e,eeeebmiiiirb7odveeeefnariCscmmmmiaeo89aooooaaaasle6ohaaaa111rrrr____Cshopefemsaelngeeeeem5555525121215555525121215555122155551221dffffee0iiyfeivsttttt.0nnnnieemiiGGGGdhl(oh0121laois1maeellllldacai’desaaaat6666o,000000000yeotc_aaaaeeeemilidd_stortuuuuid7dr__llllhhhhtoo,llllllc___2222idnnnnni00’aaaasreeee-sifrem111115125252111115125251111255211112552drCfr..asuetf,theolveeee___c3rydaT_sapnlihlllliloriiiitriinoooosrCCCCmiafttttsi222222224444C..l3ssss5DggggMcetp2ix,pRa11euuuui_DDxtpeirBBBo____emeiid,e.icrrrrnnnnseeeeaaozzzztae....rl2222262868682222262868682222866822228668a5ihneeetl((((auuuue11ssec555551121ixxxxfeeDDDr_tmlBwnnnssssrsceoeffffGa1shppppralrDttelatne44444444ddddelhg,esanh.2512121fayl600eeeettttmBtiD0000NanehsrBBBBGdtloooo0ulhdiiiilhAAAAyeeeenll(senlcidNNNrpaeeeeddddareoreafrwl600eliiii11115125252egeattttearDiiwwaosurrrrhhhhlh,l(mnenMMMMydslovzzzzoNlaeieilnoeeeeoo0C5125252lgLstT224ieeeeszzzzdg,,,,geawwwabe.trrrreqauaddddeisnnnnLllllleieNNNNinoeCrneLstueeeezt224d.stn22226286868essgiaaaatld(wbdu,u2,xanecobeeeeihhhhsrlrnefccccbzllllpn7t.6286868n.daaaaa1___llll(44dcn(eeeeus0000_wtscgilx.ogstEnet,esfhn0ttttprs__r,gfueirp.o0000oiivvvvA221152e44d05nU_isccccediEasetagcoooo)Lt0tnrbetchttttrrrr___ioehtrhdiAe60eeooooo_mmMccccoooiiiizeeRRRr,____tdieaasiiii....ePi,damtwwwwet.ehz,d_rPPlrhstttts.h552215-....rmfeTDrsMdiiiiqqqquoooozenI.hunRlaifee1111nnnnl3333toendmagemmmmnz,atbbbb_PPPb42drrsDhttttdl2222dneEDsloooo2xeetttthvvvvRRRRwaS’fe6cteaaaaeluuuusenmaflaelei668826emhP0mptweeehtcethIlwwadeeeeectwffffluuuu0e____s3333Aaavhlneaaaanir4seaeirc0isPltegeoaaaaiiiief))))utst)rih.lwww0esn(vSnnnnonaNnieeeesceDoci((((sit.oLLLceeeewslot)reraaaaellllhddddfwwttrrxooei....te.cCDDDDiqrdcstttttooimllllhg3si.1iiiini3ceLiwdPPPPsGssssmsii00000000oitbitMw.sTteeeeaiiq2woagllllrrrrnsDenaopa((tuv1iamnt3daaaaeauehhhhseosmLLLLssssxrbtasggggoonnIotavd2UUUnsthortv,(((ttyyyyeooooafuiu)_nt3aoe33eaeIIIIihieeee........iCNNNNrdUa.rrrraif)wwwwoe_(iobwcfaiiiiu_gsg×3llllrsnhdsaommmmehu333uaaaalidn1111i5555(oeeeeoalsri)nnnnUUUUuoneeeeuetaldn(gante.gtDtttedcffffctd(yyyyoooo3sclssssto(nf,ilasto0PaeesraUe666al0d0piP,.DreetUanlcarldre××3icccchnnnni-nDaiiii,,,,,,,,ehP0esiwshamnt00lldu6uytgneeeeoeaosppppa3vlrrt____ttttts×××denayohffffvvvvossssclsbdoooo.eIriiiicSze(((g6666an.e.syltNfattttroooozsrdcwoy×opiwl1111epaaaaaImaaaa.nely3Cecdddd...aiiiiw(b1l5tttteNnggggriyent)ienw111raaaaiiiirPPPPochicnr33l×oleoooeeeemutstfreyo5ambsn1iiiih5seai((((nnnnSeanvvvvqeiil1oe----oeg333nnnnssssutntafe))))yoCrrrrisdddd.lotc3rrnctei,sc,uennnneelr※tmc3333grrrrnnnntdi))3ceccccpmslSSSS_eocbtwwwwn,wi,n,n;f,,,,visrrnnmDaoo....h,ai×××xeggggcmeeeeelupe3)))ossnitxfot_shiottttitaiotttoufvaaaadsrd1roefolabbbbgimddddtdttttiiitcccc)uuuugtthooidieddddoaiwPSSSSoe1zoo1genahhhhttttrarahaaatdibiinNeestsu××××s1gnsdg)voeeeeeeiiiisaiPd-mgeofgienstttttdtn)uradineeeewwwwonthhhh111eeeegigvhnhesit-eiiiirnvvvvnlnswee)nnnncDDDDtnm)mnsrtdiSdpiiiiihdwaeeeeiiiihneeeev,)anttttarniaar.rnrngcegcettttaShhataawu....tspt,fi,aennnnn)))3333hvﬁrssssostts.bPegndnceaaaatcioticceurrrrteeeesdstddddSiiiiareiiiiae,htbztsrnhtdoajiiiiitemndddd1uuuucccuoepaogteimydh.kS-asdaDDDDnptlhttoooo))))tttthtahtaaaaaueitclewefoddddiettthnddddhconneviinrallll2caipvetrsssstitaaaa1522121nDteeiewoihhheietn_tneai4444iCtt-afiddveeeenussssyyyy6nDuest.※ttooicnnnnoe.eraipnnnn999sjehnenataalsttttotttteeeenalssoooosuwta2155252eeeen,;eteietiettttSarmuuuuc,.efudiraininnsDs,,,,eeeenaaia4uffffddeutrsoooooooorshuteneadddd....dhadSiehhhhrivtnDtcntmooontddddeorrrria8266868,,,,addeouenfffftlsdoefffftltSeeeelnrsusDthsoooagotbsarrrrddddidnas6666ttseedtsca4ily4dweeeolTTTTlrtvvvvetsisayaphhgrweaiseeee----nihwndnwuicos4imsittccccooooesniiiioDDDDDDDefffossjyeDtttttttttttittttltynsiaurnitinreleenesum,,,,iidtctsttttte,e,,oeccccsiouefft,,nnnnooronuzeeeeeeeadte.hhhhehhhhhhhhhhhhhhoiheeestvettttmo,nndnrse,fetofr,oeosoooommmmfiiiidss.iiemhmsp111vtmgttttthu6666drrdk,c6af_a6nsssslwwwwwwwf1ferppppddddataiieafnytnnnnTstvgggganddciccairdn12121212ateeeeeeeeeeeemeeeeeeei-6pe,isssstt777igptpaasiec----oTivntttttest,,,,ase,,,,-adiy,atndsP,eo.orrt,vtcCoi,acsnna6iihtenttttaoctnreteeth,hthhh,,leeaartatth,cnnfrmen:::::::.omtfltieeeiekhrhhhhgh6tnt.styre62hntnStectnh4so,meew1111121ntiraedapddaeaenlgoireetn6thlaoeeeeeegsdsehdpabddgisD-angeot,.eyadcuee,et,ee,,resphftvieas-idt-toddsd,,,nttolfdsihpenonmnhiienrae6et3p,wfdThhartneueweeiinntnapontieopevcer,fulgdnsaese,1oftw11anyoesdceefetahlurmigosp555555251212ethlh-ohd6tuiydetho0yrtr,Cmid6e00iitleadits’shsarreexg111111512525sthvcfatneeeoriesremfesa.r2rcttd,e224priaeaaiiel5heelaeei222222628686ierhwgmiasdaeceoeaarfgtacst,,eS1f44ymtnnitGnglhdldatieolalihaettsuamlhnrael(neleae3ew2gehimnwtetitestlidhincooCLtsessgbdnueloinhrhrneeev,zh.8fn(usohlxeioratslfetp.aisdtsshEoaet0rednodepeni0yAsemsye6deeedeeissxtir’lrhstftmMzIaenenz,r,ibsrm.rfDd.nl,einaml5eh11ctelealmeo0asrgute5555525121210fvtiecGot)ra600oaecoimusi.lhwnaott111115125252.iqoag1ne3mlboCtta2242sgshotvtauurne.222226286868riuefxu_g3ashipiar44di)netnedo(iAsodaldi.DttclerhiMPzesw00eeelrztsarhnsegneadyoaIehec..lNarilew0ilmtrab15evneiecootftryois.ocogi.wcni,n,iqorrm13epmnt_bttfvsotviauthoieo1aadeifue_t3gaaiPogaeiinnve-enstm)radlddDntlrnicPsShawe,elr.gcaehstsgtabdytocuedSdNnrhtwhtaaeilomeiaeteewhetnfyosivnDiceisjetacnuitc.uepns_tafvserohuiediitoniduaodirtDgotiaPdsotesdlinsavar-nsc4irnesyntsrnncSttewoesetnu.geeet,etfa,oo
+
+Appl. Sci. 2018, 8, 1678
+
+10 of 17
+
+Apsppl.aSccii.n2g0.18T, h8,exsFeOsRigPnEaElRs RtrEigVgIEeWred the CCD camera to take photos. In order to ensure that the co10notaf i1n7er
+
+rAupnpls. Stcoi. t2h01e8c, e8,nxteFrORofPvEiEeRwREﬁVeIlEdW, sensor needs to be accurately debugged.
+
+10 of 17
+
+Figure 6. Image acquisition device. CCD = charge-coupled device. LED = light-emitting diode.
+The dFFieiggtueurcretei6o6..nIImmnaeagtgwee aoaccrqqkuuiwissiitatiisoonntrddaeeivnvieiccdee..oCCnCCDDth==e ccfhhoaallrroggwee--ccinoouugpphlleeaddrdddweevvaiiccreee..: LLIEEnDDtel== Clliigoghhrett--eeimm7 ii7tttt7iin0n0ggKddiiopoddroee..cessor (gtwhVr(Tge(gteaiVhVererrpTeaneitaiheneeppsaTtintaohnhclTTnelmsrsiaionhahﬂoccmcm,psseesroaof2rwp,dl,ptdor0oer2fe2rec1owdldo0t0eto7ceee1c1stw)edcceeos77sttwpise))siidntsoeoihwhlwgienpnenneiegahhcgulpntnrehiiuenncceaeulsnihehihttrtntnwwainatsigh(hristoGoe(nnaafGt(rragirsPsGkknaaPUfamagnmPUrww)daUmfmae.)aram.iwt)Tasnsaah.TmehioiteTthnnwfrerrreehaokaeofwfsieit.srqrnrnoheoeTokusefeeqqfwrot.eddtrwukuTwfne8t.eeowoacnwaT0nnnyrntr%ewcaceyenyytortehppphettfonyooeeaae4ptfrfrrtpyf.cfatth2o44oeerupeu.l.rnltG22llscesottoueeerrHGGwowdacsndfeezHiHtiintnnd,ttnhohhzzitg3gnfe,,eteo2hgth33UhsfhUeG22aasatebhemrbrUBGuGsdtdeu.apnbwBBwmnsmutlaetuaammenumpsrrm1teleieeu1pe4n::mom4s.l01IIrte.inno0ohy44sn4rttr.e.i20eeyay.tn2plh4lnoaa.rteCCdop2hennppoeo-edodaprerrrppaeererGaaotear-iipiecrten7GG7iae-rFngpostee77oigsrFcF7sn7reoeyo0oc0gsdcss0er0yrestccKslKseesTieeytbsmdeIspeprTTTmtla,drreIiIAroaboTTm,lyncrNciAAabea,dewnNsrNrsaXdaystsenhororXXdyeerr 3.2aw.lleCorocemaatpelladorcitsoaotntehdoefttToehstrhteeseetDteasetnepsdeLttehaaernnoditnhthgeerNo8e0tthw%eortrok8s0th%ettoratihneintrgasinetin. g set.
+3.2.TChoemlopasrsisfounnocftiTohnreaenDdeetpheLeaacrcnuinragcNyeotwf otrhkess proposed MobileNet-SSD surface defect detection ananlegantdlowegtrdowoiatrrhTotiktatmhrhhikeenmmoniln2nhoo0as2ntn1hns04tec1hfIe4utemmenIstmaceetgtsnsaiteoetgN.stneeT(NetFaht(ineegFatdnuitgardratnuehidMrn7eei)Mon7aawbg)cocicewcblpureuieaeNlrerraceaNecomtycm.eotTeom.opthfeTfaperrthtsahethehrdeaeetrndhteppodrertreotoroaeheplptogsaohousolsogselresetoiodsetdrhfaioMttmMrhfhetmsoeohsbwVbhseiioGlewlVeewrGNGNeenrNGeteertiteNa-nt-SrtSineaTS[t2ieDan8[db2e]ls,8dvseuau]i,va3nrrafi.fmaaenxcmieecgxeirdcdglaleereetliafnloetetincnodttlneedddtaleeeeertcttaneeetriiccnnottiinigononng
+and data enhancement. The training parameters and reessuullttss aarree sshhoowwnn iinn TTaabbllee33..
+
+FigFuigruer7e. 7L.oLsos sfsunfucnticotnioannadnadcacuccruacraycoyfotfhtehtehtrheeredeedteecteticotnionnentwetowrokrsk. sV. GVGGG= v=isvuisaul aglegoemoemtreytrgyroguropu.p.
+
+TaFbilgeu3r.eT7r.aLinoisnsgfupnacrtaimonetaenrds aanccdurreascuyltosfothf ethtehrteheredeedteectteicotnionnetnwetowrkosr.kVs.GSGGD= v=issutoacl hgaesotmicegtrryadgireonutp.
+
+deTscaebnlte. 3. Training parameters and results of the three detection networks. SGD = stochastic gradient
+
+descent.
+
+Parameter
+
+VGG-16 MobileNet MobileNet-SSD
+
+Parameter
+
+VGG-16 MobileNet MobileNet-SSD
+
+Appl. Sci. 2018, 8, 1678
+
+11 of 17
+
+Table 3. Training parameters and results of the three detection networks. SGD = stochastic gradient descent.
+
+Parameter
+Basic learning rate Number of iterations of training Verifying the number of iterations
+Batch quantity Optimization algorithm Network parameter (million) Amount of calculation (million)
+Mean of loss function Mean value (%)
+
+VGG-16
+0.003 10,000
+50 128 SGD ≈12.30 ≈1325.00 0.14 93.91
+
+MobileNet
+0.003 10,000
+50 128 SGD ≈1.76 ≈127.54 0.19 92.33
+
+MobileNet-SSD
+0.003 10,000
+50 128 SGD ≈1.92 ≈157.32 0.09 96.73
+
+In the training process, the detection networks were tested once after two hundred iterations of the training set. The loss function and accuracy in Table 2 were mean values obtained from 40 to 50 iterations of the test set. It is clear that the MobileNet-SSD detection algorithm achieved better accuracy than the other two networks with fewer network parameters.
+
+3.3. Results of Defect Detection Network
+The trained network parameters were adopted for the MobileNet-SSD defect detection network. The test set image contained four different types of defect samples, each of which had 30 images obtained through resampling. Each sample involved one or more defects. The detection results of the trained MobileNet-SSD defect detection network on the four kinds of defect samples are show in Table 4.
+
+Table 4. Detection results of the trained MobileNet-SSD algorithm.
+
+Defect Type
+Breach Dent Burr Abrasion Total
+
+Sample Number
+30 30 30 30 120
+
+Successful Detection Number
+30 27 28 39 115
+
+Leakage Number
+0 2 1 1 4
+
+Error Detection Number
+0 1 1 0 2
+
+Positive Rate (%)
+100.00 90.00 93.33 96.67 95.00
+
+It can be seen from Table 3 that the surface defect detection network completes the defect marking of 120 defect samples with a 95.00% accuracy rate. There were missing and false samples in dent and burr defects and missing samples in abrasion defects. This is because the notches are more obvious than the other defects, and related to the image quality and subjective feelings of humans.
+When the ﬁlling line was in operation, the container passed by the image acquisition device within a certain distance, triggering the CCD camera to take photos. The defect detection network performed forward operation. If there were defects in the image, the alarm would buzz and the defect type and location were identiﬁed by the host (Figure 8). The single forward operation of the network was at the rate of 0.12 s/image.
+
+Appl. Sci. 2018, 8, 1678 AAppppll.. SSccii.. 22001188,, 88,, xx FFOORR PPEEEERR RREEVVIIEEWW
+
+12 of 17 1122 ooff 1177
+
+FFiigguurree 88.. DDeetteeccttiioonn eeffffeecctt ooff sseeaalliinngg ssuurrffaacceee dddeeefffeeeccctttsss...
+333...444... DDDeeegggrrreeeeee ooofff DDDeeefffeeecccttt DDDeeettteeeccctttiiiooonnn drdwrswrseeaeaiisevcevcmmuroroiideedplpggtTTTeelnlncdhedhedhdiiasseiteiteniviviiwwnodondidistdndneteeeoeeofeerrffrrreetdeedeveetchcchssedtdettsuuirisisiannetvvlolsrtttoetoiifaooddcacffctiaaenhetaytttnnhdhdiehthaneeesrrsrsiiggdneeneeassoerertsmstaavovotremmiiecetecctetaahhkaeetasattyneesseeotbtpdygygttafaarerpopottsaayyhhmrereeiiaaiineendeermramiisdnrsdnynoeaaessggnmbdbyttytwiiaasistccafdesdheskfkoieteetnieirffdodroaaikffdnfnfeniencegrotrodtdlhhfnnati3ieteteenns0hchrstntnt%emettihheeﬁeesreresrterttceewwommvaommddtetfoossieeharaosrrffioeioikeknetennfvyfctcciciqeet:tnsnsllsuraeaeeggtsisavsvsateess3ys3lesevievii.00yrtrffteeyi%Hi,i%i.tctr.crmyyTiaiaeStttt..thrtyoyoeeiieHHeov:do:,ttnehnhideteeeunherereaaqqemteetssttyuu,e,eyeypcaattspsa,,rhthllttneieiimemoetsts-rdyypenecppee.t.etrh.dr.drrSoSneaeTeTieiectsur-u-hvehvpuopdmmseeeeflrr.stnnoodadesTttccldaaeeyyohleennttfsdeseseppddasstccareehmeettterriidheadhoccocpsaaoebenndeldrrnnegrtddaarressttneett.a.oawwoaissctTsfuTsfuhieeeeoahlahlerrttttnlleeesessssll aoorffetthhsheeobbwrreenaaccinhheeFssigaaurreeresshh9.oowwnn iinn FFiigguurree 99..
+FFiigguurree 99.. SSttaattiicc iimmaaggee ddeetteeccttiioonn rreessuullttss ooff nnoottcchheess..
+Figuurre 110 ssshhoowwss ttthhheee ppprrreeeccciiisssiiiooonnn–––rrreeecccaaallll (((PPPRRR))) cccuuurrrvvveeesss ooofff ttthhheeeeeexxxpppeeerrriimimmeeennntttaaallldddaaatttaaassseeettt... TThe aaaddvvaannced multii--ttaasskk CCCNNNNNN((MM(MTTCCTNNCNNN))N[[22)99]][2aa9nn]dd aFFnaacdceennFeeasscsse--NNneeestts[[-33N00]]ewwt ee[r3ree0]ccoownntterrraaesstteecddonwwtirittahhstehhdee ppwrrooippthoossetehddeMMpoorbboiiplleeoNNsedtt-MSSSSoDDbiaalellggNooerrtiit-thShSmmD((“a“MlMgoSSr””itiihnnmtthh(ee“MffiiggSuu”rrieen)) toohnnettﬁhhgeeueerxxepp)eeorrniimmtheeenntteaaxllpddeaartitmaasseentt..taTTlhhdeeaeetxaxpspeeetrr.iimTmheeennettaaxllprreeerssiuumlltetssnsstahhloorwwesttuhhlatastt stthheeowrreeccthaalallltrrtaahttessreoocffattlhhleerapptrreoosppooofssteehdde aapllrggoooprroiittshhemmd awwlgeeorrerei9t9h33m..1111w%%e,,r99e229..11388.1%%1%aann, 9dd288.1228..99%77%%an,, diinn8ee2aa.9ssyy7%,, mm, ieenddeiiuuamsmy,aamnnddedhhiauarrmdd assunubdbssheeattssr,,drreessusppbeesccettiisvv,eerlleyys,,paaenncdtdiviitetsslypp, eearrnffodorrimmtsaapnneccreefowwrmaassabbneecttetteewrr atthhsaabnnetttthheaarttthooaffntthhteehaccotonnotftrrtaahssettiicvvoeenaatlrlggaoostrriiivtthhemmalssg..orithms.
+
+Appl. Sci. 2018, 8, 1678 Appl. Sci. 2018, 8, x FOR PEER REVIEW
+(a)
+
+13 of 17 13 of 17
+
+(b)
+
+(c)
+FiFgiugruere101.0(.a()aE) aEsaysyprperceicsisoino–nr–erceaclall(lP(RPR) c)ucruvrevsesofotfhtrhereeedidffifefreernetnat laglogroirthitmhms;s(;b()bM) MedeiduimumPRPRcucruvrevses ofotfhtrhereeedidffifefreernetnat laglogroirthitmhms;s(;c()cH) HaradrdPRPRcucruvrevsesofotfhtrhereeedidffifefreernetnat laglogroirthitmhms.sM. MS S= =MMoboibleiNleNet-eSt-SSDS.D. MMTCTCNNNN= =mmulutil-ttia-tsakskcocnovnovloultuiotinonnenueruarlanl entewtworokr.k.
+3.35..5C. ConotnrtarsatsEt xEpxepreirmimenetnt
+TThrhereeecocommppaararatitviveeeexxppeerriimmeennttss wweerree ddeessiiggnneedd ttooffuurrththeerrvvaalildidataetethteheprporpoopsoesdedalgaolgroitrhimth.mIn. Itnhe thﬁersftiresxtpeexrpimereinmt,etnhte, pthroepporsoepdoaslegdoraitlhgmoriwthams cwomaspacroemdptoarﬁevde tloighfitvweeliigghhttwfeaetiughret efxetartaucrteioenxntreatwctioornks, neintwclourdkisn,ginSqcluuedeiznegNSeqt u[3e1e]z,eMNoetbi[l3e1N],etM, poebrifloerNmeat,ncpeervfsoramccaunrcaecyvsneatc(cPuVrAacNy ent)e[t32(P],VMATNCeNt) N[3a2n],d MFTaCceNnNessa-NndetF. aTcheenfeesast-uNreet.exTthraectfieoantuarcecuerxatcraycotifoenacahccaulgraocryithomf efaocrhthaelgImoraitghemNeftocrlatshseiﬁIcmataigoenNtaestk cliassdsiifsipcalatiyoendtianskTaibsldei5s.pIlnaytehde isnecToanbdleex5p. eInrimtheenste, cthoendabeoxvpeerﬁivmeennet,twthoerkasbowveereficvoenntreatwsteodrkws iwthertehe copnrotrpaostseedd waligtohritthhempirnopdoesfeedct adlegtoercittihomn oifnthdeefﬁelcltindgetleincetioinn toefrmthseoffilcloinrrgeclitndeetinecttieornmrsatoef, ctroarirneicntg dteitmecetiaonndrathtee, dtreatiencitniogntitmimeeapnedrtihmeadgeete(Tcatibolne t6i)m. e per image (Table 6).
+
+Table 5. Feature extraction accuracy of each algorithm. GFLOPS =floating-point operations per second. GPU = graphics processing unit. PVANet= performance vs accuracy net.
+
+Model SqueezeNet
+MTCNN MobileNet Faceness-Net
+
+Top-1 57.64 63.85 69.37 70.31
+
+Top-5 80.40 85.03 89.22 84.39
+
+GFLOPS 0.858 0.897 0.513 0.858
+
+GPU 700 ms 640 ms 610 ms 720 ms
+
+Appl. Sci. 2018, 8, 1678
+
+14 of 17
+
+Table 5. Feature extraction accuracy of each algorithm. GFLOPS =ﬂoating-point operations per second. GPU = graphics processing unit. PVANet= performance vs accuracy net.
+
+Model
+SqueezeNet MTCNN MobileNet
+Faceness-Net PVANet
+MobileNet-SSD
+
+Top-1
+57.64 63.85 69.37 70.31 72.43 81.26
+
+Top-5
+80.40 85.03 89.22 84.39 90.16 94.62
+
+GFLOPS
+0.858 0.897 0.513 0.858 0.606 0.812
+
+GPU
+700 ms 640 ms 610 ms 720 ms 150 ms 120 ms
+
+Table 6. Correct detection rate, training time and the detection time per image of each network.
+
+Number
+1 2 3 4 5 6
+
+Model
+SqueezeNet Faceness-Net
+MobileNet MTCNN PVANet MobileNet-SSD
+
+Positive Rate
+85.83% 90.83% 90.83% 91.67% 94.17% 95.00%
+
+Training Time (Day)
+2 3 <1 3 2 <1
+
+Detection Time (s)
+0.31 0.59 0.54 0.64 0.25 0.12
+
+As shown in the two tables, the MobileNet-SSD surface defect model is fast and stable, thanks to the improved SSD meta-structure of the feature pyramid. In general, the proposed algorithm outperformed the contrastive algorithms in detection rate, training time and detection time. The ﬁnal detection time of our algorithm was merely 120 milliseconds per piece, which meets the real-time requirements of the industrial ﬁlling line.
+In Contrast Experiment 3, four traditional defect recognition methods of k-nearest neighbor (KNN) [33], HMM [34–36], SVM and HMM [37] and back propagation neural network (BPNN) [38] are realized, which are compared with the method in this paper. The KNN method selects Euclidean distance as the distance function; the HMM model adopts a sampling window of 5 × 4 size and uses the discrete cosine transform (DCT) coefﬁcient as the observation vector of HMM. The SVM and HMM method is the same as in literature [37]. The hidden layer number of the BP neural network is set to 30. The above models are also applied to detect the defects on the sealing surface of a container in the ﬁlling line. The statistical results are shown in Table 7.
+
+Table 7. Correct detection rate and the detection time per image of each model. HMM: Hidden Markov Model. SVM = support vector machine. KNN = k-nearest neighbor. BPNN = back propagation neural network.
+
+Number
+1 2 3 4 5
+
+Model
+KNN HMM SVM and HMM BPNN MobileNet-SSD
+
+Positive Rate
+65.83% 66.67% 80.83% 84.17% 95.00%
+
+Detection Time (s)
+0.31 0.39 0.32 0.14 0.12
+
+As can be seen from Table 6, compared with the other traditional defect detection methods, the MobileNet-SSD method has a higher positive detection rate. Under the same hardware conditions, MobileNet-SSD still maintains the optimal speed despite the small differences between the above ﬁve methods. In addition, the results of HMM and KNN are not ideal. The reason for this may be that the proportion of defects is small, and the sealing surface of a container contains a lot of background information. KNN and HMM did not extract speciﬁc features of the image before classifying. However, both the BP neural network and MobileNet-SSD are based on neural networks, which can automatically learn features by itself, so the accuracy rate of the two methods are relatively high. MobileNet-SSD,
+
+Appl. Sci. 2018, 8, 1678
+
+15 of 17
+
+due to its unique deep convolutional structure, can learn the deep and detachable features of defects with a bigger receptive ﬁeld, so it can achieve a higher positive detection rate.
+4. Conclusions
+This paper proposes a surface defect detection method based on the MobileNet-SSD network, and applies it to identify the types and locations of surface defects. In the pre-processing phase, a regional planning method was presented to cut out the main body of the defect, reduce redundant parameters and improve detection speed and accuracy. Meanwhile, the robustness of the algorithm was elevated by data enhancement. The philosophy of MobileNet, a lightweight network, was introduced to enhance the detection accuracy, reduce the computing load and shorten the training time of this algorithm. The MobileNet and SSD were adjusted to detect the surface defects, such that the proposed method could differentiate small defects from the background. The feasibility of the proposed method was veriﬁed by defect detection for the sealing surface of an oil chili ﬁlling production line in Guizhou, China. Speciﬁcally, an image acquisition device was established for the sealing surface and the deep learning framework was adopted to mark the defect positions. The results show that the proposed method can identify most defects in the production environment at high speed with accuracy. However, the system also has its limitations. Deep learning models have a certain dependence on the hardware platform because of computationally intensive processes, and they are not suitable for embedded systems with general performance. Future research will further improve the proposed method through integration with embedded chips and the Internet of Things, balancing the classiﬁcation accuracy and number of parameters of the detection method, and expand the application scope of our method to complex defects in industrial processes.
+Author Contributions: Project administration, Y.L.; validation, Y.L.; resources, H.H. and Q.X.; investigation, L.Y. and Q.C.
+Funding: This study was supported by the Major Project of Science and Technology in Guizhou Province (No. [2017]3004) and Natural Science Foundation in Guizhou Province (No. [2015]2043).
+Conﬂicts of Interest: The authors declare no conﬂict of interest. The founding sponsors had no role in the design of the study; in the collection, analysis, or interpretation of data; in the writing of the manuscript, and in the decision to publish the results.
+References
+1. Uddin, M.T.; Uddiny, M.A. Human activity recognition from wearable sensors using extremely randomized trees. In Proceedings of the International Conference on Electrical Engineering and Information Communication Technology, Dhaka, Bangladesh, 21–23 May 2015; pp. 1–6.
+2. Jalal, A.; Sarif, N.; Kim, J.T.; Kim, T.S. Human Activity Recognition via Recognized Body Parts of Human Depth Silhouettes for Residents Monitoring Services at Smart Home. Indoor Built Environ. 2013, 22, 271–279. [CrossRef]
+3. Zhan, Y.; Kuroda, T. Wearable sensor-based human activity recognition from environmental background sounds. J. Ambient Intell. Hum. Comput. 2014, 5, 77–89. [CrossRef]
+4. Jalal, A. Security Architecture for Third Generation (3G) using GMHS Cellular Network. In Proceedings of the International Conference on Emerging Technologies, Islamabad, Pakistan, 12–13 November 2008; pp. 74–79.
+5. Shire, A.N.; Khanapurkar, M.M.; Mundewadikar, R.S. Plain Ceramic Tiles Surface Defect Detection Using Image Processing. In Proceedings of the International Conference on Emerging Trends in Engineering and Technology, Port Louis, Mauritius, 18–20 November 2012; pp. 215–220.
+6. Shang, L.; Yang, Q.; Wang, J.; Li, S.; Lei, W. Detection of rail surface defects based on CNN image recognition and classiﬁcation. In Proceedings of the International Conference on Advanced Communication Technology, Chuncheon-si, Korea, 11–14 February 2018; pp. 45–51.
+7. Jalal, A.; Kim, S. Advanced Performance Achievement using Multi-Algorithmic Approach of Video Transcoder for Low Bitrate Wireless Communication. ICGST Int. J. Graph. Vis. Image Process. 2004, 5, 27–32.
+
+Appl. Sci. 2018, 8, 1678
+
+16 of 17
+
+8. Deutschl, E.; Gasser, C.; Niel, A.; Werschonig, J. Defect detection on rail surfaces by a vision based system. In Proceedings of the Intelligent Vehicles Symposium, Parma, Italy, 14–17 June 2004; pp. 507–511.
+9. Yazdchi, M.; Yazdi, M.; Mahyari, A.G. Steel Surface Defect Detection Using Texture Segmentation Based on Multifractal Dimension. In Proceedings of the International Conference on Digital Image Processing, Bangkok, Thailand, 7–9 March 2009; pp. 346–350.
+10. Kamal, S.; Jalal, A.; Kim, D. Depth Images-based Human Detection, Tracking and Activity Recognition Using Spatiotemporal Features and Modiﬁed HMM. J. Electr. Eng. Technol. 2016, 11, 1921–1926. [CrossRef]
+11. Jalal, A.; Kim, S. Global Security Using Human Face Understanding under Vision Ubiquitous Architecture System. World Acad. Sci. Eng. Technol. 2006, 13, 7–11.
+12. Patil, K.; Kulkarni, M.; Sriraman, A.; Karande, S. Deep Learning Based Car Damage Classiﬁcation. In Proceedings of the IEEE International Conference on Machine Learning and Applications, Cancun, Mexico, 18–21 December 2017; pp. 50–54.
+13. Zhang, Z.; Alonzo, R.; Athitsos, V. Experiments with computer vision methods for hand detection. In Proceedings of the Petra 2011 International Conference on Pervasive Technologies Related to Assistive Environments, Crete, Greece, 25 May 2011; pp. 1–6.
+14. Jeon, Y.J.; Choi, D.C.; Lee, S.J.; Yun, J.P.; Kim, S.W. Steel-surface defect detection using a switching-lighting scheme. Appl. Opt. 2016, 55, 47–57. [CrossRef] [PubMed]
+15. Kabouri, A.; Khabbazi, A.; Youlal, H. Applied multiresolution analysis to infrared images for defects detection in materials. NDT E Int. 2017, 92, 38–49.
+16. Krummenacher, G.; Ong, C.S.; Koller, S.; Kobayashi, S.; Buhmann, J.M. Wheel Defect Detection with Machine Learning. IEEE Trans. Intell. Transp. Syst. 2018, 19, 1176–1187. [CrossRef]
+17. Fu, L.; Wang, Z.; Liu, C. Research on surface defect detection of ceramic ball based on fringe reﬂection. Opt. Eng. 2017, 56, 104104.
+18. Jian, C.; Gao, J.; Ao, Y. Automatic Surface Defect Detection for Mobile Phone Screen Glass Based on Machine Vision. Appl. Soft Comput. 2016, 52, 348–358. [CrossRef]
+19. Win, M.; Bushroa, A.R.; Hassan, M.A.; Hilman, N.M.; Ide-Ektessabi, A. A Contrast Adjustment Thresholding Method for Surface Defect Detection Based on Mesoscopy. IEEE Trans. Ind. Inform. 2017, 11, 642–649. [CrossRef]
+20. LeCun, Y.; Bengio, Y.; Hinton, G. Deep learning. Nature 2015, 521, 436–444. [CrossRef] [PubMed] 21. Esteva, A.; Kuprel, B.; Novoa, R.A.; Ko, J.; Swetter, S.M.; Blau, H.M.; Thrun, S. Dermatologist-level
+classiﬁcation of skin cancer with deep neural networks. Nature 2017, 542, 115–118. [CrossRef] [PubMed] 22. Litjens, G.; Kooi, T.; Bejnordi, B.E.; Setio, A.A.; Ciompi, F.; Ghafoorian, M.; van der Laak, J.A.;
+Van Ginneken, B.; Sánchez, C.I. A survey on deep learning in medical image analysis. Med. Image Anal. 2017, 42, 60–88. [CrossRef] [PubMed] 23. Xian-Bao, W.; Jie, L.; Ming-Hai, Y.; Wen-Xiu, H.; Yun-Tao, Q. Solar Cells Surface Defects Detection Based on Deep Learning. Pattern Recognit. Artif. Intell. 2014, 27, 517–523. 24. Cha, Y.J.; Choi, W.; Büyüköztürk, O. Deep Learning-Based Crack Damage Detection Using Convolutional Neural Networks. Comput. Aided Civ. Infrastruct. Eng. 2017, 32, 361–378. [CrossRef] 25. Han, K.; Sun, M.; Zhou, X.; Zhang, G.; Dang, H.; Liu, Z. A new method in wheel hub surface defect detection: Object detection algorithm based on deep learning. In Proceedings of the International Conference on Advanced Mechatronic Systems, Xiamen, China, 6–9 December 2017; pp. 335–338. 26. Liu, W.; Anguelov, D.; Erhan, D.; Szegedy, C.; Reed, S.; Fu, C.Y.; Berg, A.C. SSD: Single Shot MultiBox Detector. In Proceedings of the European Conference on Computer Vision, Amsterdam, The Netherlands, 11–14 October 2016; pp. 21–37. 27. Howard, A.G.; Zhu, M.; Chen, B.; Kalenichenko, D.; Wang, W.; Weyand, T.; Andreetto, M.; Adam, H. MobileNets: Efﬁcient Convolutional Neural Networks for Mobile Vision Applications. arXiv 2017, arXiv:1704.04861. 28. Simonyan, K.; Zisserman, A. Very Deep Convolutional Networks for Large-Scale Image Recognition. arXiv 2014, arXiv:1409.1556. 29. Zhang, K.; Zhang, Z.; Li, Z.; Qiao, Y. Joint Face Detection and Alignment Using Multitask Cascaded Convolutional Networks. IEEE Signal Process. Lett. 2016, 23, 1499–1503. [CrossRef] 30. Yang, S.; Luo, P.; Loy, C.C.; Tang, X. Faceness-Net: Face Detection through Deep Facial Part Responses. IEEE Trans. Pattern Anal. Mach. Intell. 2018, 40, 1845–1859. [CrossRef] [PubMed]
+
+Appl. Sci. 2018, 8, 1678
+
+17 of 17
+
+31. Iandola, F.N.; Han, S.; Moskewicz, M.W.; Ashraf, K.; Dally, W.J.; Keutzer, K. SqueezeNet: AlexNet-level accuracy with 50 × fewer parameters and <0.5 MB model size. arXiv, 2016; arXiv:1602.07360.
+32. Hong, S.; Roh, B.; Kim, K.H.; Cheon, Y.; Park, M. PVANet: Lightweight Deep Neural Networks for Real-time Object Detection. arXiv, 2016; arXiv:1611.08588.
+33. Hunt, M.A.; Karnowski, T.P.; Kiest, C.; Villalobos, L. Optimizing automatic defect classiﬁcation feature and classiﬁer performance for post. In Proceedings of the 2000 IEEE/SEMI Advanced Semiconductor Manufacturing Conference and Workshop, Boston, MA, USA, 12–14 September 2000; pp. 116–123.
+34. Jalal, A.; Kamal, S.; Kim, D. A depth video sensor-based life-logging human activity recognition system for elderly care in smart indoor environments. Sensors 2014, 14, 11735–11759. [CrossRef] [PubMed]
+35. Jalal, A.; Kim, Y.H.; Kim, Y.J.; Kamal, S.; Kim, D. Robust human activity recognition from depth video using spatiotemporal multi-fused features. Pattern Recognit. 2017, 61, 295–308. [CrossRef]
+36. Jalal, A.; Kamal, S.; Kim, D. Individual detection-tracking-recognition using depth activity images. In Proceedings of the 2015 12th International Conference on IEEE Ubiquitous Robots and Ambient Intelligence (URAI), Goyang, Korea, 28–30 October 2015; pp. 450–455.
+37. Wu, H.; Pan, W.; Xiong, X.; Xu, S. Human activity recognition based on the combined svm&hmm. In Proceedings of the 2014 IEEE International Conference on Information and Automation (ICIA), Hailar, China, 28–30 July 2014; pp. 219–224.
+38. Islam, M.A.; Akhter, S.; Mursalin, T.E.; Amin, M.A. A suitable neural network to detect textile defects. In Proceedings of the International Conference on Neural Information Processing, Hong Kong, China, 3–6 October 2006; Springer: Berlin/Heidelberg, Germany, 2006; pp. 430–438.
+© 2018 by the authors. Licensee MDPI, Basel, Switzerland. This article is an open access article distributed under the terms and conditions of the Creative Commons Attribution (CC BY) license (http://creativecommons.org/licenses/by/4.0/).
+

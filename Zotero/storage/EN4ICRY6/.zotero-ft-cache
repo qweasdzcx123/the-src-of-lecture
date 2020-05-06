@@ -1,0 +1,833 @@
+S
+
+S symmetry
+Article
+Research on a Real-Time Monitoring Method for the Wear State of a Tool Based on a Convolutional Bidirectional LSTM Model
+Qipeng Chen, Qingsheng Xie, Qingni Yuan *, Haisong Huang and Yiting Li
+Key Laboratory of Advanced Manufacturing Technology, Ministry of Education, Guizhou University, Guiyang 550025, China * Correspondence: qnyuan@gzu.edu.cn; Tel.: +86-189-851-07557
+Received: 14 August 2019; Accepted: 20 September 2019; Published: 2 October 2019
+Abstract: To monitor the tool wear state of computerized numerical control (CNC) machining equipment in real time in a manufacturing workshop, this paper proposes a real-time monitoring method based on a fusion of a convolutional neural network (CNN) and a bidirectional long short-term memory (BiLSTM) network with an attention mechanism (CABLSTM). In this method, the CNN is used to extract deep features from the time-series signal as an input, and then the BiLSTM network with a symmetric structure is constructed to learn the time-series information between the feature vectors. The attention mechanism is introduced to self-adaptively perceive the network weights associated with the classiÔ¨Åcation results of the wear state and distribute the weights reasonably. Finally, the signal features of diÔ¨Äerent weights are sent to a Softmax classiÔ¨Åer to classify the tool wear state. In addition, a data acquisition experiment platform is developed with a high-precision CNC milling machine and an acceleration sensor to collect the vibration signals generated during tool processing in real time. The original data are directly fed into the depth neural network of the model for analysis, which avoids the complexity and limitations caused by a manual feature extraction. The experimental results show that, compared with other deep learning neural networks and traditional machine learning network models, the model can predict the tool wear state accurately in real time from original data collected by sensors, and the recognition accuracy and generalization have been improved to a certain extent.
+Keywords: tool wear state; CNN; BiLSTM; attention mechanism; signal features
+
+1. Introduction
+As a critical component of intelligent manufacturing, mechanical intelligent fault diagnosis has become an essential part of ‚ÄúMade in China 2025‚Äù [1]. In mechanical processing, cutting is the most important means of manufacturing. At present, research in this Ô¨Åeld mainly focuses on tool cutting parameter optimization [2,3] and tool wear condition monitoring [4,5]. Real-time monitoring of the tool wear state is an essential part of the computerized numerical control (CNC) machining process in a manufacturing workshop. The wear state of a tool is aÔ¨Äected by the processing procedures, workpiece materials, cutting parameters, and other factors. The whole system exhibits strong nonlinearity and uncertainty. The tool wear will not only reduce the processing quality of the CNC machining equipment but also aÔ¨Äect the surface roughness and machining accuracy of the workpiece and seriously aÔ¨Äect the overall stability and processing eÔ¨Éciency of the CNC machining equipment. The wear state of a tool will directly aÔ¨Äect the machining accuracy, surface quality, and production eÔ¨Éciency of the parts. Therefore, the technology of tool condition monitoring (TCM) is of great signiÔ¨Åcance for ensuring the quality of processing and realizing continuous automatic processing [6‚Äì9].
+
+Symmetry 2019, 11, 1233; doi:10.3390/sym11101233
+
+www.mdpi.com/journal/symmetry
+
+Symmetry 2019, 11, 1233
+
+2 of 18
+
+TCM methods are divided into direct measurement methods and indirect measurement methods. Direct measurement methods include resistance measurement methods, optical measurement methods, discharge current measurement methods, ray measurement methods, and computer image processing methods. The tool wear state can be obtained directly, but due to the inÔ¨Çuence of the coolant and other disturbances in the production process, the tool wear state in the mechanical processing stage cannot be detected in real time, which is rarely used in actual industrial production [10]. Indirect measurement methods include the cutting force measurement method, acoustic emission method, mechanical power measurement method, vibration signal and multi-information fusion detection [11‚Äì15]. Indirect measurement methods can acquire signals in real time through a sensor during tool cutting. After data processing and feature extraction, hidden Markov model (HMM), fuzzy neural network (FNN), back propagation neural network (BPNN), support vector machine (SVM), and other machine learning (ML) models can be used to monitor tool wear [16‚Äì18]. For example, Zhang Xiang et al. proposed micro-milling tool wear identiÔ¨Åcation as the research object and established the HMM of tool wear. Eight optimal cutting forces were extracted as the HMM training input vectors by Fisher‚Äôs linear discriminant. The method can identify the micro-milling tool‚Äôs wear state with an accuracy rate of 85% [16]. X. Li et al. proposed an FNN designed and developed for machinery prognostic monitoring. The FNN is basically a multi-layered fuzzy-rule-based neural network that integrates a fuzzy logic inference into a neural network structure. This method is helpful to accelerate the learning process of the complex conventional neural network structure, and the accuracy in prediction and rate of convergence are better than those of similar ML models [17]. Liao Zhirong et al. proposed a tool wear condition monitoring system based on acoustic emission technology. By analysingrepresentative acoustic signals, the energy ratios from six diÔ¨Äerent frequency bands are selected from the time‚Äìfrequency domain. These are used as a classiÔ¨Åcation feature to determine the amount of tool wear. In this method, the SVM is used as the classiÔ¨Åcation method, which can ultimately achieve an accuracy rate of 93.3% [18]. The traditional ML model adopts shallow learning. Since ML is aÔ¨Äected by the quality instability of the manual extraction feature, a random initialization of the weights can easily enable the objective function to converge to the local minimum. When the number of layers is too large, the forward propagation of the residuals will be lost, leading to gradient diÔ¨Äusion. At the same time, ML is limited by the inability to capture the dependence of long-distance signals on the sequential input. Deep learning (DL) can eÔ¨Äectively avoid these problems.
+DL was Ô¨Årst introduced into machine learning (ML) in 1986 and then used in an artiÔ¨Åcial neural network (ANN) [19] in 2000. DL uses multi-level non-linear information to process low-level features to form more abstract high-level representations for supervised or unsupervised feature learning, representation, classiÔ¨Åcation, and pattern recognition [20]. The DL model is an ‚Äúend-to-end learning‚Äù model, which does not require complex data pre-processing of the original data, making the construction of the model more concise (Figure 1). At present, the DL method has emerged in the industrial Ô¨Åeld. DL models represented by a CNN have been gradually applied to the study of tool wear condition monitoring and achieved speciÔ¨Åc results [21‚Äì23]. For example, Zhang Cunji et al. proposed transforming the vibration signal of a tool in the process of machining into an energy spectrum by a wavelet packet transform (WPT) and inputting the spectrum into a CNN to extract the features automatically and classify them accurately [21]. German Terrazas et al. proposed that based on the gramian angular summation Ô¨Åelds (GASF) module, a large number of continuous force signals generated by cutting tools in a high-speed milling process can be automatically converted into two-dimensional images, which are input into a CNN to obtain the tool wear status [22]. Cao Dali et al. proposed the construction of a DenseNet using the dense connection, which adaptively extracts hidden high-dimensional features from original time series signals. The results showed that deepening the network layers is helpful for improving the accuracy of the tool wear monitoring model [23]. The above methods adopt DL to extract features adaptively, which basically solves the shortcoming of a manual extraction of the signal features. However, the convolution neural network (CNN) used relies too heavily on high-dimensional feature extraction. The excessive number of convolutional layers is prone
+
+Therefore, this paper proposes a method for real-time monitoring of a tool wear state based on a CNN and bidirectional long short-term memory (BiLSTM) network model with an attention mechanism (CABLSTM). The sensor acquires the signals generated during tool processing in real time, which are directly fed into the CNN for parallel local feature extraction and then into the SByimLmSTetMry 2n01e9t,w11o, r1k23f3or feature extraction of the long-distance dependence information. The atten3 toifo1n8 mechanism is used to calculate the network weights and distribute them reasonably. Finally, the signal feature information with different weights is sent to a Softmax classifier to classify the tool wtoegarradstiaetnutsd, iaspveorisdiionng, athnde tchoemnpulmexbiteyr oafncdonlivmoiltuattiioonnalclaauyseerds ibsytoao smmaanlul taol gferastuprteheexgtlroabcatilofnea. tTuhreis manedthdoodescnanotmtaekeetinthtoe arcecaol-utinmt ethaencdritaicaclufreaactyurreeqouf tirheemcoenrrteslaotfiotnoobletmwoeneintotrhiengtimininagctsuiganl ailnsdaumstprlieasl pgeronderuactteidond.uring tool processing.
+Figure 1. CCoommppaarriison of deep learning and traditional machine learning methods.
+Therreefmoraei,ntdheisr opfatpheirs praoppeorsisesoargmaneitzheoddafsofrorleloawl-tsi.mSecmtioonni2toprriensgenotfsathtoeoCl AwBeLarSTstMatealbgaosreitdhmon. SaeCctNioNn 3apnrdesbeindtisrethcetiomnoanl iltonrigngshporortc-etsesrmof tmooeml woeryar.(BSeiLctSiTonM4) pnreetswenotrskthmeoedxeplerwimithenatanl raetsteunlttsioonf tmhecthoaonliwsmea(rCcAoBnLdSitTioMn)m. Tohneitsoernisnogr. aSceqcutiiornes5thcoensciglundalessgtehneearrattiecdled. uring tool processing in real time, which are directly fed into the CNN for parallel local feature extraction and then into the BiLSTM 2n.eCtwAoBrkLSfoTrMfeaMtuordeeelxtraction of the long-distance dependence information. The attention mechanism fiisnufsuoisoreImnndsattpotoiiortcenhadelwcburiyetlahattlhe-dteitimÔ¨Ählieeteernermaentttouwnwroeitero[ki2gri4whn]t,gestihgitsahisstskspenaaopntfedtarodataipostopSrloliibfewtudmeteaaarxtChsNcetlmaaNtsesr,aieÔ¨Åncaedosronrnstetoacrbuuclrclyrat.essnFstitiwfnynaoeltulhynre,eattlthwoneooeslrtiwkwgnomeraaklordf(esRetalNatstuNuorse)f, caovnovidoilnugtitohneacl olmonpglesxhitoyrta-ntedrmlimmiteamtioonryca(uCsLeSdTbMy)aamndancuoanlvfoealututiroeneaxltrbai-cdtiiornec. tTiohnisalmloetnhgodshcoarnt-mteremet mtheemreoarly-ti(mCBeLaSnTdMac),ceufrfaeccytivreeqlyuisroelmveesntthseopf rtooobllemmoonfittohreincgorirnealacttiuoanl binedtwuesterniatlhperiogdnuocrteidonti.me-series signaTlsheinreamsianingdleeCr oNfNth,iasnpdapaevroiisdsortghaenpizreodblaesmfoolflogwrasd. iSeencttidoinsp2eprsreiosnenatns dthgerCadAiBenLtSeTxMplaolsgioonritihnma. cSiercctuiolanr3nperuersaelnntsetthweomrko. nMitoerainnwg hpirloe,cetshseoaf tttoeonltiwoneamr. eScehctainoinsm4 pirsesinentrtosdthueceedxpoenrimtheentbaalsriessuofltsthoef CthBeLtSoTolMwneeatrwcoornkd.iFtiionnalmlyo, nthiteoCriAngB.LSSeTcMtionne5twcoonrkcliusdpersotphoeseadrt,icwleh.ich further improves the accuracy o2.f CmAodBeLlSpTrMediMctioodne.l
+The CABLSTM model mainly includes four parts: The first part involves the local feature extraIcntisopnireodf tbhyethsienlgilteertaitmurees[t2e4p], ttihmisinpgapsiegrnaapl,plwiehdicahCmNaNinalyndusreescuarroennet-ndeimureanl snioetnwalorCkN(RNNfNor) nfuesigiohnbotorhtohoedrfeilatel-rtiinmge, umseosnaitsolridininggtawsikndoofwa ftoorotlhwe ceoanrvsotaluteti,ocnocnasltcruulcattsiotnw, aonndeftiwnaolrlyk ombtoadineslsthoef hcoignhv-odliumtieonnsaiol nloanl gfesahtourrte-steromf tmheemsionrgyle(CtLimSTeMst)eapndtimcoinnvgosluigtinoanl.alTbhie-dsireeccotniodnaplalrotnignvshoolvret-stetrhme emxetrmacotriyon(CoBfLtShTeMtim), eeÔ¨Äseecrtiievseolyf stoimlvee-ssethrieesprsoigbnleamls,oafntdhethcoerBreilLaStiToMn bneettwweoernkthiseuigsendorteodptirmocee-sssertihees hsiiggnha-dlsimineanssiionngalle fCeNatNur,easngdeanveoraidtesdthbeyptrhoeblceomntoinf ugoraudsietinmt edisstpeeprstiiomninangdsgigrnaadlisenatnedxpglroasdiounalilny saycnitrhcueslaizrentehueravlencteotrwfoeraktu. rMe reeapnrwesheinlet,attihoenaottfetnhteioinnpmuetcshiagnniaslms. Tishienttrhoirdducpeadrtounsethsethbeasaitsteonftitohne mCBeLchSaTnMismnettwo ocarklc.uFlaintealtlhy,ethime pCoArtBaLnScTeMdisntertiwbuotrikonisopfrsoepqouseendt,iawlhsiicghnaful rfethaetur riemspinrocvoensttihneuoacucsutriamcye sotfempsoadnedl pgreendeicratitoent.he feature model of sequential signals with an attention probability distribution. The fTohuertChApBaLrtSTisMthmeocdlaeslsmifaieinr,lywihnicclhuduessefsodurroppaortust: tTehcehÔ¨Ånrosltopgayrttoinpvroelvveesntthoevleorcfaitltfienagtuarnedexutsraecsttiohne of the single time step timing signal, which mainly uses a one-dimensional CNN for neighborhood Ô¨Åltering, uses a sliding window for the convolution calculation, and Ô¨Ånally obtains the high-dimensional features of the single time step timing signal. The second part involves the extraction of the time series of time-series signals, and the BiLSTM network is used to process the high-dimensional features generated by the continuous time step timing signals and gradually synthesize the vector feature representation of the input signals. The third part uses the attention mechanism to calculate the importance distribution of sequential signal features in continuous time steps and generate the feature model of sequential signals with an attention probability distribution. The fourth part is the classiÔ¨Åer, which uses dropout technology to prevent overÔ¨Åtting and uses the Softmax classiÔ¨Åer to predict the tool wear states. The neural network framework for real-time monitoring of the tool wear state based on CABLSTM is shown in Figure 2.
+
+Symmetry 2019, 11, 1233
+
+4 of 19
+
+SSyomftmmetaryx20c1l9a,s1s1i,f1ie23r3to predict the tool wear states. The neural network framework for real-4tiomf 1e8 monitoring of the tool wear state based on CABLSTM is shown in Figure 2.
+
+FFiigguurree 22. .NNeueruarlanletnweotwrkofrrkamfreawmoerkwfoorrkrefaol-rtimreealm-toimnietorminognoitfotroionlgweoafr tsotaotle bwaesaedr osntactoenvboalsuetdionoanl cnoenuvraollunteitownoarlkn(eCuNraNl n) eatnwdobrikdi(rCeNctiNon) aalnldonbgidsihroerctt-itoenrmal lmonemg oshryor(tB-itLerSmTMm)enmetowryor(kBwiLiSthTMan) antetetwntoiorkn wmietchhaanniastmten(CtiAonBLmSeTcMha)n. ism (CABLSTM).
+
+2.1. Local Feature Extraction of Single Time Step Timing Signals 2.1. Local Feature Extraction of Single Time Step Timing Signals
+The one-dimensional CNN can be applied to a time-series analysis of sensor data [24‚Äì26]. In the one-dTihmeeonnsieo-ndaiml ceonnsvioonluatlioCnNalNlacyaenr,bme ualptippllieedÔ¨Ålttoerastaimreeu-sseerdietos apnearflyorsmis onfesigehnbsoorrhdoaotda [Ô¨Å2l4te‚Äìr2i6n]g. Ionf tthhee oinnpeu-dtitmimene-ssioerniaelscdoantvao, launtdiotnhael alacyqeuri,rmedufletiaptluerfeilmtearspsaraereusseudpetorimpeprofosremd tnoefiogrhmboarnhoooudtpfiulttefreinatguoref tmheapinopfutthteimcoen-sveorliuestiodnaatal,laanyder.thTehaecnq,uthireedpofeoalitnugrelamyaepr sexatrreascutsptehreimÔ¨Åpxoedse-ldentogtfhorfmeaatunroeuvtepcutot rfesaftruorme mfeaaptuoref tmheapcosnovfoelaucthiocnaanl dlaiydeart.eTfhraemn,ethfoerpaoofeliantugrleaydeirmeexntrsaioctns rtehdeuficxteiodn-l,etnhgetrhebfeyaetuxtrreavcteicntgorcsrfitriocmal ffeeaattuurreesminapthseotfimeaec-hsecraiensddidaatateanfrdamsiemfpolrifayifnegattuhreecdoimmpelnesxiiotyn orfedthuectnioetnw, othrkerceablycuelxattrioacnt.ing critical featuIrnesthinistphaeptiemr, ea-soenreie-ds idmaetansainodnaslimCNplNifywinags tuhseedcotmo pdlierexcittylyopfrtohceenssettwheotrikmcianlgcusliagtnioanls. generated durinIng tthoioslpparpoecre,sasionnge.-dTihmeeCnsNioNnainl CclNudNeswtawsouslaedyetros:diAreccotlnyvporloucteiossntahlelatyimerinagndsiganpaolsoglienngerlaayteedr. dTuhreincogntvooolluptrioocnelsasyinegr.pTehrefoCrmNsNnienicglhubdoershtowoodlaÔ¨Åylteerrsi:nAg coofnthveoltuimtioen-saelrliaeysesrigannadlsaopfoeoalicnhgdliamyeern.sTiohne cuosninvgolauotinoen-dlaimyeernpsieornfoarl mcosnnveoilguhtiboonrhoopoedraftiilotnertionggeonf etrhaetetimfeaet-usererimesaspigs,naanlsdoefaecahchfedatiumreenmsiaopncuasninbge areognared-deidmaesnasioconnavl oclountvioonluotipoenraotpioenraotifodniÔ¨Ätoeregnent eÔ¨Årlatetersfeoantuthree cmuarpresn, tatnidmeeascthepfetiamtuirnegmsiagpnaclasn[2b7e]. rWooWsfeeaufaghmhtstapeeuaprnnumrdletettephhfsmdeleeeiaasaisitnpnsumippraso,ueuftcÌ†µtthmtoÌ±öthten,iiamemvstphcioiiznooenleugnfgstvotsiishzofoiigeeglntunhncotaoeoaiflpolncinteivsoshraonxaelÌ†µlv,tÌ±•uli,ctoaothotylinheuoneentvwroiawoofyellndeiuclgiaiatkgfhiynfeohteerntbvrrneveeeknÌ†µceÌ±¶elettcxoirctfspnroialnrernoteel,fosbr‚àóiftssseheitshoedeÌ†µnÌ±õextc,ahpoctse‚àónrohefvnceoisoovslsclnloeuoutdvlhwrtuoireaoteslisnu:ncooftntkoinoteklivlnrmeonorwoeelnuplsestie:ltisroeiawspnt,iÌ†µtootÌ±§ihmpn, ete,ihrnateaongtttdiaosolitntganh,lnuenaamonlusbudme[t2prbt7hueo]ertf.
+
+mm
+
+ÔÉ• yy == xx ‚àó‚àóww== xx((mm)) ‚ãÖ¬∑ ww((nn ‚àí‚àí mm)).
+
+(1()1)
+
+mm==00
+
+.
+
+IInn tthhee ccoonnvvoolulutitoionnaalllalyayere,re, aecahchnenuerounroonf tohfetlhleayÌ†µÌ±ôerlaisyeornliys coonnlnyeccotendnteoctaedloctoal awlioncdaolwwnineudroown
+
+nineuthroenl ‚àíin1tlhaeyeÌ†µrÌ±ô ‚àíto1folramyear ltoocafol rcmonaneloctciaolncnoentnweocrtiko.nTnheetcwaolcrukl.aTtihoen cfoarlcmuulaltaiofonrftohremounlea-dfoimr tehnesioonnea-l
+
+dcoimnveonlsuiotinoanl lcaoynevroisluatsiofnolllaoywesr:is as follows:
+
+ÔÉ• where
+
+xlj
+
+is
+
+the
+
+j
+
+feature
+
+map
+
+of
+
+xxlljj
+
+=
+=
+
+f
+f
+
+(
+(i‚ààM j
+
+xxli‚àíil ‚àí11¬∑‚ãÖwwli ijlj
+
++
++
+
+bbljlj)),
+
+the
+
+l
+
+layer,
+
+i‚ààM j
+f (¬∑)
+
+is
+
+the
+
+activati,on
+
+function,
+
+Mj
+
+is
+
+the
+
+input
+
+(2)
+(2) feature
+
+vwpveeahccreattoormerr,,exÌ†µtÌ†µÌ±•eliÌ±•‚àír1.isCistoihtsnhetsehiÌ†µdÌ±óieeffereÌ†µÌ±ñiaanftteuguarrtteheumemrecaaomppnoavopfefrttoghhfeeentlhcÌ†µ‚àíÌ±ôe l1saÌ†µÌ±ôply‚àíaeeyer1de,ral,Ì†µaÌ±ìnw(y¬∑dli)ej roii,svsÌ†µeatÌ±§rhtÔ¨Åretaitaisincnatagibvtprlaeartoiicnoboanlnebvfmlueosnlc,ucottthniiooevnnro,eklcuÌ†µettÌ±ÄriiÔ¨Ånoeeinsdl,ktalheinnerdneiaenbrlplj,uuiasnntitdfthe(eaRÌ†µtÌ±èbeuilrauiess)
+
+tihs echboiassenpaforarmtheetenro.nC-olinseiadrearcintigvathtieoncofnuvnecrtigoenn,cwe hspicehedcoannvderogveesrfaitsttienrgtporiombplermovse, the rsepcatrifsieeldy loinf ethaer
+
+unnetiwt (oRrekluin) tihsischpoaspeenr,froerdtuhceesntohne-liinnteardr eapcetinvdaetniocne ofuf nthcteiopna,rawmheitcehrsc,oannvdearglleesvifaatsetserthteooicmcuprroevnecethoef
+
+sopvaerrsÔ¨Åetltyinogf. tThheenfeotrwmourklainfotrhtihsepRaepleur,arcetdivuacteiosnthfueninctieorndeispeans dfoelnlocewos:f the parameters, and alleviates
+
+the occurrence of overfitting. The formula for the Relu activation function is as follows:
+
+{ } where
+
+yli+1( j)
+
+is
+
+the
+
+output
+
+vaaai(li(lul++1e)1()o(jfj))t=h=efvf((oyylilliu++1m1((ejj))a))n==dmmopaaxexra00t,i,yoyiln+il+1a1((nj)dj),ali,+1( j)
+
+is
+
+the
+
+activation
+
+(3) (3)
+value
+
+of yli+1( j).
+
+Symmetry 2019, 11, 1233
+
+5 of 19
+
+wSyhmemreetryÌ†µÌ±¶2019(, Ì†µ1Ì±ó)1, i1s23t3he output value of the volume and operation and Ì†µÌ±é (Ì†µÌ±ó) is the activation val5uoefo18f Ì†µÌ±¶ (Ì†µÌ±ó).
+
+TThhee ccoonnvvoolluuttiioonnaall llaayyeerr iiss ccoonnnneecctteedd ttoo tthhee ppoooolliinngg llaayyeerr ffoorr tthhee llooccaall mmaaxxiimmuumm oorr llooccaall mmeeaann,, nnaammeellyy,, mmaaxx ppoooolliinngg aanndd mmeeaann ppoooolliinngg [[2288]].. TThhee ppoooolliinngg llaayyeerr hhaass tthhee ffuunnccttiioonn ooff ffeeaattuurree sseelleeccttiioonn,, wwhhiicchh ccaann eennssuurree tthhaatt tthhee ffeeaattuurree ccaann rreessiisstt aa ddeeffoorrmmaattiioonn;; aatt tthhee ssaammee ttiimmee,, tthhee ppoooolliinngg llaayyeerr ccaann rreedduuccee tthhee ffeeaattuurree ddiimmeennssiioonn,, ssppeeeedd uupp tthhee nneettwwoorrkk ttrraaiinniinngg,, rreedduuccee tthhee nnuummbbeerr ooff ppaarraammeetteerrss,, aanndd iimmpprroovvee tthhee rroobbuussttnneessss ooff tthhee ffeeaattuurree.. IInn tthhiiss ppaappeerr,, mmaaxx ppoooolliinngg wwaass uusseedd ttoo oobbttaaiinn tthhee mmaaxxiimmuumm vvaalluuee ooff tthhee ffeeaattuurree ppooiinnttss iinn tthhee nneeiigghhbboorrhhoooodd.. TThhee ffoorrmmuullaa iiss aass ffoolllloowwss::
+
+{ } PPlii+l+11((jj))==
+
+( j‚àí1)mWm+a1ax‚â§xt‚â§ jW
+( j‚àí1)W+1‚â§t‚â§jW
+
+qqilli((tt))
+
+,,
+
+(4()4)
+
+w1nww,ehhÌ†µiuÌ±óÌ†µseeÌ±§rrrt]ohee.neqÌ†µ.Ì†µÌ±§Ì±ûliw((tiiÌ†µ)sÌ±°d)ittshhisetohtwfehtievhdaevthlapulooeufoeotlhfeodetfhptreheogetoinloÌ†µeÌ±°endun, rreaeoungnrdiooiPnnnli,+tianh1ne(tdjhi)efÌ†µiesÌ±ÉÌ†µaÌ±ñtthfuee(raÌ†µeÌ±óv)tuavirlesuectethvoceerocvrotaorfelrutshopeefocnltohdlraeriyenÌ†µseÌ±ôgprltoaaoynnteddhrientagln‚àà+dt[o(1Ì†µtjÌ±°hl‚àí‚ààaey1[eÌ†µ)(Ì±ô rwÌ†µ+Ì±ó n‚àí+1e1u1l)ra,Ì†µoyÌ±§jnwe+.r]. TThhee oonnee--ddiimmeennssioionnaallCCNNNNpepreforfromrms tshethfeeafteuarteuerextreaxcttriaocntioofnthoef otrhieginoarilgdinaatal, danatda,thaentdhrtehee-
+dthimreee-ndsiimoneanlsifoenaatul rfeesatuofretshoef ttihmeet-ismerei-essersieigsnsaigl naarleabreetbteetrteerxepxrpesresessdedasashhigighh-d-dimimeennssioionnaallffeeaattuurreess,, wwhhiicchh ffaacciilliittaattee tthhee ssuubbsseeqquueenntt ttiimmee--sseerriieess ffeeaattuurree eexxttrraaccttiioonn ooff tthhee BBiiLLSSTTMM nneettwwoorrkk.. TThhee bbaassiicc ssttrruuccttuurree ooff tthhee oonnee--ddiimmeennssiioonnaall CCNNNN iiss sshhoowwnn iinn FFiigguurree 33..
+
+Time Step
+
+Time Step
+
+Convolutional Layer
+
+Pooling Layer
+
+Figure 3. TThhee bbaassiicc ssttrruuccttuurre of the one-dimensional convolutional neural network (CNN).
+22..22.. TTiimmee--SSeerriieess FFeeaattuurree EExxttrraaccttiioonn ooff TTiimmee--SSeerriieess SSiiggnnaallss
+LLoonngg sshhoorrtt--tteerrmm mmeemmoorryy ((LLSSTTMM)) iiss aann eexxcclluussiivvee sseellff--ccoonnnneecctteedd rreeccuurrrreenntt nneeuurraall nneettwwoorrkk ((RRNNNN)).. LLSSTTMM iinnttrroodduucceess aa ggaattee ffuunnccttiioonn ttoo ggeenneerraattee tthhee ppaatthh ooff ccoonnttiinnuuoouuss ggrraaddiieenntt fÔ¨Çlooww ffoorr aa lloonngg ttiimmee,, wwhhiicchh eeÔ¨Äffeeccttiivveellyyaavvooididssththeepprorbolbelmemofogfrgardaidenietndtisdaipsappepaeraanracnecaendangdragdriaedniteenxtpelxopsiloonsiocanucsaeudsbeyd tbhye tchheaicnharuinleruinletihnethgreagdriaednitecnatlccaullcautiloatnioonf ohfidhdidednelnaylaeyresrisninRNRNNN[2[92]9.].LLSSTTMMccaannmmiinnee tthhee tteemmppoorraall vvaarriiaattiioonn llaawwooffrerelalatitviveleylylolnognginitnertevravlsalisnitnimtiemseersieesr,ieasn,danitdisitpaisrtpicaurltaicrulylaursleydutsoepdrtoocepsrsotcimeses-stiemrieessdeartiae.s dTahtea.oTrhigeionrailgsiniganl asilggneanlegreanteerdatdeudrdinugritnogotloporlopcreoscseinssginhgahs aas taimtiminigngrerlealtaitoinosnhshipip. .TThhee LLSSTTMM nneettwwoorrkk ccaann eennccooddee tthhee ttiimmee sseerriieess ooff ttiimmee--sseerriieess ssiiggnnaallss aanndd mmiinnee tthhee ttiimmiinngg vvaarriiaattiioonn iinn rreellaattiivveellyy lloonngg iinntteerrvvaallssiinnththeetitmimeesesreireises[3[03]0.]T. oTeonesnusreurtehatht tahtethreearle-taiml-teimmeomniotonriitnogrimngodmeol doef ltooofltwooelawr ceaanr bcaenttebretlteearrlneatrhne tdheepdeenpdeenndceenocef otifmtiem-see-rsieersiefseafetuartuesrebsebtewtweeenentitmime-es-esreireisessisgignnaalslsaannddiimmpprroovvee tthhee aaccccuurraaccyy ooff tthhee mmooddeell ccllaassssiifÔ¨Åiccaattiioonn,, tthhiiss ppaappeerr iimmpprroovveess tthhee eexxiissttiinngg LLSSTTMM nneettwwoorrkk [[3311]] aanndd bbuuiillddss aa BBiiLLSSTTMM nneettwwoorrkk wwiitthh aassyymmmmeettrriicc ssttrruuccttuurree bbyyccoonnssttrruuccttiinngg ttwwooddiirreeccttiioonnssooffLLSSTTMMnneettwwoorrkkss[[3322]].. AAtt tthhee ssaammee ttiimmee,, tthhee aatttteennttiioonn mmeecchhaanniissmm iiss iinnttrroodduucceedd iinnttoo tthhee BBiiLLSSTTMM nneettwwoorrkk ttoo iinnccrreeaassee tthhee aatttteennttiioonn llaayyeerr, ,wwhihcihcheneanbalebsletshethmeomdeoldtoelbtoothbeoxtthraecxt ttreamctpotermalpsiogrnaal lsfiegantualrefseafrtoumresboftrhomthebpoothsittihvee panodsitnivegeaatnivdendeigreactitvioendsiarencdtisoenlescatnivdelsyelleecatrinvetlhyelcerairtnicathl eincfroirtimcaaltiionnfoormf tahteiosnigonfatlhfeeastiugrneasl. features.
+TThhee ccoonnssttrruucctteedd BBiiLLSSTTMM nneettwwoorrkk ccoonnttaaiinneedd 225566 nneeuurroonnss iinn tthhiiss ppaappeerr.. TThhee ffoorrwwaarrdd aanndd rreevveerrssee LLSSTTMM nneettwwoorrkkss ccoonnssiisstteedd ooff 112288 nneeuurroonnss.. EEaacchh BBiiLLSSTTMM nneeuurroonn iinncclluuddeedd aann iinnppuutt ggaattee,, aa ffoorrggeett ggaattee
+
+Symmetry 2019, 11, 1233 Symmetry 2019, 11, 1233
+
+6 of 18 6 of 19
+
+aanndd aann oouuttppuuttggaattee,,wwhhiicchhaarreerreepprreesseennteteddbbyyÌ†µÌ±ñi,, Ì†µfÌ±ì,, aanndd oÌ†µÌ±ú,,rreessppeeccttiivveellyy.. TThhee iinntteerrnnaall ssttrruuccttuurree ooff tthhee BBiiLLSSTTMM nneeuurroonnss iiss sshhoowwnn iinn FFiigguurree 44..
+
+Ì†µÌ±•
+
+‚Ñé Output Gate Ì†µÌ±è
+
+Ì†µÌ±ì
+
+Ì†µÌ±• ‚Ñé
+Input Gate Ì†µÌ±è
+
+Ì†µÌ∞∂
+
+‚Ñé
+
+Ì†µÌ∞∂
+
+Cell
+Ì†µÌ∞∂ Ì†µÌ∞∂
+Ì†µÌ±ì
+
+Ì†µÌ±î
+
+Ì†µÌ±•
+
+Ì†µÌ±ì
+
+‚Ñé
+
+Ì†µÌ±è Forget Gate
+
+Ì†µÌ±• ‚Ñé Ì†µÌ±è
+
+Figure 4. TThheeiinntteerrnnaall ssttrruuccttuurree of the BiLSTM neurons.
+
+The iinnppuutt ggaattee Ì†µiÌ±ñ iiss uusseedd to control the amouunntt ooff ccuurrrreennttiinnppuuttininffoorrmmaatitoionnÌ†µxÌ±• t of the network that can be saved to the mmeemmoorryy uunniitt CÌ†µÌ∞∂t, uses the sigmoid function to determine new information to be ssaavveedd,,uusseesstthheetatannhhfufunnctcitoionntotogegneenreartaetea anenwewcacnadnidiadteatveevcetocrtoÌ†µrÌ∞∂ C, at,nadnsdensednsdtshethinefionrfmoramtioatnioton btoe sbaevseadvteodthtoe mtheemmoerym. oTrhye. uTnhitecuonmitpcleotmesptlheeteusptdhaeteu.pTdhaetefo. rgTehtegfaotergÌ†µeÌ±ìt igsautseedf tios cuosnedtrotol thcoensterlof-l cthoennseclft-icnognnuencitti,ngfilutenrist, tÔ¨ÅhleterisnftohreminatfioornmaintiotnheinmtheemmoreymournyitunÌ†µÌ∞∂it Ct‚àía1t atthtehepprervevioiouus smmoommeenntt to determmiinnee tthhee aammoouunntt ooff vvaalliidd iinnffoorrmmaattiioonntthhaattnneeeeddssttoobbeerreettaaiinneeddiinntthheeccuurrrreennttmmeemmoorryyuunniitt Ì†µCÌ∞∂ t,, and forgetss tthhee uusseelleessssiinnffoorrmmaattiioonn..TThheeoouutptpuuttggaateteoo controls the infÔ¨Çluencee ooff tthhee mmeemmoorryyuunniitt Ì†µCÌ∞∂t on thee ccuurrrreenntt oouuttppuuttvvaalluuee ‚Ñéht aannddddeetteerrmmiinneess tthhee aammoouunt of information that the meemmoorryy uunniitt Ì†µCÌ∞∂t outputs at time step tÌ†µ.Ì±°.TThheeffoorrmmuullaaiissaassffoollloowwss::
+
+itit==œÉœÉ(W(Wxxiixxtt ++WWhhiihhtt‚àí‚àí1 1++bbi)i,) ,
+
+(5()5)
+
+CÔÄ•Ct tf=t==ttaaœÉnn(hWh((xWWf xxxtccx+xtt+W+WhWf hhhct‚àíhch1t‚àít+1‚àí1+b+fb)bc,)c,) ,
+
+(6) (6()7)
+
+ft
+
+=CœÉt (=Wxftf
+
+xtc+t‚àí1W+hfiht t‚àí1C+t, b f
+
+)
+,
+
+(7()8)
+
+ot = œÉ(Wxoxt + Whoht‚àí1 + bo),
+
+(9)
+
+Ct h=t =ft oÔÅ•t ctt‚àía1n+h(itCÔÅ•t),CÔÄ•t ,
+
+((81)0)
+
+where C is the memory unit, which is called the cell state, Ct is the memory cell state at time step t, Ct
+
+is the candidate output vector at
+
+vtiemcteosrtoepf tth, eWmiesmthoeortyw=ceeiœÉgllh(aWttvxteoimcxttoe+rsWotefphtohht,et‚àíxn1te+itswbtoho)erk,in, bpuisttvheecotoÔ¨Ärseatt
+
+time step t, ht is(t9h)e vector, represents
+
+a multiplication of tangent activation
+
+vector elements, function.
+
+œÉ(¬∑)
+
+ishtthe=soigt mÔÅ• otiadnfhu(nCctti)o,n,
+
+and
+
+the
+
+tanh
+
+function
+
+is
+
+the
+
+hyperbolic (10)
+
+wherTehÌ†µeÌ∞∂ hisigthhe-dm‚Üíimemenosriyonuanlitf,ewathuirceh oisf ctahleleidntphuetcteilml sintagtes,igÌ†µÌ∞∂nails‚Üêitsheoumtepmutoterydcbeyll sthtaetefoartwtiamrde sLteSpTMÌ†µÌ±°,
+
+Ì†µnÌ∞∂etiws othrek cvaencdtoidr ahtet, vtheectionrvoefrstheeLmSTeMmonreytwceollrkatotuimtpeusttveepctÌ†µoÌ±°,rÌ†µiÌ±•s ihst,thaendintphuetBvieLcStoTrMatnteimtweosrtkepouÌ†µÌ±°t,p‚Ñéut
+
+iesigthenevoeucttpour tisvPect taotrtaimt teimsteepstte.pThÌ†µÌ±°,e Ì†µfoÌ±ärmisuthlaeiws aesigfhotllovwecst:or of the network, Ì†µÌ±è is the offset vector, ‚äô
+
+represents a multiplication of vector e‚Üílemen‚àí‚àít‚àís‚àí,‚àí‚ÜíÌ†µÌºé(¬∑) is the sigmoid function, and the tanh function is
+
+the hyperbolic tangent activation funchttio=n. LSTM (ht‚àí1, xt, Ct‚àí1).
+
+(11)
+
+The high-dimensional feature of the input timing signal is outputted by the forward LSTM
+
+network vector ‚Ñé‚Éó eigenvector is Ì†µÌ±É
+
+a,ttthiemienvsteerpseÌ†µÌ±°L. TSThMe ‚Üêhfontre=mtwu‚ÜêLola‚àíSr‚àíkTi‚àísM‚àío‚àíaus(thfpto+ull1to,vwxets,c:Ctotr+1is).
+
+‚Ñé‚Éñ
+
+,
+
+and
+
+the
+
+BiLSTM
+
+network
+
+out(p1u2t)
+
+Symmetry 2019, 11, 1233
+
+hÔÅ≥t
+
+=
+
+‚Üê‚éØ‚éØ‚éØ
+LSTM (ht +1, xt , Ct +1 ) .
+
+Pt =[hÔÅ≤t ,hÔÅ≥t ].
+
+(12) 7 o(f1138)
+
+In this paper, the attention mechanism wa‚Üís u‚Üêsed to assign weights to each time step output vector of the BiLSTM layer by assigningPtd=iffe[ hretn, th ti]n. itialization probability weights. Finally(,13th) e
+
+valuInesthwiserpeacpaelcru, ltahteedatbteyntthioensigmmecohidanfuisnmctiwona.sTuhseedattteonatisosnigmn ewcheaignhistms toacehaiecvhetsimseelesctteivpeofiulttepruint g veacntodrfoofcuthseinBgiLofSsToMmleacyreirtibcaylainssfoigrnminagtiodniÔ¨Äferoremntailnairtgiaelinzuatmiobnepr roofbsaigbnilaitlyfewateuigrehst.sT. Fhienfaolclyu,stihnegvparlouceesss wweraescaelmcubloadteieddbiynththeesicgamlcouildatfiuonncotifonth. eThweeaigtthetnctiooenffmicieecnhtas.niDsmiffearcehniet vweseisgehletsctwiveerÔ¨Åeltaelrloincgataedndto fodcuifsfeinrgenotfcsroitmicealcrpitiieccaelsinoffoirnmfoartimonatfiroonm, aanldartgheenpurmopboerrtoiofnsigonf aclrifteiactaulriensf.oTrmheaftoiocnuswinags pernohcaensscewdasby emlifbtoindgietdheinwtheeigchatlscutolartieodnuocef tthheewloesisghotfccoreitÔ¨Éiccaileinntfso. rDmiaÔ¨Äteiorenntowf leoingghtssewquereencaelloticmatiendgtsoigdniÔ¨Äalesr.eTnht e crcitailccaullpatiieocnesfoorfminufloarmfoar ttihoen,aattnednttihoen pmroecphoarntiiosnmo[f3c0r]iitsicaasl finolfloorwmsa:tion was enhanced by lifting the
+
+weights formula
+
+to reduce the loss of critical for the attention mechanism
+
+[i3n0f]ouirsmt a=asttfiaoonlnlhoo(wWf sls:oPntg+sbesq)u,ence
+
+timing
+
+signals.
+
+The calculati(o14n)
+
+utŒ±=t =tasnohft(mWasPxt(+utTb,su),s ) ,
+
+((1145))
+
+ÔÉ• Œ±t= ŒΩso=ŒΩf t=maxŒ±(Œ±tuPtTttP,,tu,s),
+
+(15) (16) (16)
+
+wwoulafsoÌ†µrwoheyÌªºPeiufieeshgptrrttghieteprhshieretuPseerstnotothemeffiunÌ†µeivsrÌ±ÉunagtaatiaptahhtmltielnupeistdopoeehtoentorderuhxmÌ†µraoÌ±£ntettvnpafaeiomdunloauÌ†µifotucÌ±ÉzreteeamethtshipldtsegwhlneauyebSrgeetnoaydotievwgute.futtethigehogrmÌ†µctnhÌ±¢ieretnkooatntSigrxfhiolvosaoetnefÌ†µfyhfÌ±¢utgcnemtetlneheraonn,tcaueyrruotexraeBisrroaorifiaminlfunLstinienSasntttedhhTlcogitmteeMzwiorpeoraaBboadrnlpnaotnir,LapdykbcdaieSeeoynolnsdrTammdstayaMh,lvtelvyaerytrieniai,lSmiadsadnoÌ†µlytutÌ±¢ei-hfhÔ¨ÅttertisieemirnamtineslafSiagapeezltotxlhaeytctftd,eth,ftluiuumatemrcrhstnaoeasietencsnixrvtÔ¨Ådoattiseehoicuoftcnxuaeenmtttipptno,hnivlucroaigyedtÌ†µnntoÌ±°icid,odpvfntroenartÌ†µeinÌ±¢hrtoÌ†µls,iÌ±£utceaulŒ±oaeeililÔ¨Åtsisystzvoisnetsoet,bhraohdfttalerfheatencttehifepohndeheixrnemaiettdafttasoeimupdentxorrotneaeeteelrntlsanvtwalvsalyteta-leniie,tcaogocicatytmnnetoerhoe.reerr, stcaltaes.sTifhiceaptiaorntiraelseuxlpt aonf sthioentooof lthweeBariLsStaTtMe. Tnhetewpoarrktiaml oedxpelawnsiitohnthoef tahteteBnitLioSnTMmencehtawnoisrmk maloodnegl twheith timthee aaxttiesnistisohnomwencihnanFiisgmureal5o.ng the time axis is shown in Figure 5.
+
+Output Layer
+Attention Layer
+‚Üê‚Ñé
+BiLSTM Layer
+‚Ñé
+Input Layer
+
+Ì†µÌºà
++
+
+Ì†µÌªº
+
+Ì†µÌªº
+
+Ì†µÌªº
+
+Ì†µÌªº
+
+‚Üê‚Ñé
+
+‚Üê‚Ñé
+
+‚Üê‚Ñé
+
+‚Ñé
+
+‚Ñé
+
+Ì†µÌ±•
+
+Ì†µÌ±•
+
+‚Ñé
+
+Ì†µÌ±•
+
+Ì†µÌ±•
+
+FiFgiugruer5e. 5P. aPratiratilaelxepxapnasnisoinonofotfhteheBiBLiSLTSMTMnentewtworokrkmmodoedlewl withiththtehaettaetntetniotinonmmecehcahnainsmismaloalnogngthtehe timtime aexaixs.is.
+2.23..3N. NetewtworokrkMModoedleTl rTarinaiinnigng InInthtihsispappaepre, rd, rdorpoopuotuttetcehcnhonloolgoygywwasaisnitnrotrdoudcuecdedinitnotothtehereraela-tli-mtime emmonointoitroinrigngmmodoedleol fotfhtehe
+totoolowl weaerasrtsattaetetotoprperveevnetntthtehme modoedleflrofrmomovoevreÔ¨Årtftiitntigndgudruinrigngtratrinaiinnign.gT. hTeheacatcivtiavtaiotinonfufnucntciotinonofotfhtehe network model uses Softmax, and the loss function uses Categorical_crossentropy, which was used to classify the wear features of the acquired time-series signals. The formula is as follows:
+
+y = so f tmax(v) =
+
+evi Mm=1evm .
+
+(17)
+
+y is a vector whose dimensions are the number of categories, each of which has a value between [0,1], and the sum of all dimensions is 1, which is the probability that the tool wear state belongs to
+
+Symmetry 2019, 11, 1233
+
+8 of 18
+
+a category. M is the number of possible categories. During the training of the model, the entire model
+
+was trained by the Categorical_crossentropy loss. The calculation formula for the cross-entropy error
+
+is as follows:
+n
+
+loss = ‚àí yÀÜi1 log yi1 + yÀÜi2 log yi2 + ¬∑ ¬∑ ¬∑ + yÀÜim log yim,
+
+(18)
+
+i=1
+
+‚àÇloss ‚àÇyi1
+
+=
+
+n
+‚àí
+i=1
+
+yÀÜi1 yi1
+
+,
+
+(19)
+
+‚àÇloss ‚àÇyi2
+
+=
+
+n
+‚àí
+i=1
+
+yÀÜi2 , yi2
+
+(20)
+
+‚àÇloss ‚àÇyim
+
+=
+
+n
+‚àí
+i=1
+
+yÀÜim , yim
+
+(21)
+
+where m is the number of classiÔ¨Åcations, n is the number of samples, yÀÜim is the i value in the tool wear state real category label vector, and yim is the i value of the output vector y of the Softmax classiÔ¨Åer. For the obtained cross-entropy error, the average was taken as the loss function of the model. The Adam method was used to minimize the objective function when training the model. The Adam method is essentially the RMSprop method with a momentum term. The Adam method dynamically adjusts the learning rate of each parameter by using a Ô¨Årst-order moment estimation and a second-order moment estimation of the gradient. The main advantage of the Adam method was that after the oÔ¨Äset correction, the learning rate of each iteration had a speciÔ¨Åc range, which makes the parameter change relatively stable.
+
+3. Real-Time Monitoring Method of the Tool Wear State
+An acceleration sensor is used to collect the vibration signal generated by a computerized numerical control (CNC) machining device in the process of machining the workpiece in real time. The input signal of the real-time monitoring model of the tool wear state is the Œ±x, Œ±y, and Œ±z vibration signals, and the output of the model is the predicted value of the tool wear state. In this paper, after continuous sampling of the original vibration signal generated by each milling cutter feed, the sampling points with a length of 2000 were cut to form multiple tensors (3 √ó 2000), which were taken as the input data of the model for the DL neural network. The schematics diagram of the CABLSTM network is shown in Figure 6. The CBLSTM network did not have an attention block, while the CLSTM network was similar to the CBLSTM network but with an LSTM block instead of a BiLSTM block.
+The input data of the CABLSTM network included the time-series signal (data type) and the wear classiÔ¨Åcation (label type). The feature extraction and expression of the time-series signal were achieved by two convolution layers, one pooling layer, one Ô¨Çatten layer, one BiLSTM layer, one attention layer, and two fully-connected layers. The parameters of each layer of the network are shown in Table 1.
+
+Table 1. CABLSTM: The network parameters settings.
+
+Layer Name
+Input layer Convolution layer 1 Convolution layer 2
+Pooling layer Flatten layer Bidirectional layer Attention layer Fully-connected layer
+Output layer
+
+Output Feature Size
+3 √ó 2000 20 √ó 98 √ó 128 20 √ó 96 √ó 128 20 √ó 48 √ó 128
+20 √ó 6144 20 √ó 256
+256 128
+3
+
+Quantity
+1 1 1 1 1 1 1 2
+1
+
+CABLSTM Network
+/ Conv1D, 1; kernel size = 3; stride = 1 Conv1D, 1; kernel size = 3; stride = 1
+MaxPooling1D, 1; stride = 2 / / /
+Dense, 128, 3 Softmax, Loss: Categorical_crossentropy
+
+Pooling layer Flatten layer Bidirectional layer Attention layer SyFmumlleytr-yc2o0n1n9,e1c1t,e1d23l3ayer Output layer
+
+20 √ó 48 √ó 128 20 √ó 6144 20 √ó 256 256 128 3
+
+1
+
+MaxPooling1D, 1; stride = 2
+
+1
+
+/
+
+1
+
+/
+
+1
+
+/
+
+2
+
+Dense, 128, 3
+
+9 of 18
+
+1
+
+Softmax, Loss: Categorical_crossentropy
+
+Figure 6. SScchheemmaattiicc ddiiaaggrraamm ooff tthhee CCABLSTM.
+
+44.. EExxppeerriimmeennttaall
+44..11.. EExxppeerriimmeennttaall DDeessiiggnn pphaaatecthonnoqirrdgoeoomdduahlccwiptree-wpaAAaepssoumpessdeartrriakoreneaenefrrtprnataaoghstaslilltir,-eey-tnamttataacsinoigtmnenmiwauds,dmatneshteoulDhcyteemrinehmensLkatieiocspteosorp.ounqeeionlemuTriaqualitcelnthuotiwpeopfttirei,oiturhpimem.nirctaemntmeoTgehregvrnnhe.essssantdesytfalayttiosuenotcttstqriueoedotocuaemsnonoDmmnidiflpnmalfLietemoltofacryiorpoooetesznrltaunlntaihihnltwrtttehmoefetgoieetrtmtvoaoroaihntminonreboe.gldi.crostTvwaofolpfaahtlorewilrlcieoerauonicnelracdegitaetnsasoirstafiettafsgaaslhstiytcntneeoaiaizanlgnoitiilncentvslatilchgieluwiglbynseudearescdnnadeiialnseuetdarticrs.fhdtoaplaaTaenuetcrhesadciobdlneoseacaitdinesddygctsidauhcncosiiltreniantaeaniilcdnqsobsgalsugniuanittfiigsdhtampyoiheleecinmyoennddsenegempiaqhrinsrtatauoiootafgntniacreupahdieicdnsntm-sioerplgsdiedreidetpnfiycnrnautgloftocagiro,rnisiutrlpanfsciimsnatnrilgyefuocdgyadicdalnittteinnehhhttcsdygodeeees
+4.1.1. Condition Monitoring 4.1.1. Condition Monitoring
+The experimental platform of this paper was provided by the Engineering Training Center of GuizThhoeu eUxnpievreimrseitnyt.aAl phliagtfho-rpmrecoifsitohnisCpNapCervewrtaiscaplrmovilildinegd mbyacthhienEe n(Mginodeeerli:nVgMT6ra0i0n)inwgasCuesnetedrfoofr GthueizmhiolluinUg nwivoerkrspitieyc. eA. Nhiogcho-polraencitswioansCadNdCedvedrutircianlgmmilillilninggm. Tahcehiwneor(kMpoiedceel:wVaMs m60i0ll)edwastseuels(eSd13fo6r). tThheemmilillilninggwtooroklphieacde.aNcoemcoeonltaendt wcaarsbaiddede4d-eddugreinmgimlliinllgincgu.tTtehre, wanodrkiptsiescuerwfaacse mwiallsedcosvteeerled(S1w3i6t)h. Tlahyeemrsiollfinagttiotaonl ihuamd aalcuemmiennutemd ncaitrrbidideec4o-aedtigneg.mTilhliengdicaumtteetre,ranodf tihtsestuorofal cweawsa6s mcomve,rtehdewraitkhelaanyegrlse owfaas t4i‚ó¶ta, nthiuemcleaalruamncineuamnglneitwriadse8c‚ó¶o, aatnindgt.hTehheeldixiaamnegtleerwoafsth3e0‚ó¶t.oTohl ewcaustt6inmgmpa, rtahme eratekres aonf gthlee wmailsli4n¬∞g, tehxepecrliemareanntcaereanshgolewwn ains T8a¬∞b, laen2d. the helix angle was 30¬∞. The cutting parameters of the milling experiment are shown in Table 2.
+Table 2. Cutting parameters of the milling experiment.
+
+Spindle Speed 8000 (RPM)
+
+Feed Rate 1000 (mm/min)
+
+Cutting Width 0.5 (mm)
+
+Cutting Depth 1 (mm)
+
+Tool Overhang 15 (mm)
+
+Processing Mode Up milling
+
+Cooling Condition Dry milling
+
+In the experiment, three accelerometers (Model: INV9822; Range: ¬±50 g) were magnetically attracted to the machine tool Ô¨Åxture in the x, y, and z directions for real-time acquisition of the original vibration signals generated during tool machining. A high-precision digital acquisition instrument (model: INV3018CT) from the Beijing Oriental Institute of Vibration and Noise was used to process the real-time signals and transmit them to a computer. The sampling frequency of the signal was 20 kHz, 200 mm of milling in each direction of the tool was recorded as a milling stroke, and each
+
+In the experiment, three accelerometers (Model: INV9822; Range: ¬±50 g) were magnetically attracted to the machine tool fixture in the Ì†µÌ±•, Ì†µÌ±¶, and Ì†µÌ±ß directions for real-time acquisition of the
+
+original vibration signals generated during tool machining. A high-precision digital acquisition
+
+instrument (model: INV3018CT) from the Beijing Oriental Institute of Vibration and Noise was used
+
+Symmetry 2019, 11, 1233
+
+10 of 18
+
+to process the real-time signals and transmit them to a computer. The sampling frequency of the
+
+signal was 20 kHz, 200 mm of milling in each direction of the tool was recorded as a milling stroke,
+
+taonodl weaacshmtoilolel dwfaosrm33il0lesdtrfookre3s.30Asftreorkeeasc.hAmfteilrlienagchstrmokileli,ntghestmroikllein, tghceumtteilrliwngascurettmerowveads frreommovtheed
+
+mfriolmlingthme amchililnineganmdapchionteogarnadphpehdo. tAogprraep-hcaeldib. rAatepdreh-icgahli-bprraetceidsiohnigdhi-gpitraelcmisiiocnrosdciogpiteal(EmViDcrMos-c1o0p1e)
+
+w(EaVs DusMed-1f0o1r) twheasmuesaesdurfeomr ethnet,mtheeaosuprtiecmalemnta, gthneiÔ¨Åocpatiocanl wmaasg0n.i7f√óic‚Äìa4ti.5o√ón,wthaese0l.e7c√ót‚Äìro4n.5i√óc,mthaegnelieÔ¨Åcctartoinonic
+
+wmaasg3n5i√ófi‚Äìc2a3ti5o√ón, awnadsth35e√óm‚Äì2e3a5su√ó,rianngdactchueramcyeawsuasri0n.g1 ¬µamcc.uDraucryinwg athse0m.1eaŒºsmur.eDmuenritnpgrothceessm, tehaesuproesmitieonnt
+
+opfrothcesws,etahrezpoonseitioofnthoef tmheinwoeraÔ¨Çraznoknesuorffathce mofinthoer fmlainllkinsgurcfuatctero, fwthheicmh iwlliansgthcuetmtero,swt ehaicshilywwasotrhne,
+
+wmaosssteelaescitleydwaosrtnh,ewmaesasseulerecmtedenatsptohseitmioena,saunrdemtheenstapmoseitrieofne,reanncdetlhineesawmase traekfernenascethliensetawnadsatradketon
+
+eansstuhree sthtaantdtharedptoosietinosnuremthaaint sthuenpchoasintigoendrdeumrainingsthuencmheaansguerdemduenritn. gThtheewmeaearsvuarleume e(VntB.mThaxe)wweaasr
+
+cvaalcluuela(tVedBmbyaxs)ubwtarascctainlcgutlhaetecdubrryensut bcutrtaticntignegdtgheelceunrgrtehnftrcoumttitnhge ienditgieallelennggtthhforof mthethceutitniintgiael dlegnegothf
+
+tohfetmheilcliuntgtincugtteedrg. eThoef trheealm-tiimlliengmocuntiteorr.inTgheexrpeaelr-itmimenetmalodneivtoicrienogf etxhpeetroiomlewnetaalrdsteavtieceisosfhtohwe ntoionl
+
+Fwigeuarest7a.te is shown in Figure 7.
+
+FFiigguurree77.. RReeaall--ttiimmee mmoonniittoorriinngg eexxppeerriimmeennttaallddeevviicceeoofftthheettoooollwweeaarrssttaattee..
+44..11..22.. DDaattaa AAnnaallyyssiiss
+TThhee DDLL hhaarrddwwaarree ppllaattffoorrmmooffththeeeexxppereirmimenent tusuesdedhihgihg-hp-epreforfromrmanacnecseersveervrse:rAs:nAInnteInl XteeloXneEo5nE256-5206p50ropcreoscseosrs,owr,itwhitahfraefqrueqenuceyncoyf o2.f32G.3HGzH, 2z5, 625G6BGoBf omf emmeomryo,rya,nadnadnaNn VNIVDIIDAIAGeGFeoFrocercTeITTIATANNX Xgrgarpahpihciscsprporcoecsessisnignguunnitit(G(GPPUU).).TThheessooftfwtwaarreeppllaattffoorrmmuusseedd tthhee UUbbuunnttuu 1166..0044..44 ooppeerraattiinngg ssyysstteemm wwiitthh KKeerraass aass tthhee ffrroonntt--eenndd ooff tthhee iinn--ddeepptthh lleeaarrnniinngg ffrraammeewwoorrkk aanndd TTeennssoorrFFllooww aass tthhee bbaacckk--eenndd ffoorr ddaattaa aannaallyyssiiss..
+TThheemmiilllliinnggooppeerraattiioonnwwaassccaarrrriieeddoouuttwwiitthhffoouurrmmiilllliinnggccuutttteerrss((CC11, ,CC22, ,CC33,,aannddCC44)).. EEaacchh mmiilllliinngg ccuutttteerr wwaass ppeerrffoorrmmeedd 333300 ttiimmeess,, aanndd 11332200 oorriiggiinnaall ssiiggnnaall ssaammpplleess wweerree oobbttaaiinneedd.. TThhee ddaattaa ooff tthhrreeee mmiilllliinngg ccuutttteerrss ((CC11,, CC22,, aanndd CC33))wweerreeuusseeddffoorrtthheettrraaiinniinnggsseettaannddvveerriiÔ¨Åficcaattiioonnsseettoofftthheemmooddeell,,aanndd oonneemmiilllliinnggccuutttteerr((CC44))ddaattaawwaassuusseeddffoorrtthheetteessttsseettoofftthheemmooddeell.. TThhee ttrraaiinniinnggsseettwwaassuusseeddffoorrmmooddeell Ô¨Åtting the data samples, the veriÔ¨Åcation set was used for adjusting the hyperparameters of the model,
+the initial ability of the model was evaluated, and the test set was used to evaluate the generalization ability of the Ô¨Ånal model. In the DL training process, a suÔ¨Écient number of samples were needed to
+improve the learning quality of the neural network. The data samples of the original processed signals
+were long sequences of periodic timing signals. According to the principle of signal sampling, in this
+paper, 100,000 points of each sample were sampled continuously, and 50 short sequence timing signals
+with a length of 2000 were cut to be used for model input after data normalization to reduce the
+computational intensity of the network training. At the same time, data expansion could increase the
+
+fitting the data samples, the verification set was used for adjusting the hyperparameters of the model,
+
+the initial ability of the model was evaluated, and the test set was used to evaluate the generalization
+
+ability of the final model. In the DL training process, a sufficient number of samples were needed to
+
+improve the learning quality of the neural network. The data samples of the original processed Symmestriygn20a1l9s,w11e,r1e2l3o3ng sequences of periodic timing signals. According to the principle of signal sampling11, of 18
+
+in this paper, 100,000 points of each sample were sampled continuously, and 50 short sequence timing
+
+expersimigneanltsawl ditahtaa lbeansgetdh oofn2t0h0e0 owreirgeincualt mtoabgenuistueddefodr amtao,dieml ipnrpouvteafttheer droabtaunsotnrmesasliozfattihoen ntoetrwedourcke, and
+
+reducttehheethceeoxmpriepsrkuimtoaeftniootanvlaedlriaÔ¨Ånttatteibnnasgsit.eydoofnththeenoetrwigoinrkaltmraainginnigtu. Adet
+
+the same time, data, improve
+
+data expansion could increase the robustness of the network,
+
+Tahnedprerdoucecsestihnegrcisoknodfitoivoenrsfiitntinthge. experiment had the following characteristics: 1. Finishing milling
+
+and smallTbhaecpkroecnegssaignegmcoenndt iwtioenrse ipnetrhfoeremxpeder;im2.entthehawd otrhkepfioelcloewwinags cmhailrlaecdtesritseteicls:(S11.3F6i)niwshiitnhghigh
+
+hardnmeislslinagftaenrdhesmatatllrebaatcmk eenngt;agaenmde3n.t wtheereepxepreforirmmeedn;t2n. etheedewdortkoppiercoedwuacsemtoilolelddsatteaels(eSt1q36u)icwkiltyh and
+
+accurhaitgehlyh. aTrhdnisespsaapfteerrrheefaetrrteredattmoernetf;earnednc3e.sth[3e3e‚Äìx3p5e]riamnedntthneemdeedastourpermodeunctemtoeotlhdoadtas soeftmquililciknlgy tool
+
+wear aind20ac1c0uprartoeglyn. oTshtiiscspaapnedr rheefearlrtehdmtoanreafgereemnceenst[3(P3‚ÄíH35M] )ancdomthpeemtietiaosunr.eTmheentfomlleothwoidnsgomf metilhliondg was
+
+used taosotlhweebarluinnt2s0t1a0npdraorgdnofostrictshaenmd ihlleianltghcmuattneargienmtehnits(ePxHpMer)imcoemnpte: tTitihoen.mTahxeifmolulomwivnaglumeet(hVoBdmax) of thewwaseaurszedonaesotfhtehbelumnitnsotranÔ¨Çdaanrkd sfuorrfathcee omfiltlhinegmciulltitnergicnutthteisr wexapsersiemleecntte: dThaes tmheaxqimuaunmtiÔ¨Åveadluevalue reÔ¨Çec(tVinBgmtahxe) wofetahrestwaetear. IztowneasofsptheecimÔ¨Åeindotrhfalatnfkailsuurrefaocef tohfethmeilmliinllgincgucttuetrteor cwcuasrrseedlewctehdenasththeewear valueqwouhfaetnnhteitfhimeediwlvleianalrugvecaruleutfteleeocrtfwitnhgaestmhgeirlewlianetgearrcusthttataetenr.w0It.a1ws3gamrsesmaptee.rcTitfhhieaednwt0h.e1aa3trfmapimrluo.rcTeehsoesf wothfeetahmr epilrmloinciglelsicsnuogtftectruheottcmecruislrlr(ineCdg1, C2, C3, ancudttCer4s) (iCs1s,hCo2w, Cn3i,nanFdigCu4r)ei8s.shown in Figure 8.
+
+FigFuigruer8e.8W. Weaerarpprorocceessssooff tthhee mmiilllilninggcucutttetresr. s.
+
+EachEsaacmh psalemcpolenctaoinntasinthsrteher-ede-idmimenesnisoionnaallvviibbrraattiioonnssigignnaalslsanadndthtehwe ewareavralvuaesluoefsthoef ftohuerfroeuarr rear bladebs.laTdoesp. rTeovepnretvmenuttmuaultuinatleirnfteerrefenrceencoef othf ethdeidÔ¨Äiefrfeernetnbt lbaldadeewweeaarrvvaalluueess,, tthheemmaaxximimuummwweaeravravluaelue of the fooiunfrttohbeilnafiodtiuearsl bwwlaeadaser,ssnewolearcsmtseaedllewcateseadtrh,aeasnltahdberelaalpboiedfl towhfeetahmre. miIlnliiltnlhignisgspstratropokekree,..tTThheheewwweeaeararsrstatsattetaeotoefftothhfeethttooeooltlowwoaalsswddaievsfiidndeeiddvided into inacitcioarldwinegatro, ntohremaactluwaleware,aarncdurrvaepiodf weaecahr.mInilltihngis cpuatpteer.r,Tthhee wacetuaarlswtaetaerocfutrhvee twooals wusaesddteoÔ¨Åned accorddientegrmtointheethaectwuaelarwdeeagrrceue rovfethoef etoaoclh. Tmhiellitnooglcwuettaerr.dTeghreeeacwtuaasldwiveidaredcuinrvtoe twhraeseutsyepdestoofdleatbeerlmine the wdeaatrad, aengdretheeolfabtheel dtaotoalw. Terheectoonovlewrteedarbydeagorneee-hwotacsoddiivnigdfeodrminttooftahcirleiteatteytpheescolafslsaifbicealtidoantao,f athned the
+
+label dfiantaal twooelrewceoarnsvteartete. dThbeyclaasosnifeic-hatoiot ncoodf itnhge ffionraml totolfwaceialritsattaetethiseschloawssniÔ¨ÅicnaTtiaobnleo3f. the Ô¨Ånal tool wear
+
+state. The classiÔ¨Åcation of the Ô¨Ånal tool wear state is shown in Table 3.
+Table 3. Classifications of the final tool wear state.
+
+Label CTlaabssleifi3c.aCtiloanssiÔ¨ÅcTaotioolnWs oefatrhVeaÔ¨Ålnuael/mtomol weTaorosltaWtee. ar State
+
+Label Class0iÔ¨Åcation
+
+1
+
+0 1
+
+2
+
+Tool We0a‚Äìr0V.0a6lue/mm 0.06‚Äì0.13 00.0.01‚Äì630‚Äì‚Äì.000.6.1232
+
+ToIonlitWialewareSatrate Normal wear NRInaopirtmiidaalwlwweeaeararr
+
+2
+
+0.13‚Äì0.22
+
+Rapid wear
+
+4.2. Comparison of the Experimental Results of the Deep Learning Model
+The original signal generated by the milling process was sampled and then sent to the DL neural network model. The model adaptively extracted the high-dimensional features implied in the time-series signal and calculated the actual output value and reality of the model. The Adam algorithm reduced the error distance between the values, and the network weight was continuously updated so that the actual output value of the model was closer to the real value. To further verify the
+
+Symmetry 2019, 11, 1233
+
+12 of 19
+
+4.2. Comparison of the Experimental Results of the Deep Learning Model
+Symmetry 20T1h9,e1o1r, i1g2i3n3al signal generated by the milling process was sampled and then sent to the DL neura1l2 of 18 network model. The model adaptively extracted the high-dimensional features implied in the timeseries signal and calculated the actual output value and reality of the model. The Adam algorithm
+perforremduancecde tohfethereroprrodpisotasnecdeablegtowreitehnmth,ewvealiumeps,leamndenthteednetthweobrekawrienighftawulatsdcioangtninousoisuasllygourpidthamtedof the CNNsomtohdatelthine [a2c5tu]aalnoduttphuettvuarlbuoefaonf tehnegminoedleilfewparsecdloicsteirontoatlhgeorietahlmvaolufet.hTeoBfiuLrSthTeMr vmeroifdyelthien [26]. The apbeorfvoermmaoncdeeol fwthaes pcroompopsaerdedalgwoirtithhmou, rwpe riomppolesmedenCteLdStThMe b, eCaBriLngSTfaMul,t adniadgnCoAsiBs LalSgToMrithnmetowf orks. The Ô¨Åthvee CtrNaiNnimngodmeloidne[l2s5u] saenddtthhee stuamrboeftarnaiennignigneplaifreampreedteicrtsi.oTnhaelgsopriethcimÔ¨ÅcotfrtahieniBnigLSpTaMrammoedteerl sinof the mode[2l 6a]r.eTshheowabnoivne Tmaboldee4l .was compared with our proposed CLSTM, CBLSTM, and CABLSTM
+networks. The five training models used the same training parameters. The specific training parameters of the model Taareblseho4w. SnpienciTÔ¨Åacbtlreai4n.ing parameters of the model.
+
+Table 4. SpecPifaicratrmaientienrg parameMteorsdoeflthe model.
+
+LeaPranrianmg erateter LDearronpionugtrate EDproocphout BatcEhpoScizhe OBpatitmchizSeirze
+
+Mo0d.0e0l1 0.0001.5 0.1500 10016
+A16dam
+
+Optimizer Adam
+
+After the training and veriÔ¨Åcation of the DL neural network, diÔ¨Äerent loss function values and accuracieAs wfteerrtehoebtrtaaiinniendg.aTnhdevleorisfsicfautinocntioofnthveaDluLesneoufrtahl eneCtwNoNrk[,2d5i]f,feBrieLnSt TloMss [fu26n]c,tiConLSvTalMue,sCaBnLdSTM, and CaAccBurLaScTieMs wmeroedoeblstaainnedd.thTeheaclocsusrfaucnyctoiof nthvealvueersiÔ¨ÅofcathtieoCnNseNt [a2r5e],sBhioLwSTnMin[2F6i]g, uCrLeSsT9M‚Äì1, C3,BwLShTeMre, the x axis waÌ†µÌ±•naadsxCuisAsweBdaLstSouTsMreedpmrtooesdreeenplstraetsnhedenttnhtuehmeacnbcueumrraobcfeyriotoeffrtaihtteeirovanetirsoifonicsfatothifoetnhmeseimltlaiilnrliegnsgdhadotwaatnasesinet,tF,aiangnuddretthhs ee9‚Äìdd1oo3uu, bwblleheeÌ†µryÌ±¶eaatxxhiiess was usedwtoasreupseredsteonrtetphreesleonststfhuenlocstisofnunvcatiloune vaanlduethanedmthoedmelovdeerlivÔ¨Åecraiftiicoantioanccaucrcaucrayc. y.
+
+Symmetry 201F9,i1g1u,F1ri2eg3u93r.eL9o. sLsosfsunfucnticotinonananddaaccccuurraaccyy ooff CCNNNNmmooddeletlratrinaiinnginagndanvdervifeicraiÔ¨Åtiocant.ion.
+
+13 of 19
+
+FiguFreig1u0r.e L10o.sLsofsusnfcutnioctnioannadndacaccucuraraccyyooffBBiiLLSSTTMMmmooddeel ltrtarianiinnignagnadnvdervifeirciaÔ¨Åticoant.ion.
+
+Symmetry 2019, 11, 1233 Figure 10. Loss function and accuracy of BiLSTM model training and verification.
+
+13 of 18
+
+FigFuigreur1e1.11L. oLsosssfufnucntcitoionnaannddaaccccuurraaccyy ooff ccoonnvvoolutioonnaall lloonnggsshhoorrt-tt-etermrmmmememoroyry(C(LCSLTSMTM) m) omdoedl el tratirnaiinnginagnadnvdevreiÔ¨Åricfaictaiotino.n.
+
+FigFuigreur1e2.12.LLoossssfufunncctitoionn aanndd aaccccuurraaccyy ooff ccoonnvvoolluuttiioonnaall bbi-id-dirierectcitoinoanlallolnogngshsohrot-rtte-rtmermmemmeomryory
+
+(CB(CLBSSLTySmMTm)Metmry) 2om0d1o9ed,l1e1tl,r1at2ri3an3iinnigngananddvveerirÔ¨Åifcicaatitoionn..
+
+14 of 19
+
+Figure 1F3ig. uLreos1s3.fLuonsscftuionnctiaonn danadcaccucuraraccyy ooffCCAABLBSLTSMTtMraintrinaginainndgvaernifdicavtieorni.Ô¨Åcation.
+It can be concluded from the figure that the loss function value of the network model training set decreased with an increase in the number of iterations and finally stabilized. The loss function value of the verification set fluctuated periodically, and the loss function of the CLSTM model had a large amplitude. The CNN, BiLSTM, CBLSTM, and CABLSTM models were relatively stable, the overall trend of the loss function was decreasing and finally converging, there was no gradient explosion or dispersion phenomenon, and the network convergence speed was faster. The accuracy rates of the CNN and BiLSTM model validation sets were 87.57% and 86.36%, respectively, and the
+
+Symmetry 2019, 11, 1233
+
+14 of 18
+
+It can be concluded from the Ô¨Ågure that the loss function value of the network model training set decreased with an increase in the number of iterations and Ô¨Ånally stabilized. The loss function value of the veriÔ¨Åcation set Ô¨Çuctuated periodically, and the loss function of the CLSTM model had a large amplitude. The CNN, BiLSTM, CBLSTM, and CABLSTM models were relatively stable, the overall trend of the loss function was decreasing and Ô¨Ånally converging, there was no gradient explosion or dispersion phenomenon, and the network convergence speed was faster. The accuracy rates of the CNN and BiLSTM model validation sets were 87.57% and 86.36%, respectively, and the prediction accuracy was low. This result indicates that the individual DL network could predict the tool wear state, but deeper features could not be captured due to the limitation of the network model capability. There were deeper features hidden in the tool vibration signal. The network model proposed in this paper was superior to the CNN and BiLSTM network. This is because the network structure was relatively deep, which is conducive to mining deeper features. First, the CNN was used to extract the local features of the timing signals, which could eÔ¨Äectively Ô¨Ålter the noise in the original signal. At the same time, the length of the timing signal was reduced, which facilitates subsequent network learning depending on the time-series characteristics of the time-series signals and improved the ability of the model prediction.
+In the network model proposed in this paper, the CABLSTM model had the best performance, which ewas superior to that of the CLSTM and CBLSTM models, and achieved high prediction accuracy. The initial prediction accuracy of the CLSTM model was relatively low. After 65 iterations, the accuracy of the veriÔ¨Åcation set was basically stable and above 96%, and the accuracy was 96.42% after 100 iterations. The CBLSTM model used a two-way LSTM network to access past and future information; that is, it could extract timing signal features from both the forward and reverse directions and extract more abundant information features. After 42 iterations, the accuracy rate of the veriÔ¨Åcation set was basically stable at over 96%, and the accuracy rate was 97.04% after 100 iterations. The CABLSTM model introduced the attention mechanism on the basis of CBLSTM, which selectively Ô¨Åltered out some key information from a large amount of information and focused on the key information, reducing the loss of key information features of long sequence texts. After 35 iterations, the accuracy of the veriÔ¨Åcation set was basically stable and above 96%, the accuracy was 97.50% after 100 iterations, the loss function value reached 0.0651, and the network stability was higher. The loss function and the accuracy of the veriÔ¨Åcation set and test set are shown in Table 5.
+
+Parameter
+CNN [25] BiLSTM [26]
+CLSTM CBLSTM CABLSTM
+
+Table 5. Loss function and the accuracy of the veriÔ¨Åcation set and test set.
+
+Loss
+0.2688 0.2857 0.1608 0.0931 0.0651
+
+VeriÔ¨Åcation Accuracy Rate (%)
+88.34% 87.13% 96.42% 97.04% 97.50%
+
+Single Test Time/ms
+2 20 4 5 6
+
+Test Accuracy Rate (%)
+87.57% 86.36% 93.64% 95.15% 96.97%
+
+The data of the milling cutter (C4) were selected as the test set of the DL network model to evaluate the generalization ability of the final model. The total number of test samples was 330, including 23 initial wear samples, 232 standard wear samples, and 75 sharp wear samples. The samples were randomly fed into the trained DL network model. The CABLSTM model had high precision and recall. The F1-score reaches the optimum value at 1 (perfect precision and recall), and the worst is 0. The F1-score in this paper was 0.9697. The evaluation indices of the CABLSTM model are shown in Table 6. The test results show that the CABLSTM model proposed in this paper hade a strong generalization ability. Although the test time was not as good as that of the partial comparison model, the algorithm found a good balance between time and precision.
+
+including 23 initial wear samples, 232 standard wear samples, and 75 sharp wear samples. The
+
+samples were randomly fed into the trained DL network model. The CABLSTM model had high
+
+precision and recall. The F1-score reaches the optimum value at 1 (perfect precision and recall), and
+
+the worst is 0. The F1-score in this paper was 0.9697. The evaluation indices of the CABLSTM model
+
+Sayrmemsehtroyw20n19i,n11T, a12b3l3e 6. The test results show that the CABLSTM model proposed in this paper h15adofe18a strong generalization ability. Although the test time was not as good as that of the partial comparison
+
+model, the algorithm found a good balance between time and precision. It can be concluded frToamblteh6e. fEigvualrueatthioant itnhdeicCesAoBfLthSeTCMAmBLoSdTeMl pmroodpeols. ed in this paper completed
+
+the inspection of Lthabeeml CilllainssgiÔ¨Åccuatttieorn(C4P) rweciitshioann accuRreaccayllof 96.F917-S%c.oTrehe prSeudpicptoerdt results of normal wear were more accurate. There were some deviations between the initial wear and sharp wear, but the deviations were withi01n a reasonable00..r99a17n3003ge. The00i..99n18c37o00rrect pr00e..99d17i38c06tion resu22l3t32s mainly occurred in the transition stage of the2wear degree.0T.9h8i5s9is beca0u.9s3e33the tool0.w95a8s9 in the n7o5rmal wear state for a long time during the mavagc/htointainl g process,0.t9h6e97amount0.o9f69d7ata tha0t.c9o69u7ld be lea3r3n0ed by the model was
+
+relatively large, and the features were relatively distinct; in addition, the tool had a short period of
+
+initiaIlt cwaenabreacnodncralupdidedwfreoamr, athnedÔ¨Åtghuereamthoautntht eoCf AdaBtLaStThMat mcooudldel bperoopbotsaeindeidn twhaisspinapsuerffcicoimenptl.eTtehde tchoenifnusspioenctmioantroifxtohfetmheilwlinegarctuetstterre(sCu4l)tswoifththaentoaoccl utersatcyseot fis96sh.9o7w%n. TinhFeipgruerdei1ct4e.d results of normal
+
+wear were more accurate. TThaebrelew6e. ErevasolumateiodneivnidaitcioesnosfbtehtewCeAenBLthSTeMinimtioadl ewl.ear and sharp wear, but the deviations were within a reasonable range. The incorrect prediction results mainly occurred in the
+
+transition stage of tLheabweelaCrldaesgsirfeiec.aTtihoins is Pberecacuissieonthe tRoeoclawllas iFn1t-hSeconroermaSluwpepaorrsttate for a long time
+
+during the machining proces0s, the amount o0.f9d1a3t0a tha0t.c9o1u30ld be0l.e9a1r3n0ed by th2e3 model was relatively
+
+large, and the features were 1relatively distin0c.9t;7i0n3addi0ti.9o8n7, 0the to0o.9l7h8a6d a sho2r3t2period of initial wear
+
+and rapid wear, and the amo2unt of data that0c.9o8u5l9d be o0b.9ta3i3n3ed w0a.s95in8s9uÔ¨Écien7t.5The confusion matrix
+
+of the wear test results ofavthge/ttootoal test set is 0sh.9o6w97n in F0i.g9u6r9e714. 0.9697
+
+330
+
+FFiigguurree 1144.. CCoonnffuussiioonn mmaattrriixx ooff tthhee wweeaarr tteesstt rreessuullttss ooff tthhee ttooooll tteesstt sseett..
+WWhheenn tthhee rreeaall--ttiimmee mmoonniittoorriinngg ssyysstteemm ooff ttooooll wweeaarr ssttaattee wwaass wwoorrkkiinngg,, tthhee aacccceelleerraattiioonn sseennssoorrss wwoouulldd bbrriinngg aa tthhrreeee--aaxxiiss vviibbrraattiioonn ssiiggnnaall ooff lleennggtthh 22000000 ttoo tthhee mmoonniittoorriinngg mmooddeell ooff tthhee CCAABBLLSSTTMM nneettwork. TThhee mmooddeell peerrffoorrmmeedd aa forwarrd calculatiioonn to identify the current tool wwear ssttaatte aanndd aacchhiieevvee rreeaall--ttiimmee mmoonniittoorriinngg ooff tthhee ttooooll wweeaarr ssttaattee..
+4.3. Comparison of Deep Learning and Machine Learning
+To further validate the feasibility of the proposed model, a comparative experiment was designed with alternative ML models. The same data set used for DL was used in the experiment. More speciÔ¨Åcally, the commonly used models in traditional tool wear value detection approaches, including the BPNN, the SVM, the HMM, and the FNN, were compared with the CABLSTM model proposed in this paper. The wavelet threshold denoising method was used to perform noise reduction processing on the original signal collected by the acceleration sensor. The data features of the time domain, frequency domain, and time-frequency domain were extracted, and the speciÔ¨Åc extraction method is shown in Table 7. Pearson‚Äôs correlation coeÔ¨Écient (PCC) was used to reÔ¨Çect the correlation between the feature and the wear value, and the feature with a correlation coeÔ¨Écient greater than 0.9 was selected as the extraction object to achieve a feature dimensionality reduction. The extracted features were used as the input of the ML model.
+
+Symmetry 2019, 11, 1233
+
+16 of 18
+
+Table 7. Feature extraction category table of the machine learning (ML) models.
+
+Feature Attribute Time domain feature
+Frequency domain feature Time-frequency domain feature
+
+Feature Category
+Maximum, Mean, Root mean square, Variance, Standard deviation, Skewness,
+Kurtosis, Peak, Peak factor
+Power spectrum maximum, Band energy value, Mean, Variance, Skewness, Kurtosis,
+Band peak
+Node energy value
+
+Extraction Method Statistical calculation
+Fourier transform Wavelet packet transform
+
+It can be concluded from Table 7 that the accuracy of traditional ML models varied greatly, which was due to the instability of the artiÔ¨Åcial extraction features, and the construction of the model would have an impact on the prediction results. The DL model proposed in this paper could achieve ideal results by adaptively extracting hidden high-dimensional features and reasonable network depth design for tool processing signals without data pre-processing. The prediction accuracy was signiÔ¨Åcantly higher than that of the BPNN, SVM, and HMM. However, the prediction accuracy of the FNN reached 94.24% because the FNN used a neural network to learn the rules of the fuzzy system. According to the learning sample of the input and output, the design parameters of the fuzzy system were automatically designed and adjusted to realize the self-learning and adaptive functions of the fuzzy system. Compared with the other algorithm models, this method demonstrated a great improvement in performance. The test sample speed of the CABLSTM model could reach 6 ms, which could meet the requirements of real-time tool wear monitoring in industrial production. The accuracy of ML and DL prediction is shown in Table 8.
+
+Table 8. Accuracy of machine learning and deep learning prediction.
+
+Models Machine Learning
+Deep Learning
+
+Parameter
+BPNN SVM HMM FNN
+CNN [25] BiLSTM [26]
+CLSTM CBLSTM CABLSTM
+
+Accuracy Rate (%)
+84.85% 91.21% 85.76% 94.24%
+87.57% 86.36% 93.64% 95.15% 96.97%
+
+5. Conclusions
+In this paper, we proposed the application of a CNN and RNN fusion to real-time monitoring of a tool wear state and modiÔ¨Åed the network parameters and structure according to the characteristics of vibration signals to monitor the tool wear degree in real time. The prediction accuracy of the CBLSTM reached 96.97%. In the pre-processing stage, the wear state of the tool was deÔ¨Åned according to the actual wear curve, which was used to determine the wear degree of the tool and improve the accuracy of the data label classiÔ¨Åcation. At the same time, the experimental data were added to the original magnitude data to improve the robustness of the algorithm by employing the data expansion method. A one-dimensional CNN was used to extract the local features, and abundant high-dimensional features were extracted from the original signal, which avoided the limitation of the traditional manual feature extraction, better characterizede the hidden tool wear state information in the original signal, and shortened the network model training time. The idea of introducing the attention mechanism was innovatively applied to the improved CBLSTM network model, which eÔ¨Äectively improved the recognition accuracy and generalization performance of the real-time monitoring. The experimental
+
+Symmetry 2019, 11, 1233
+
+17 of 18
+
+results show that the CABLSTM model had certain advantages in the real-time monitoring of tool wear, which could meet the industrial requirements in terms of recognition accuracy and recognition speed.
+In the process of actual manufacturing, the processing procedures and site conditions were often complicated and variable. There were many features that could reÔ¨Çect the wear state of a tool. In this paper, the original signal collected by the acceleration sensor was used as the tool wear monitoring index, which was restricted by the training data volume and processing method. It might not be applicable to meet the requirements of arbitrary working conditions. In future work, multi-source data fusion technology and DL theory will be used to further study the information characterizing the wear state of the tool, improve the proposed method, and extend the method to industrial monitoring.
+Author Contributions: Q.C. and Q.Y. conceived and designed the experiments; Q.C. and Y.L. performed the experiments; Q.C. and H.H. analyzed the data; Q.C. wrote the paper; Q.Y., Q.X., and Q.C. revised and polished the manuscript. All authors have read and approved the Ô¨Ånal manuscript.
+Funding: This research was funded by the Guizhou Province Science and Technology Fund Project (Branch Support [2017] 2870), and Guizhou Province Education Department Science and Technology Talents Support Project (Branch Support KY [2017]062).
+Acknowledgments: We gratefully acknowledge the support of NVIDIA Corporation with the donation of the Titan X GPU used for this research.
+ConÔ¨Çicts of Interest: The authors declare no conÔ¨Çict of interest.
+References
+1. Lei, Y.G.; Jia, F.; Kong, D.T.; Lin, J.; Xing, S.B. Opportunities and Challenges of Machinery Intelligent Fault Diagnosis in Big Data Era. J. Mech. Eng. 2018, 54, 94‚Äì104. [CrossRef]
+2. Mia, M.; Kr√≥lczyk, G.; Maruda, R.; Wojciechowski, S. Intelligent Optimization of Hard-Turning Parameters Using Evolutionary Algorithms for Smart Manufacturing. Materials 2019, 12, 879. [CrossRef] [PubMed]
+3. Andres, B.; Gorka, U.; Jose, M.P.; Octavio, M.P.; Luis, N.L. Smart optimization of a friction-drilling process based on boosting ensembles. J. Manuf. Syst. 2018, 48, 108‚Äì121.
+4. Zhu, K.P.; Zhang, Y. A generic tool wear model and its application to force modeling and wear monitoring in high speed milling. Mech. Syst. Signal Process. 2018, 115, 147‚Äì161. [CrossRef]
+5. Benkedjouh, T.; Zerhouni, N.; Rechak, S. Tool wear condition monitoring based on continuous wavelet transform and blind source separation. Int. J. Adv. Manuf. Technol. 2018, 97, 3311‚Äì3323. [CrossRef]
+6. Zhou, Y.Q.; Xue, W. Review of Tool Condition Monitoring Methods in Milling Processes. Int. J. Adv. Manuf. 2018, 96, 2509‚Äì2523. [CrossRef]
+7. Beranoagirre, A.; Urbikain, G.; Marticorena, R.; Bustillo, A.; Lacalle, L. Sensitivity Analysis of Tool Wear in Drilling of Titanium Aluminides. Metals 2019, 9, 297. [CrossRef]
+8. Krahmer, D.M.; Hameed, S.; Egea, A.J.; P√©rez, D.; Canales, J.; Lacalle, L.N. Wear and MnS Layer Adhesion in Uncoated Cutting Tools When Dry and Wet Turning Free-Cutting Steels. Metals 2019, 9, 556. [CrossRef]
+9. Lacalle, L.N.; Fernandez-Larrinoa, J.; Rodriguez-Ezquerro, A.; Valdivielso, A.F.; Lopez-Blanco, R.; Azkona, I. On the cutting of wood for joinery applications. Proc. Inst. Mech. Eng. Part B J. Eng. Manuf. 2014, 229, 1‚Äì13.
+10. Dutta, S.; Pal, S.K.; Mukhopadhyay, S.; Sen, R. Application of digital image processing in tool condition monitoring: A review. CIRP J. Manuf. Sci. Technol. 2013, 6, 212‚Äì232. [CrossRef]
+11. Saglam, H.; Unuvar, A. Tool condition monitoring in milling based on cutting forces by a neural network. Int. J. Product Res. 2003, 41, 1519‚Äì1532. [CrossRef]
+12. Chen, X.Z.; Li, B.Z. Acoustic emission method for tool condition monitoring based on wavelet analysis. Int. J. Adv. Manuf. Technol. 2007, 33, 968‚Äì976. [CrossRef]
+13. Li, C.B.; Wan, T.; Chen, X.Z.; Lei, Y.F. On-line Monitoring Method of Tool Wear for NC Turning in Batch Processing Based on Cutting Power. Comput. Integr. Manuf. Syst. 2018, 24, 1910‚Äì1919.
+14. Yesilyurt, I.; Ozturk, H. Tool condition monitoring in milling msing vibration analysis. Int. J. Product Res. 2007, 45, 1013‚Äì1028. [CrossRef]
+15. Lui, Z.P. Research on Pattern Recognition and Life Prediction of Tool Wear Based on Multi-sensor Information Fusion; Southwest Jiaotong University: Nanjing, China, 2018.
+
+Symmetry 2019, 11, 1233
+
+18 of 18
+
+16. Zhang, X.; Fu, H.Y.; Sun, Y.Z.; Han, Z.Y. Hidden Markov Model Based Micro-milling Tool Wear Monitoring. Comput. Integr. Manuf. Syst. 2012, 18, 141‚Äì148.
+17. Li, X.H.; Lim, B.S.; Zhou, J.H.; Huang, S.; Phua, S.J.; Shaw, K.C.; Er, M.J. Fuzzy neural network modelling for tool wear estimation in dry milling operation. In Proceedings of the Annual Conference of the Prognostics and Health Management Society, PHM, Montreal, QC, Canada, 27 September-1 October 2009; pp. 1‚Äì11.
+18. Liao, Z.R.; Li, S.M.; Lu, Y.; Dong, G. Tool Wear IdentiÔ¨Åcation in Turning Titanium Alloy Based on SVM. Mater. Sci. Forum 2014, 800‚Äì801, 446‚Äì450. [CrossRef]
+19. LeCun, Y.; Bottou, L.; Bengio, Y.; HaÔ¨Äner, P. Gradient-based learning applied to document recognition. Proc. IEEE 1998, 86, 2278‚Äì2324. [CrossRef]
+20. Minar, M.R.; Naher, J. Recent Advances in Deep Learning: An Overview. arXiv 2018, arXiv:1807.08169. 21. Zhang, C.J.; Yao, X.F.; Zhang, J.M.; Liu, E.H. Tool Wear Monitoring Based on Deep Learning. Comput. Integr.
+Manuf. Syst. 2017, 23, 2146‚Äì2155. 22. Terrazas, G.; Mart√≠nez-Arellano, Z.; Benardos, P.; Ratchev, S. Online Tool Wear ClassiÔ¨Åcation during Dry
+Machining Using Real Time Cutting Force Measurements and a CNN Approach. J. Manuf. Mater. Process. 2018, 2, 72. [CrossRef] 23. Cao, D.L.; Sun, H.B.; Zhang, H.Z.; Mo, R. In-process Tool Condition Monitoring Based on Convolution Neural Network. Comput. Integr. Manuf. Syst. 2018. Available online: https://kns.cnki.net/KCMS/detail/11. 5946.TP.20180913.1536.020.html (accessed on 3 September 2019). 24. Zhao, R.; Yan, R.Q.; Wang, J.J.; Mao, K.Z. Learning to Monitor Machine Health with Convolutional Bi-Directional LSTM Networks. Sensors 2017, 17, 273. [CrossRef] [PubMed] 25. Zhang, W. Study on Bearing Fault Diagnosis Algorithm Based on Convolutional Neural Network; Harbin Institute of Technology: Harbin, China, 2017. 26. Zhang, A.S.; Wang, H.L.; Li, S.B.; Cui, Y.X.; Liu, Z.H.; Yang, G.C.; Hu, J.J. Transfer Learning with Deep Recurrent Neural Networks for Remaining Useful Life Estimation. Appl. Sci. 2018, 8, 2416. [CrossRef] 27. Li, X.D.; Ye, M.; Li, T. Review of Object Detection Based on Convolutional Neural Networks. Appl. Res. Comput. 2017, 34, 2881‚Äì2891. 28. Lipton, Z.C. A Critical Review of Recurrent Neural Networks for Sequence Learning. arXiv 2015, arXiv:1506.00019. 29. Kolen, J.F.; Kremer, S.C. Gradient Flow in Recurrent Nets: The DiÔ¨Éculty of Learning LongTerm Dependencies; Wiley-IEEE Press: Hoboken, NJ, USA, 2007. 30. Hochreiter, S.; Schmidhuber, J. Long Short-term Memory. Neural Comput. 1997, 9, 1735‚Äì1780. [CrossRef] 31. Zhao, R.; Wang, J.J.; Yan, R.Q.; Mao, K.Z. Machine health monitoring with LSTM networks. In Proceedings of the 2016 10th International Conference on Sensing Technology (ICST), Nanjing, China, 11‚Äì13 November 2016. 32. Graves, A.; Schmidhuber, J. Framewise Phoneme ClassiÔ¨Åcation with Bidirectional LSTM and other Neural Network Architectures. Neural Netw. 2005, 18, 602‚Äì610. [CrossRef] 33. Andres, B.; Maritza, C.; Anibal, R. A Virtual Sensor for Online Fault Detection of Multitooth-Tools. Sensors 2011, 11, 2773‚Äì2795. 34. Miko≈Çajczyk, T.; Nowicki, K.; Bustillo, A.; Pimenov, D.Y. Predicting tool life in turning operations using neural networks and image processing. Mech. Syst. Signal Process. 2011, 104, 503‚Äì513. [CrossRef] 35. Andres, B.; Juan, J.R. Online breakage detection of multitooth tools using classiÔ¨Åer ensembles for imbalanced data. Int. J. Syst. Sci. 2013, 45, 2590‚Äì2602.
+¬© 2019 by the authors. Licensee MDPI, Basel, Switzerland. This article is an open access article distributed under the terms and conditions of the Creative Commons Attribution (CC BY) license (http://creativecommons.org/licenses/by/4.0/).
+

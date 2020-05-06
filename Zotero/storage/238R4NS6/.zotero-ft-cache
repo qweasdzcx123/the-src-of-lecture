@@ -1,0 +1,458 @@
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+Contents lists available at ScienceDirect
+Robotics and Computer Integrated Manufacturing
+journal homepage: www.elsevier.com/locate/rcim
+Full length Article
+In-process tool condition forecasting based on a deep learning method
+T Huibin Suna,⁎, Jiduo Zhanga, Rong Moa, Xianzhi Zhangb
+a School of Mechanical Engineering, Northwestern Polytechnical University, Xi'an, China b School of Mechanical and Automotive Engineering, Kingston University, London, UK
+
+ARTICLE INFO
+Keywords: Tool condition forecasting Deep learning Long short-term memory Data correction
+
+ABSTRACT
+It is widely acknowledged that machining precision and surface integrity are greatly aﬀected by cutting tool conditions. In order to enable early cutting tool replacement and proactive actions, tool wear conditions should be estimated in advance and updated in real-time. In this work, an approach to in-process tool condition forecasting is proposed based on a deep learning method. A long short-term memory network is designed to forecast multiple ﬂank wear values based on historical data. A residual convolutional neural network is built to enable inprocess tool condition monitoring, using raw signals acquired during the machining process. The integration of them enables in-process tool condition forecasting. Median-based correction and mean-based correction are adopted to improve the accuracy. IEEE PHM 2010 challenge data has been used to illustrate and validate this approach. Experimental study and quantitative comparisons showed that future ﬂank wear values could be precisely forecasted during the machining process. The proposed approach contributes to prompt and reliable cutting tool condition forecasting, which will support the decision-making about cutting tool replacement in data-driven smart manufacturing.
+
+1. Introduction
+It is widely acknowledged that machining precision and surface integrity are greatly aﬀected by cutting tool condition. In order to avoid unexpected downtime or scrapped parts, cutting tools are normally underused. According to Li et al. [1], only 50%–80% of tool life was actually used. Nevertheless, tool wear may be more severe than expectation in some cases. Cutting tools should be replaced in time prior to the failure. Such a decision is important to machining quality improvement and cost reduction, which requires an accurate tool wear estimation.
+However, it is very challenging to precisely estimate cutting tool conditions in the machining process. Tool wear is a dynamic, timevarying, non-linear and stochastic process with many possible interferences. Every cutting tool is unique and has a speciﬁc wear curve. Due to the occlusion and cutting ﬂuid, it is not feasible to measure tool wear conditions directly during the machining process. Moreover, there is no precise physics-based model available for tool wear estimation. Hence, data-driven intelligence has been widely used to enable in-process tool condition monitoring (TCM) [2]. However, a research gap still exists, especially in the transformation of today's manufacturing paradigm to data-driven smart manufacturing.
+Data-driven smart manufacturing implements predictive
+
+manufacturing based on advanced sensing techniques, digital twin [3], big data [4], and so on [5]. By mining the trend of events in time series, data-driven smart manufacturing predicts coming abnormities and takes proactive actions [6, 7]. In order to enable precise cutting tool replacement, tool wear conditions should be estimated in advance and updated in real-time. However, it is not easy to achieve this goal. The relationship between historical and future cutting tool wear curves is still unclear.
+Aiming at this problem, this work puts forward an approach to tool wear condition forecast in machining process. By capturing and using data dependencies in time series, it aims to forecast future tool wear conditions precisely. The approach supports the decision-making for prompt and reliable cutting tool replacement in data-driven smart manufacturing.
+This paper is organized as follows. The ﬁrst section introduces the motivation. Section 2 reviews related literature, followed by the overall explanation for the approach in Section 3. Section 4 addresses the integration of in-process TCM model. The experimental study is presented in Section 5, which is followed by concluding remarks in Section 6.
+2. Literature review
+In the past 30 years, TCM has been a signiﬁcant research issue both
+
+⁎ Corresponding author. E-mail address: sun_huibin@nwpu.edu.cn (H. Sun).
+https://doi.org/10.1016/j.rcim.2019.101924 Received 23 June 2019; Received in revised form 7 December 2019; Accepted 8 December 2019 0736-5845/ © 2020 Elsevier Ltd. All rights reserved.
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+in academia and industry [8]. Using cutting force, vibration and acoustic emission (AE) signals [9], many tool wear stage classiﬁcation and degradation process regression models have been developed based on support vector machine [10], logistic regression [11], hidden Markov model [12], fuzzy logic [13], and other shallow neural network (SNN) models [14,15]. Data was the cornerstone for these applications [16]. Heterogeneous data, including structured process parameters and unstructured power proﬁles and machine vision [17], has been integrated for TCM [18]. The quality of features decides the accuracy, generalization ability and robustness, but sensitive features are tricky to extract. The accuracy, robustness and generalization ability should be improved further to make a more reliable estimation.
+Compared with monitoring current states, forecasting cutting tool conditions is more meaningful for data-driven smart manufacturing [5]. Data-driven smart manufacturing aims to convert data acquired in the machining process into manufacturing intelligence to yield positive impacts on manufacturing [7]. Based on comprehensive big data analytics, an accurate prediction can be made for decision-making [19]. By making early-warnings and cutting tool replacement decisions, datadriven smart manufacturing can take proactive actions as early as possible [4]. The machining quality can be guaranteed with higher productivity and reduced cost.
+Based on machine learning (ML), some models have been established to analyze the related sensing data and to discover patterns of cutting tool condition. For example, Martinov et al. [20] implemented a model to predict a cutting tool's future state based on its current state. Using least-squares method, the cutting tool wear curve was approximated by a straight line. Future cutting tool wear state was determined by the slope of this straight line and time, without considering dynamic and time-varying characteristics of cutting tool wear. Based on AE signal and force signal acquired in the machining process, Pang et al. [21] extracted and selected some dominant features on the basis of singular value decomposition (SVD). These features were used by an autoregressive moving-average (ARMA) model to predict future ﬂank wear (VB) values. Without considering data dependencies in time series, great waves existed in the forecasted tool wear curve. Moreover, this method was not designed for non-linear dynamics of time series.
+Therefore, time series forecasting should capture non-linear dependencies that can be used to predict future patterns [22]. Regarding this issue, traditional forecasting techniques were veriﬁed to be outperformed by deep learning (DL) models [23]. For example, Babu et al. [24] proposed a regression approach for remaining useful life (RUL) estimation on the basis of deep convolutional neural network (CNN). Deutsch and He [25] presented a DL-based approach for bearing RUL prediction with big data. Ren et al. [26] proposed an integrated DLbased approach for multi-bearing RUL prediction by combining both time domain features and frequency domain features. Li et al. [27] proposed a data-driven approach for RUL prognostics by using CNN.
+However, with the increasing large amounts of data, the complexity of forecasting models has been increased to capture long-term nonlinear dynamics of time series. By retaining the recent memories of input patterns, recurrent neural network (RNN) was able to map from the entire history of previous inputs to target vectors in principal [28]. It allowed a memory of previous inputs to be kept in the network's internal state. However, traditional RNN may not capture long-term dependencies. Long short-term memory (LSTM) network, a variant of RNN, was put forward to prevent back propagated errors from vanishing or exploding [29]. Due to its ability to capture long-range dependencies and nonlinear dynamics in time-series data, LSTM has been successfully adopted in various predictive applications, including health state estimation for bearings [29], and machine RUL prediction [30]. LSTM has also been applied in TCM [31]. Raw sequential multisensory signals were used to monitor tool wear condition without any pre-processing. Compared with traditional RNN, the LSTM-based TCM model ﬁtted the cutting tool wear curve better. Gated recurrent unit (GRU) was regarded as an updated version of LSTM with a simple
+
+structure [32]. A hybrid scheme accomplished by a deep heterogeneous GRU model enabled single-step tool wear condition prediction. To capture the temporal pattern hidden in the sequential input, a local feature extraction method was designed [33]. An intermediate layer was designed to capture the inherent relation for long-term prediction. However, these models were state-related, rather than time-related. Data dependencies in time series have not been eﬀectively decoded and continued, especially for multi-step forecast of future cutting tool conditions.
+In summary, forecasting cutting tool conditions is of great signiﬁcance for data-driven smart manufacturing. Compared with MLbased methods, DL-based models are more suitable for capturing nonlinear data dependencies in time series. However, in order to enable multi-step forecast of future cutting tool conditions, more eﬀorts should be made to decode and continue data dependencies in time series further.
+
+3. In-process tool condition forecasting approach
+
+In this paper, an approach to in-process tool condition forecasting (TCF) is proposed. It focuses on the time-varying cutting tool wear curves during the machining processes. It estimates multiple VB values in the nearest future by using several sequential VB values measured in the latest past. Then, how to capture and continue data dependencies in historical VB values becomes the most signiﬁcant issue. Although standard RNN can retain the recent memories of input patterns, it has diﬃculty to model time series data when long time lag is present [29]. To deal with this problem, an LSTM network is used in this work. By capturing long-range dependencies in time-series data, the LSTM network contributes to accuracy improvement of the in-process TCF approach. In Fig. 1, several sequential VB values measured in the latest past, denoted by yt−n+1, yt−n+2, …, yt in sequence, are inputs of the LSTM network. Here, variable n stands for the number of historical data. The LSTM network outputs multiple VB values in the nearest future, denoted by yt+1, yt+2, …, yt+m. Variable m stands for the number of forecasted data. A deterministic model, H, aims to learn a mapping from the input values to the output values. Formally, there are:
+
+(yt+1, yt+2, ⋯, yt+m) = H (yt−n+1, yt−n+2, ⋯, yt )
+
+(1)
+
+Normally, it is very diﬃcult to measure VB values directly during the machining process. Under this case, the VB values judged by the inprocess TCM model could be used. Then, cutting force, vibration and AE signals are acquired in the machining process and used by the in-process TCM model to estimate current tool conditions.
+
+3.1. Structure of the LSTM network
+
+As Fig. 2 shows, the LSTM network is logically composed of an encoder, a decoder and a context tensor [31]. The encoder accepts n historical and sequential VB values and outputs the context tensor. The decoder accepts the context tensor and estimates m future and sequential VB values. Both the encoder and the decoder use the same LSTM unit [32].
+The LSTM network used in this work is shown in Fig. 3. Numbers and variables in brackets mean dimensions. The duplicated vector layer is used to extend 2D vectors to 3D vectors. The former two LSTM units are encoders, and the latter two LSTM units are decoders. Driven by the LSTM mechanism, the threshold of an LSTM unit is adjusted to save or delete time series information. Then, the network can use or ignore historical VB values in forecasting future tool conditions. By modifying n and m, future VB values in diﬀerent time ranges can be forecasted. In addition, the LSTM network also contributes to back propagate error prevention from gradient vanishing or exploding problems [34].
+If a new time range is used, it is time-consuming to train a new LSTM network. If the input VB values are insuﬃcient, the LSTM network could work by using outputs of itself. On the basis of this so-called
+
+2
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+Fig. 1. In-process TCF approach.
+
+Fig. 2. Logic of LSTM network.
+Fig. 3. Structure of LSTM network. self-referring mode, the LSTM network can extend its time range. However, if the thresholds are not updated accordingly, small errors will accumulate to great errors.
+
+state ht using the information from the long-term state ct. Its value is in the range [0, 1]. Values 1 and 0 respectively stand for completely saving or removing historical information.
+The input gate It is calculated as
+
+It = σ (Wi·[ht−1, xt] + bi)
+
+(2)
+
+Here, σ is a single-layer neural network that uses the transfer function Sigmoid, and xt is the input tensor of time sequential sample. Wi and bi are weight and bias, respectively.
+The forget gate Ft and the output gate Pt are calculated as
+
+Ft = σ (Wf ·[ht−1, xt] + bf )
+
+(3)
+
+Pt = σ (Wo·[ht−1, xt] + bo)
+
+(4)
+
+The long-term state ct is calculated as
+
+ct = Ft ⊙ ct−1 + it ⊙ c ′t
+
+(5)
+
+where ⊙ denotes the element-wise product. A candidate parameter for unit state updating is named c’t and
+calculated as
+
+ct′ = tanh(Wc·[ht−1, xt] + bc)
+
+(6)
+
+where tanh is a single-layer neural network which uses the transfer function Tanh.
+The hidden state ot is calculated as
+
+ot = ht = Pt ⊙ tanh(ct)
+
+(7)
+
+3.3. Network training and performance evaluation
+
+3.2. Mechanism of the LSTM unit
+As shown in Fig. 4, LSTM unit t includes two states, the long-term state ct and the short-term state ht [32]. The forget gate Ft, the input gate It and the output gate Pt are added to regulate the unit states. The forget gate Ft deletes the information from the previous long-term state ct-1. The output gate Pt controls the formation of the current short-term
+
+In the training stage, the LSTM network is optimized by adjusting weights of three Sigmoid functions and one Tanh function. Adam optimizer is used to optimize the network. It is also robust to train and to make the whole training process steady. Based on DL optimization method, an excellent LSTM network could be trained.
+Although a deeper LSTM network means better accuracy, it still fails sometimes since more calculation resources are needed and the
+
+3
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+Fig. 4. LSTM unit t.
+
+generalization ability is impaired. Finding a proper depth becomes a big obstacle to a successful LSTM network. Since there is very tiny diﬀerence among candidate networks with diverse depths, an approximate estimation on depth is considered. After every training epoch, a loss evaluation is done by using root mean square error (RMSE), which is deﬁned as
+
+RMSE =
+
+∑ 1
+s
+
+s i=1
+
+(yi
+
+−
+
+y^i )2
+
+(8)
+
+where s is the sample number, and yiand y^i are respectively measured and forecasted VB values. The training ends when the training error decreases and the validation error is increasing. The best network is chosen as the ﬁnal solution.
+Moreover, mean absolute error (MAE) is also used to evaluate and compare the LSTM network's performance. It is deﬁned as
+
+MAE
+
+=
+
+1 s
+
+s
+∑
+i=1
+
+yi
+
+− y^i
+
+(9)
+
+4. Integration of in-process TCM
+The LSTM network discussed above uses measured VB values as input. Generally, it is very challenging or even impossible to measure VB values directly in the machining process. In order to enable inprocess TCF, an in-process TCM model is integrated. In order to improve the accuracy, robustness and generalization ability, the model is implemented on the basis of the residual neural network (ResNet) [35, 36].
+
+4.1. ResNet-based in-process TCM model
+
+The ResNet-based in-process TCM model is shown in Fig. 5. At time t, its inputs are seven-dimensional time series signal segments as Xt = [xt1, xt2, xt3, xt4, xt5, xt6, xt7], including X force, Y force, Z force, X vibration, Y vibration, Z vibration and AE signals. A deterministic model, G, aims to learn a mapping from raw signal segments to a single output y˜t, VB value at time t. Formally, there are:
+
+y˜t = G (Xt) = G (xt1, xt2, xt3, xt4, xt5, xt6, xt7)
+
+(10)
+
+The ResNet-based in-process TCM model includes a post-activation residual block and many pre-activation residual blocks. The post-activation residual block starts with a convolutional layer (Conv). A batch normalization layer (BN) is used to accelerate the calculation and optimize the network. A rectiﬁer linear unit (ReLu) is adopted to manipulate pre-activation architecture. A dropout layer is added to
+
+diminish over-ﬁtting in the training process and to improve the generalization ability. In order to reduce computation time and eliminate redundant features, a max-out pooling (Pool) layer is included in the shortcut of residual learning framework (RLF). Then, the post-activation residual block ends with a convolutional layer. The structure of convolutional layers and max-out pooling layers use classical parameters. The kernel size is 3 and the stride is 2. In every block, kernel numbers of two convolutional kernels are 64 and 128, respectively. A pre-activation residual block starts with a BN, followed by Relu, Dropout, Conv in sequence. This structure repeats in every pre-activation residual block. Finally, a fully-connected layer (Dense) is used to produce a VB value.
+An adaptive feature extraction mode is implemented based on the convolutional layer. In the convolutional process, the signal segments do convolutional operations with kernels of various sizes. During these steps, some speciﬁc patterns are emphasized. Noise is automatically ﬁltered using convolution operations. Based on the good selectivity, the convolution kernel enables adaptive ﬁltering. Parameters of the convolution kernel can be optimized by the training process. After necessary training, the kernels are able to fully extract features from the raw signals. The feature extraction process is nearly the same as the manual process.
+Extracted features are selected based on multi-layer perception (MLP), which is a feedforward neural network that simulates how signals pass two neurons. MLP is made up of many neurons in diﬀerent layers. The output of a layer is the input of next layer. Assisted by the back-propagation (BP) algorithm, tool wear condition information could pass through these layers. Then, the low-level features are assembled into the high-level features. The high-level features approximate tool wear conditions, as no obvious clue could be found from the low-level features.
+Gradient always vanishes when the multiplication of two gradients becomes smaller and smaller. Then, information produced by low-level layers may be wiped out, although tool wear condition always exists in minor clues. Based on RLF introduced by He et al. [35, 36], the gradient vanishing phenomenon is prevented. Then, ResNet and RLF are merged to leverage their advantages. Moreover, over ﬁtting is avoided by using BN, ReLu and dropout layers.
+4.2. Data correction
+As discussed above, the integration of ResNet-based in-process TCM enables in-process TCF. However, the compound errors should never be ignored. The ResNet-based in-process TCM model uses sensitive features extracted from raw machining signal segments. Without considering dependencies of time series VB values, monitored tool wear
+
+4
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+C onv BN R elu
+
+C onv
+
+BN
+
+Pool
+
+R elu
+
+Dropout
+
+C onv
+
++
+
+BN
+
+BN
+R elu
+Dropout C onv
+Pool BN
+R elu
+Dropout C onv
+
+R elu
+
++
+
+D e ns e
+
+Fig. 5. ResNet-based in-process TCM model.
+
+curves may wave greatly when the machining process is going on. Based on these VB values, future VB values judged by the LSTM
+network are not accurate and reliable enough. Waves in the monitored tool wear curves may be wrongly regarded as inﬂection points by the LSTM network, especially in the normal wear stages of cutting tools. Consequently, errors of the in-process TCM model may be ampliﬁed by the LSTM network.
+Therefore, VB values judged by the LSTM network, denoted by y˜t+1, y˜t+2, ⋯, y˜t+m, should not be outputted directly. Eﬀorts must be made to reduce the compound errors. Consequently, model H in Eq. (1) can be converted into the following formation.
+
+(y˜t+1, y˜t+2, ⋯, y˜t+m) = H (G (Xt−n+1), G (Xt−n+2), ⋯, G (Xt))
+
+(11)
+
+A deterministic model, C, aims to build a function from original forecasted VB values to the ﬁnal outputs. Formally, there are:
+
+( ) yt = C y˜t(1), y˜t(2), ⋯, y˜t(qt)
+
+(12)
+
+where is ytthe ﬁnal forecasted VB value regarding time t. qt is the number of available forecasted VB values regarding time t, while y˜t(k) is the k-th original forecasted VB value.
+Here, model C is implemented by two correction functions, in-
+cluding mean-based correction and median-based correction. Meanbased correction ﬁnds the mean of the original forecasted VB values. The ﬁnal VB value regarding time t equals the average of all available
+original forecasted VB values regarding time t
+
+∑ yt
+
+=
+
+1 k
+
+qt
+y˜t(k)
+k=1
+
+(13)
+
+Median-based correction ﬁnds the median of the original forecasted VB values, which can be done by arranging all numbers from smallest to greatest. If qt is an odd number, the middle one is picked as the ﬁnal forecasted VB value regarding time t:
+
+yt = y˜t[(qt+1)/2]
+
+(14)
+
+If qt is an even number, there is no single middle value. The mean of two middle values is calculated as the ﬁnal forecasted VB value regarding time t:
+
+[ ] yt = y˜t(qt/2) + y˜t(qt/2+1) /2
+
+(15)
+
+In fact, a real cutting tool wear curve is non-decreasing. Should waves in original forecasted VB values be eliminated completely to output a non-decreasing curve? The answer is no, because such an artiﬁcial operation would enlarge errors arbitrarily. In order to improve the accuracy, future tool wear condition should always be forecasted and corrected dynamically. The performance of in-process TCF approach should be evaluated quantitatively using MAE and RMSE deﬁned above. Additionally, in order to reduce the compound errors further, the ResNet-based in-process TCM model and the LSTM network should be trained together carefully.
+
+5. Experimental study
+
+5.1. Experimental setup
+
+The IEEE PHM 2010 challenge dataset [37] was used to verify the approach. The machining experiments were performed on a CNC machine (Röders Tech RFM760). Some stainless steel (HRC52) workpieces were milled with 10,400 r/min spindle speed, 1555 mm/min feed speed, 0.125 mm radial cut depth in Y direction, and 0.2 mm axial cut depth in Z direction. A Kistler quartz 3-axis dynamometer was installed between the workpiece and the machining table. A Kistler piezo accelerometer was adopted to acquire vibration signals in three coordinators. A Kistler AE sensor was mounted on the workpiece to capture acoustic waves. All signals were collected by NI DAQ PCI 1200 at 50 kHz frequency. A 7-dimension dataset was saved as a CSV ﬁle
+
+5
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+Table 1 Setup and testing error of the LSTM network.
+Setup No. Training dataset Testing dataset
+
+S1
+
+C4, C6
+
+C1
+
+S2
+
+C1, C6
+
+C4
+
+S3
+
+C1, C4
+
+C6
+
+MAE (μm)
+2.607 0.946 0.440
+
+RMSE (μm)
+4.307 2.734 0.908
+
+with 7 columns. These columns stood for X force (N), Y force (N), Z force (N), X vibration (g), Y vibration (g), Z vibration (g) and AE (V) signals in sequence. Six three-ﬂute cutting tools (respectively named C1, C2, C3, C4, C5 and C6) were used in the experiments. Every cutter was used for about 315 cut cycles under the same machining condition. VB values of cutting tool C1, C4 and C6 were recorded after every cut cycle. Based on Keras framework, all algorithms are implemented with TensorFlow. An Intel Xeon E7 CPU and an Nvidia Quadro M2000 GPU were used.
+
+5.2. Performance evaluation of the LSTM network
+In the training process, the inputs were several measured time series VB values, denoted by yt−n+1, yt−n+2, …, yt in sequence. The outputs were multiple time series VB values, denoted by yt+1, yt+2, …, yt+m(n ≤ t ≤ Lm, L is the sample number) in sequence. The model was trained by using datasets of cutting tools C1, C4 and C6, because every sample of them had a corresponding VB value. As shown in Table 1, three setups were adopted such that two datasets were used for training and the other one was used for testing. For every setup, the dataset for testing never appeared in the training process.
+TensorBoard was used to monitor the training process. The time consumption of a training iteration was less than 1 s. When using testing datasets, MAE and RMSE values were up to 2.607 μmand 4.307 μm, respectively. Although the trained LSTM networks never saw the testing datasets, the forecast accuracy was good enough.
+Moreover, both measured VB values and forecasted VB values had various ranges. In order to investigate this issue, a comparison was done by using orthogonal test. As shown in Fig. 6, both smaller forecasted ranges and bigger historical ranges led to less errors. Short-term forecast was more accurate than long-term forecast, because more input meant more clues. However, when the historical range increased, the marginal beneﬁt become less and less. Considering data availability and accuracy, n = 5 and m = 2 could be selected as the best combination.
+
+Fig. 6. A performance comparison under various time ranges.
+
+Table 2 Accuracy evaluation of ResNet-based in-process TCM.
+
+Setup No.
+
+S1
+
+S2
+
+S3
+
+RMSE (μm) MAE (μm)
+
+5.271 1.598
+
+1.82 1.04
+
+4.252 1.04
+
+Average
+3.781 1.226
+
+5.3. Performance evaluation of the in-process TCF approach
+The ResNet-based in-process TCM model was implemented and integrated. The model with 20 residual blocks was selected due to its outstanding performance. As shown in Table 2, the averages of RMSE and MAE were 3.781 μm and 1.226 μm, respectively. As shown in Fig. 7, monitored VB values ﬁtted nicely with measured tool wear curve. However, the monitored tool wear curves were not smooth non-decreasing, because random waves still existed.
+By integrating the ResNet-based in-process TCM model with the LSTM network, VB values in the nearest future could be forecasted when the machining process was going on. As shown in Fig. 8, the forecasted VB curves waved greatly. The LSTM network was not as accurate as it worked individually. Both median-based correction and mean-based correction contributed to accuracy improvement of forecasted tool wear curves. By removing singular points or scatter points, waves in the forecasted cutting tool wear curve were reduced. According to Table 3, before correction, the average MAE value was 1.331 μm. After correction, the average MAE values were 1.253 μm for the median-based correction and 1.288 μm for the mean-based correction, respectively.
+5.4. Comparisons and discussions
+Comparisons have been conducted against some signiﬁcant works in this ﬁeld. Martinov et al. [20] approximated the cutting tool wear curve by a straight line. However, future cutting tool wear curve was regarded as a linear process without considering dynamics and time-varying characteristics. Because weak data dependencies in time series were captured and used, the long-term forecast might come with big errors. The ARMA with exogenous model developed by Pang et al. [21] predicted future VB values by using some dominant features extracted from machining signals. However, sensitive features were diﬃcult to identify and select. Compare with these two works, the proposed approach was designed to forecast the non-linear cutting tool wear curves. By using median-based or mean-based correction, the waves in the forecasted cutting tool wear curves have been reduced dramatically. Regarding the time-varying cutting tool wear curves, the proposed approach was more accurate.
+Wang et al. proposed a deep heterogeneous GRU model with an intermediate layer for tool wear prediction [32, 33]. However, the model was designed for single-step forecasting, while this work has implemented multi-step forecasting. No correction was made by the model proposed by Wang et al. Based on the same dataset (PHM 2010) [37] and time range (from 0 to 270 cuts) [32], more quantitative comparisons have been made by using MAE and RMSE. As shown in Table 4, the approach proposed in this paper outperformed the model proposed by Wang et al. [32]. Under every setup, both MAE values and RMSE values have been reduced dramatically.
+Normally, a typical tool wear curve includes initial wear, steady wear and accelerated wear stages. According to above experiments, the proposed approach performed consistently in various stages, except that errors were likely to rise at inﬂection points.
+Moreover, additional eﬀorts should be made to improve the reliability and robustness of the proposed approach. Except continuous cutting tool wear, cutting tool breakage and chipping are unexpected, discrete and random incidents, which present further challenges for future research.
+
+6
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+Fig. 7. ResNet-based TCM result.
+
+Fig. 8. In-process TCF results before and after correction.
+
+Table 3 MAE comparison (μm).
+Setup No.
+No correction Median-based correction Mean-based correction
+
+S1
+2.607 2.436 2.588
+
+S2
+0.946 0.919 0.863
+
+S3
+0.440 0.403 0.413
+
+Average
+1.331 1.253 1.288
+
+Table 4 Performance comparisons.
+Setup No. Measurement (μm)
+
+S1
+
+S2
+
+S3
+
+MAE RMSE MAE RMSE MAE RMSE
+
+5 steps-ahead prediction [32] Proposed approach
+(Median-based correction) Proposed approach
+(Mean-based correction)
+
+3.70 0.994
+1.233
+
+7.25 1.337
+1.696
+
+13.23 1.349
+1.294
+
+16.24 1.995
+1.935
+
+27.96 0.838
+0.846
+
+24.89 1.444
+1.381
+
+6. Conclusions
+In this paper, a DL-based in-process TCF approach has been proposed. Using the latest historical VB values, the LSTM network can forecast tool conditions. The ResNet-based TCM model is integrated to enable in-process TCF. According to the above discussions and comparisons, the following conclusions can be drawn.
+• By capturing data dependencies in time series, the LSTM network deduces multiple future VB values based on several measured VB values in time series. It bridges the gap between historical and future cutting tool wear curves.
+• The integration of ResNet-based TCM enables in-process TCF. Both mean-based correction and median-based correction improves the accuracy.
+• Experimental studies support that the proposed approach can accurately forecast cutting tool wear curves. Comparisons showed that the proposed approach outperformed existing models.
+However, there are limitations to the approach, which call for further research. For example, the model's performance largely depends on the availability of data. More experiments with various machining
+
+7
+
+H. Sun, et al.
+
+Robotics and Computer Integrated Manufacturing 64 (2020) 101924
+
+conditions should be conducted to test the approach's robustness and reliability.
+CRediT authorship contribution statement
+Huibin Sun: Conceptualization, Methodology, Writing - original draft, Project administration, Funding acquisition. Jiduo Zhang: Methodology, Software, Validation, Investigation, Visualization, Writing - original draft. Rong Mo: Conceptualization, Resources, Supervision. Xianzhi Zhang: Writing - review & editing.
+Declaration of Competing Interest
+The authors declare that they have no known competing ﬁnancial interests or personal relationships that could have appeared to inﬂuence the work reported in this paper.
+Acknowledgment
+The research is under the support of the National Natural Science Foundation of China (No. 51875475), the National Science and Technology Major Project (No. 2017-VII-0010-0104) and the Natural Science Basic Research Plan in Shaanxi Province of China(No. 2018ZDXM-GY-068). Authors hereby thank them for the ﬁnancial supports.
+Supplementary materials
+Supplementary material associated with this article can be found, in the online version, at doi:10.1016/j.rcim.2019.101924.
+Reference
+[1] Y. Li, C. Liu, J. Hua, J. Gao, P. Maropoulos, A novel method for accurately monitoring and predicting tool wear under varying cutting conditions based on metalearning, CIRP Annals - Manuf. Technol. 68 (2019) 487–490.
+[2] E. Kannatey-Asibu, J. Yum, T.H. Kim, Monitoring tool wear using classiﬁer fusion, Mech. Syst. Signal Process. 85 (2017) 651–661.
+[3] F. Tao, Q. Qi, Make more digital twins, Nature 573 (2019) 490–491. [4] A. Kusiak, Smart manufacturing must embrace big data, Nature 554 (2017) 23–25. [5] F. Tao, Q. Qi, A. Liu, A. Kusiak, Data-driven smart manufacturing, J. Manuf. Syst. 48
+(2018) 157–169. [6] S. Ren, Y. Zhang, Y. Liu, T. Sakao, D. Huisingh, C. Almeida, A comprehensive review
+of big data analytics throughout product lifecycle to support sustainable smart manufacturing: a framework, challenges and future research directions, J Clean. Prod. 210 (2019) 1343–1365. [7] J. Wang, Y. Ma, L. Zhang, R.X. Gao, D. Wu, Deep learning for smart manufacturing: methods and applications, J. Manuf. Syst. 48 (2018) 144–156. [8] Y. Zhou, W. Xue, Review of tool condition monitoring methods in milling processes, Int. J. Adv. Manuf. Technol. 96 (5–8) (2018) 2509–2523. [9] H.B. Sun, W.L. Niu, Hilbert-Huang transform based tool wear feature extraction, Proceedings of the 24th International Conference on Flexible Automation and Intelligent Manufacturing, San Antonio, USA, 20-23 May 2014, pp. 657–662. [10] H.Y. Zhang, C. Zhang, J.L. Zhang, L.S. Zhou, Tool wear model based on least squares support vector machines and Kalman ﬁlter, Prod. Eng. 8 (2014) 101–109. [11] G.F. Wang, Z.W. Guo, L. Qian, Tool wear prediction considering uncovered data based on partial least square regression, J. Mech. Sci. Technol. 28 (1) (2014) 317–322.
+
+[12] Z.R. Liao, D. Gao, Y. Lu, Z.K. Lv, Multi-scale hybrid hmm for tool wear condition monitoring, Int. J. Adv. Manuf. Technol. 84 (9–12) (2016) 2437–2448.
+[13] B. Cuka, D.W. Kim, Fuzzy logic based tool condition monitoring for end-milling, Robot. Comp. Integr. Manuf. 47 (10) (2017) 22–36.
+[14] D.M. D'Addona, R. Teti, Image data processing via neural networks for tool wear prediction, Procedia CIRP 12 (2013) 252–257.
+[15] G.F. Zhang, S. To, G.B. Xiao, Novel tool wear monitoring method in ultra-precision raster milling using cutting chips, Precis. Eng. 38 (2014) 555–560.
+[16] W. Liu, C. Kong, Q. Niu, J. Jiang, X. Zhou, A method of nc machine tools intelligent monitoring system in smart factories, Robot. Comp. Integr. Manuf. 61 (2020) 101842.
+[17] R.G. Lins, P.R.M. Araujo, M. Corazzim, In-process machine vision monitoring of tool wear for cyber-physical production systems, Robot. Comp. Integr. Manuf. 61 (2020) 101859.
+[18] P. Wang, Z. Liu, R.X. Gao, Y. Guo, Heterogeneous data-driven hybrid machine learning for tool condition prognosis, CIRP Ann. - Manuf. Technol. 68 (2019) 455–458.
+[19] W. Wang, Y. Zhang, R.Y. Zhong, A proactive material handling method for CPS enabled shop-ﬂoor, Robot. Comp. Integr. Manuf. 61 (2020) 101849.
+[20] G.M. Martinov, A.S. Grigoryev, P.A. Nikishechkin, Real-Time diagnosis and forecasting algorithms of the tool wear in the CNC systems, Proceedings of the 6th International Conference in Swarm Intelligence, Beijing, China, 25-28 June 2015, pp. 115–126.
+[21] C.K. Pang, J.H. Zhou, Z.W. Z.hong, F.L. Lewis, Tool wear forecast using dominant feature identiﬁcation of acoustic emissions, Proceedings of 2010 IEEE International Conference on Control Applications, Yokohama, Japan, 8-10 September 2010, pp. 1063–1068.
+[22] R. Gao, L. Wang, R. Teti, D. Dornfeld, S. Kumara, M. Mori, M. Helu, Cloud-enabled prognosis for manufacturing, CIRP Ann. - Manuf. Technol. 64 (2015) 749–772.
+[23] R. Zhao, Z.Chen R.Yan, K. Mao, P. Wang, R.X. Gao, Deep learning and its applications to machine health monitoring, Mech. Syst. Signal Process 115 (2019) 213–237.
+[24] G.S. Babu, P. Zhao, X.L. Li, et al., Deep convolutional neural network based regression approach for estimation of remaining useful life, in: S.B. Navathe, et al. (Ed.), International Conference on Database Systems for Advanced Applications, Dallas, USA, 16-19 April 2016, pp. 214–228.
+[25] J. Deutsch, D. He, Using deep learning-based approach to predict remaining useful life of rotating components, IEEE Transac. Syst. Man Cybern. Syst. 99 (2017) 1–10.
+[26] L. Ren, J. Cui, Y.Q. Sun, X.J. Cheng, Bearing remaining useful life prediction based on deep autoencoder and deep neural networks, J. Manuf. Syst. 48 (C) (2018) 71–77.
+[27] X. Li, Q. Ding, J.Q. Sun, Remaining useful life estimation in prognostics using deep convolution neural networks, Reliab. Eng. Syst. Safe 172 (2018) 1–11.
+[28] J. Schmidhuber, A local learning algorithm for dynamic feedforward and recurrent networks, Conn. Sci. 1 (4) (1989) 403–412.
+[29] S. Hochreiter, J. Schmidhuber, Long short-term memory, Neural Comput. 9 (8) (1997) 1735–1780.
+[30] Z. Chen, Y. Liu, S. Liu, Mechanical state prediction based on LSTM neural network, Proceedings of the 36th Chinese control conference, Dalian, China, 26-28 June 2017, pp. 3876–3881.
+[31] J. Zhang, P. Wang, R. Yan, R.X. Gao, Long short-term memory for machine remaining life prediction, J. Manuf. Syst. 48 (2018) 78–86.
+[32] J. Wang, J. Yan, C. Li, R.X. Gao, R. Zhao, Deep heterogeneous GRU model for predictive analytics in smart manufacturing: application to tool wear prediction, Comput. Ind. 111 (2019) 1–14.
+[33] Q. Qiao, J. Wang, L. Ye, R.X. Gao, Digital twin for machining tool condition prediction, Procedia CIRP 81 (2019) 1388–1393.
+[34] X. Fang, Z. Yuan, Performance enhancing techniques for deep learning models in time series forecasting, Eng. Appl. Artif. Intell. 85 (2019) 533–542.
+[35] K.M. He, X.Y. Zhang, S.Q. Ren, J. Sun, Deep residual learning for image recognition, Proc. 29th IEEE Conference on Computer Vision and Pattern Recognition, Las Vegas, USA, 26 June - 1 July 2016, pp. 770–778.
+[36] K.M. He, X.Y. Zhang, S.Q. Ren, J. Sun, Identity mappings in deep residual networks, Proceedings of the European Conference on Computer Vision, Amsterdam, Netherland, 8-16 October 2016, pp. 630–645.
+[37] PHM Society, PHM Society Conference Data Challenge, 2010 https://www. phmsociety.org/competition/phm/10 2010 (accessed 20 December 2018).
+
+8
+

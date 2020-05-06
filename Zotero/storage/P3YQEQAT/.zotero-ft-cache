@@ -1,0 +1,104 @@
+
+close this message
+Donate to arXiv
+
+Please join the Simons Foundation and our generous member organizations in supporting arXiv during our giving campaign September 23-27. 100% of your contribution will fund improvements and new initiatives to benefit arXiv's global scientific community.
+DONATE
+
+[secure site, no need to create account]
+Skip to main content
+Cornell University
+We gratefully acknowledge support from
+the Simons Foundation and member institutions.
+arXiv.org > cs > arXiv:1710.08864
+
+Help | Advanced Search
+Search
+arXiv
+Cornell University Logo
+open search
+GO
+open navigation menu
+quick links
+
+    Login
+    Help Pages
+    About
+
+Computer Science > Machine Learning
+arXiv:1710.08864 (cs)
+[Submitted on 24 Oct 2017 ( v1 ), last revised 17 Oct 2019 (this version, v7)]
+Title: One pixel attack for fooling deep neural networks
+Authors: Jiawei Su , Danilo Vasconcellos Vargas , Sakurai Kouichi
+Download PDF
+
+    Abstract: Recent research has revealed that the output of Deep Neural Networks (DNN) can be easily altered by adding relatively small perturbations to the input vector. In this paper, we analyze an attack in an extremely limited scenario where only one pixel can be modified. For that we propose a novel method for generating one-pixel adversarial perturbations based on differential evolution (DE). It requires less adversarial information (a black-box attack) and can fool more types of networks due to the inherent features of DE. The results show that 67.97% of the natural images in Kaggle CIFAR-10 test dataset and 16.04% of the ImageNet (ILSVRC 2012) test images can be perturbed to at least one target class by modifying just one pixel with 74.03% and 22.91% confidence on average. We also show the same vulnerability on the original CIFAR-10 dataset. Thus, the proposed attack explores a different take on adversarial machine learning in an extreme limited scenario, showing that current DNNs are also vulnerable to such low dimension attacks. Besides, we also illustrate an important application of DE (or broadly speaking, evolutionary computation) in the domain of adversarial machine learning: creating tools that can effectively generate low-cost adversarial attacks against neural networks for evaluating robustness. 
+
+Subjects: 	Machine Learning (cs.LG) ; Computer Vision and Pattern Recognition (cs.CV); Machine Learning (stat.ML)
+Journal reference: 	IEEE Transactions on Evolutionary Computation}, Vol.23 , Issue.5 , pp. 828--841. Publisher: IEEE. 2019
+DOI : 	10.1109/TEVC.2019.2890858
+Cite as: 	arXiv:1710.08864 [cs.LG]
+  	(or arXiv:1710.08864v7 [cs.LG] for this version)
+Bibliographic data
+[ Enable Bibex  ( What is Bibex? )]
+Submission history
+From: Jiawei Su [ view email ]
+[v1] Tue, 24 Oct 2017 16:02:19 UTC (815 KB)
+[v2] Thu, 16 Nov 2017 07:58:35 UTC (958 KB)
+[v3] Fri, 16 Feb 2018 08:53:44 UTC (1,121 KB)
+[v4] Thu, 22 Feb 2018 09:18:34 UTC (1,129 KB)
+[v5] Mon, 28 Jan 2019 04:39:30 UTC (1,494 KB)
+[v6] Fri, 3 May 2019 08:32:24 UTC (4,475 KB)
+[v7] Thu, 17 Oct 2019 07:46:53 UTC (2,233 KB)
+Full-text links:
+Download:
+
+    PDF
+    Other formats
+
+( license )
+Current browse context:
+cs.LG
+< prev   |   next >
+new | recent | 1710
+Change to browse by:
+cs
+cs.CV
+stat
+stat.ML
+References & Citations
+
+    NASA ADS
+    Google Scholar
+    Semantic Scholar
+
+4 blog links
+( what is this? )
+DBLP - CS Bibliography
+listing | bibtex
+Jiawei Su
+Danilo Vasconcellos Vargas
+Kouichi Sakurai
+Export citation
+Bookmark
+BibSonomy logo Mendeley logo Reddit logo ScienceWISE logo
+Which authors of this paper are endorsers? | Disable MathJax ( What is MathJax? ) Browse v0.3.0 released 2020-04-15    Feedback?
+
+    About arXiv
+    Leadership Team
+
+    contact arXiv Click here to contact arXiv Contact
+    arXiv Twitter arXiv Twitter Follow us on Twitter
+
+    Help
+    Privacy Policy
+
+    Blog
+    Subscribe
+
+arXiv® is a registered trademark of Cornell University.
+
+arXiv Operational Status
+Get status notifications via email or slack
+
+If you have a disability and are having trouble accessing information on this website or need materials in an alternate format, contact web-accessibility@cornell.edu for assistance.

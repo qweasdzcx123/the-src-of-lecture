@@ -1,0 +1,109 @@
+2015 1st International Conference on Next Generation Computing Technologies (NGCT-2015) Dehradun, India, 4-5 September 2015
+Application of A Multi-Objective Particle Article Swarm Optimization Technique to Solve Reliability
+Optimization Problem
+
+Sangeeta Pant∗, Anuj Kumar∗, Amar Kishor† , Dhiraj Anand‡ and Suraj Bhan Singh‡
+
+∗ Department of Mathematics, University of Petroleum & Energy Studies, Dehradun, INDIA: 248007,spant@ddn.upes.ac.in † Department of Electronics and Communication Sciences Unit Mathematics ISI, Kolkata, INDIA: 700108 ‡ Department of Electrical and Electronics Graphic Era University, Dehradun, INDIA: 248002
+‡ Department of Mathematics, Statistics and Computer Sci. G.B. Pant University of Ag. & Tech. Pantnagar, INDIA: 263145
+
+Abstract—This study investigates the applicability of multiobjective evolutionary algorithm (MOEA), namely the Particle swarm optimization incorporating crowding distance (MOPSOCD) in solving the reliability optimization problem of a complex system where the two conﬂicting objectives maximization of system reliability and minimization of system cost are considered. The simulation results shows that MOEA used in this paper (MOPSO-CD) is able to generate a well distributed Pareto optimal set in a single run for a decision maker (DM) to choose from. DM could select the most convenient optimal solution according to his/her level of satisfaction in a posterior decision environment. The efﬁciency of MOPSO-CD in solving this problem is demonstrated by comparing its result with those of simulated annealing (SA), non-equilibrium simulated annealing (NESA) and cellular evolutionary strategies (CES).
+Keywords Bio-inspired optimization; Particle swarm optimization; reliability optimization; multi-objective optimization.
+I. INTRODUCTION
+In order to design an efﬁcient system with high reliability, a design engineer needs to achieve several objectives such as maximize reliability, minimize cost, minimize weight etc. These conﬂicting objectives can cause the situation where no solution is superior to another and no single solution can be considered as the optimum with respect to all objectives. Classical methods form a global objective function by converting multi objective problem (MOP) into single objective problem (SOP). The main goal of a SOP is to ﬁnd one optimum solution even when there exist a set of trade-off solutions (known as Pareto-optimal solutions). It therefore becomes important to ﬁnd as many as optimum solutions in spite of just one. These Pareto-optimal solutions help DM to ﬁnd the most preferred optimal solution according to his/her subjective preferences.
+In general, reliability optimization problems produce very large search space as they are considered as NP-hard problems [1]. Therefore, obtaining optimal reliability design is a challenging task and it takes a lot of time if we use traditional optimization techniques in ﬁnding optimal solutions. Therefore, nowadays computational algorithms, inspired by biological processes and evolution, become popular in solving multi-objective reliability optimization problems. Population based bio-inspired optimization methods permits an efﬁcient way to ﬁnd multiple Pareto-optimal solutions. This aspect has
+
+made the research and application in bio-inspired optimization techniques so popular [2].
+In the past two decades many researchers have solved reliability and redundancy problems under multi objective formulation. To have an overview of the trend of research in this area, one may refer to the works of Salazar et al. [3], Kishore et al.[4], Garg et al. [5], Zhao et al. [6], Garg and Sharma [7], Safari [8] and others.
+This work considers application of MOPSO in solving a multi-objective reliability optimization problem as it has been applied to many other real life problems with promising results [9, 10, 11]. PSO is swarm based artiﬁcial intelligence based technique which is inspired from the food searching behavior of birds ﬂocking or ﬁsh schooling. It has the following advantages over other evolutionary techniques [12, 13, 14, 15]:
+(i) easy to implement (ii) fast convergence (iii) number of parameters are less. Due to the above mentioned advantages a population of particles in PSO can operate simultaneously so that the possibility of paralysis in the whole process can be reduced, this phenomena is useful in solving reliability optimization problems which are generally NP-hard in nature [16].
+This paper has been organized in the following way. Particle swarm optimization has been brieﬂy introduced in Section II. Section III describes the multi objective reliability optimization problem solved in this paper. Results have been presented in Section IV and Section V concludes this paper.
+II. PARTICLE SWARM OPTIMIZATION
+The PSO algorithm, proposed by Eberhart and Kennedy, is used for solving optimization problems. Basically it is a swarm intelligence method which is inspired from the social behavior of birds ﬂocking, schools of ﬁsh, and herds of animals to adapt to their environment, avoid predators by implementing an approach of information sharing, hence, developing an evolutionary advantage [17,18,19]. Particle swarm optimization is initialized with randomly generated multiple particles. Each particle gets a random velocity so that it can move in search space towards optima over a number of iterations. Apart from that it also has a memory for remembering its own best position attained in the past which is known as personal best position
+
+978-1-4673-6809-4/15/$31.00 ©2015 IEEE
+
+1004
+
+2015 1st International Conference on Next Generation Computing Technologies (NGCT-2015) Dehradun, India, 4-5 September 2015
+
+Fig. 1. Flow chart of MOPSO-CD
+
+and denoted by Pbest. Each particle has its Pbest and the particle with the best value of ﬁtness is called global best particle and its position is denoted by Gbest. Suppose that the search space is D dimensional, the position of ith particle of the population can be represented by a D-dimensional vector . Another D-dimensional vector denotes the velocity of this particle. The previously best visited position of ith particle is denoted by and the best particle in the swarm is denoted by . Particles update their position by the following two equations. New velocity for each particle is calculated by equation (1) which is based on its previous velocity whereas with the help of equation (2) one can updates each particles position in search space.
+here k is denoting iteration number, and i = 1,2,3.N; N= swarm size, d=1,2,3, D; w is denoting the inertia weight, which controls the momentum of particle by weighing the contribution of previous velocity. r1 and r2 are random numbers uniformly distributed between [0,1] and c1 and c2 are
+
+acceleration coefﬁcients which are positive.
+PSO has been extended for solving the MOP, which is generally known as the multi-objective particle swarm optimization (MOPSO) [20]. In this paper a speciﬁc MOPSO known as MOPSO-CD developed by Raquel and Naval [21] is utilized to handle reliability optimization problem. They have implemented crowding distance phenomena in MOPSO. They proposed for using crowding distance measure in MOPSO for gbest selection and archive update. With the help of Crowding distance factor one can deﬁned how much a non-dominated solution is crowded with other solutions. The performance of this approach was highly competitive in converging towards the Pareto front and generated a well-distributed set of nondominated solutions. A ﬂowchart [11] presenting the procedure of MOPSO-CD is given in Fig. 1. More details of MOPSO-CD can be consulted in Ref. [21].
+
+1005
+
+2015 1st International Conference on Next Generation Computing Technologies (NGCT-2015) Dehradun, India, 4-5 September 2015
+TABLE I. SHOWS THE LAST 15 POINTS OF THE POF.
+
+Fig. 2. Life support system in a space capsule
+
+III. PROBLEM DESCRIPTION
+
+This problem [22] concerns the reliability design of a lifesupport system in a space capsule whose schematic diagram is presented in Fig. 2. In the system, component 1 is backed up by a parallel component 4. There are two equal paths, each of which has component 2 in series with the stage formed by components 1 and 4. Hence, the resultant pair of series-parallel arrangement forms two equal paths. component 3 is inserted as a third path and backup for the pair. This problem is to determine the minimum cost and maximum reliability of the system.
+
+This problem is continuous nonlinear programming problem and consists of four components, each having component reliability Ri, i= 1, 2, 3, 4. The system reliability, system unreliability and system cost are given by
+
+Rs = 1 − R3(1 − R1)(1 − R4)2 − (1 − R3)(1 −
+
+R2)(1 − R1)(1 − R4)2Qs = 2K1R2α2 + K3R3α3 + 2K4R4α4
+
+1 − R3Cs
+
+=
+
+2K1R1α1 +
+
+where, k1=100,k2 =100, k3 =200, =k4 150, α1= 0.60, Thus, the problem is to ﬁnd decision variables which minimize the system cost and system unreliability and satisfy the constraints imposed on the system, i.e. Find which minimize Qs,Cs.
+
+IV. RESULTS
+The Pareto front of two conﬂicting objectives ( Rs and Cs ) in life support system of space capsule has been successfully obtained by the MOPSO algorithm which incorporates the concept of crowding distance computation. We have checked the different parameter settings for the problem and the parameter setting corresponds to one of the best optimal fronts has been reported after rigorous experimentation. The algorithm was executed for 500 iterations and swarm size is ﬁxed at 200. The size of the archive for storing optimum Pareto sets during the execution was 200 and probability of mutation was taken 0.03. The other parameters were set as and The resulting Pareto solution corresponding to the above parameter setting is shown in Fig 3.
+Similarly, many Pareto-optimal fronts can be obtained by varying the different PSO parameters. From Figure 3, it is clearly visible that the MOPSO-CD is capable of generating a well distributed Pareto front amongst the conﬂicting objectives. Further decision can be made based on the Pareto front
+
+Fig. 3. Pareto-optimal front by MOPSO-CD
+according to the decision makers subjective preferences later on.
+Ravi et. el. [23] and Rocco et el [24] solved the same problem under single objective formulation using an improved non-equilibrium simulated annealing (I-NESA) and cellular evolutionary algorithm (CEA) respectively. Present approach is better than Ravi et al. [23] and Rocco et al. [24] as it provides a more insightful design data to DM. It gives a set of solutions over the Pareto space instead of giving a single optimal solution so that DM can select any solution that ﬁts best to his/her preferences.
+Further, Ravi et al. [25] again solved this problem under multi objective formulation using linear membership functions for all of the fuzzy goals. They investigated system reliability and cost as fuzzy goals. They solved this problem by using various kinds of aggregators. But their method is not interactive as it produces only one Pareto-optimal solution at a time and all the possible solutions cannot be explored using their approach. On the contrary, Present methodology provides Pareto optimal front in a single run. Moreover, present result are better as compared to Ravi et al. [25] in terms of accuracy as it provides the results upto 6 decimal places (Table I) unlike Ravi which gave results upto 5 decimal places only. Hence the approach is much more efﬁcient and ﬂexible.
+V. CONCLUSION
+Reliability optimization problems are more difﬁcult to solve in comparison to any general nonlinear programming problem because they are NP-hard from computational point of view. So it is a hot spot to ﬁnd efﬁcient algorithms in this ﬁeld. In this article we have successfully utilized a nature inspired optimization algorithm MOPSO-CD to solve a real life reliability optimization problem of a life support system
+
+1006
+
+2015 1st International Conference on Next Generation Computing Technologies (NGCT-2015) Dehradun, India, 4-5 September 2015
+
+in space capsule. The comparison with studies in the literature involving the same problems demonstrated that MOPSOCD has better efﬁciency in solving the complex reliability optimization problem. The simulation results indicates that MOPSO-CD is a viable alternative to solve multi-objective reliability optimization problems as it is able to obtain a complete set of Pareto-optimal solutions in a single run. Thus, it provides DM more ﬂexibility in choosing the solution according to his (her) preference.
+REFERENCES
+[1] M.S. Chern, On the computational complexity of reliability redundancy allocation in a series system, Operations Research Letters, vol. 11, no.5, pp. 309-315, 1992.
+[2] S. Binitha, S.S. Sathya, A Survey of Bio inspired Optimization Algorithms, International Journal of Soft Computing and Engineering, Vol.2, no. 2,pp. 137-151, 2012.
+[3] D. Salazar , C. M. Rocco and B. J. Galvan, Optimization of constrained multiple-objective reliability problems using evolutionary algorithms, Reliability Engineering and System Safety, Vol. 91, pp. 10571070, 2006.
+[4] A. Kishore, S. P. Yadav, S. Kumar, Application of a Multi-objective Genetic Algorithm to Solve Reliability Optimization Problem, in the proc. of IEEE International conference on computational intelligence and multi-media applications, pp. 458-462, 2007.
+[5] H. Garg, M. Rani, S. P. Sharma, Y Vishwakarma, Intuitionistic fuzzy optimization technique for solving multi-objective reliability optimization problems in interval environment, Expert Systems with Applications, vol. 41, no. 7, pp. 3157-3167, 2014.
+[6] J. Zhao, Z. Liu, M. Dao, Reliability optimization using multi objective ant colony system approaches, Reliability Engineering & System Safety, vol. 92, no. 1, pp. 109-120, 2007.
+[7] H. Garg, S.P. Sharma, Multi-objective reliability-redundancy allocation problem using particle swarm optimization, Computers & Industrial Engineering, vol. 64, no. 1, pp. 247-255, 2013.
+[8] J. Safari, Multi-objective reliability optimization of series-parallel systems with a choice of redundancy strategies, Reliability Engineering System Safety, vol. 108, pp. 10-20, 2012.
+[9] H. Yin et al. Multiobjective crashworthiness optimization design of functionally graded foam-ﬁlled tapered tube based on dynamic ensemble metamodel, Materials and Design, vol. 55, pp. 747-757, 2014.
+[10] H. Yin, G. Wen, Z. Liu, Q. Qing Crashworthiness optimization design for foam-ﬁlled multi-cell thin-walled structures, Thin-Walled Structures, vol. 75, pp. 8-17, 2014.
+[11] S. Guangyong, L. Guangyao, G. Zhihui, C. Xiangyang, Y. Xujing, L. Qing, Multiobjective robust optimization method for drawbead design
+
+in sheet metal forming, Materials Design, vol. 31, no. 4, pp. 1917-1929, 2010.
+[12] B. Clow and T. White, An evolutionary race: a comparison of genetic algorithms and particle swarm optimization used for training neural networks, in the Proc. of International Conference on Artiﬁcial Intelligence, pp. 582-588, 2004.
+[13] R. Hassan, B. Cohanim, O. De Weck, and G. Venter, A comparison of particle swarm optimization and the genetic algorithm, in the proc. of the 1st AIAA multidisciplinary design optimization specialist conference, pp. 1-13, 2005.
+[14] R.J.W. Hodgson, Particle swarm optimization applied to the atomic cluster optimization problem, in the Proc. of the Genetic and Evolutionary Computation Conference, pp. 6873, 2002.
+[15] X. Hu, Y. Shi, and R. C. Eberhart, Recent advances in particle swarm, in the Proc. of IEEE Congress on Evolutionary Computation, pp. 90-97, 2004.
+[16] S. Pant, and S. B. Singh, Particle Swarm Optimization to Reliability Optimization in Complex System, in the proc. of IEEE International Conference on Quality and Reliability, pp. 211-215, 2011.
+[17] A. P. Engelbrecht, Fundamentals of Computational Swarm Intelligence, Jhon Wiley Sons Ltd., 2005.
+[18] J. Kennedy and R. Eberhart, Particle swarm optimization, in the proc. of IEEE International Conference on Neural Networks, pp. 1942-1948, 1995.
+[19] R. Eberhart and J. Kennedy, A new optimizer using particle swarm theory, in the proc. of the Sixth International Symposium on Micro Machine and Human Science, pp. 39-43, 1995.
+[20] C. A. Coello Coello, G. T. Pulido, and M. S. Lechuga, Handling multiple objectives with particle swarm optimization, IEEE Transactions on Evolutionary Computation, vol.8, no. 3, pp. 256279, 2004.
+[21] C. R. Raquel, and P. C. Naval Jr, An effective use of crowding distance in multiobjective particle swarm optimization, Genetic and evolutionary computation conference, pp. 257-264, 2005.
+[22] FA tilmman, C. Hwang, L. Fan, K. C. Lal, Optimal Reliability of a Complex System, IEEE Transactions on Reliability, vol. R-19, no. 3, pp. 95-100, 1970.
+[23] V. Ravi, B.S.N. Murty, and J. Reddy, Nonequilibrium simulatedannealing algorithm applied to reliability optimization of complex systems, IEEE Trans. on Reliability, vol. 46, no. 2, pp. 233-239, 1997.
+[24] C.M. Rocco, A.J. Miller, J.A. Moreno, and N. Carrasquero, A cellular evolutionary approach applied to reliability optimization of complex systems, in the Proc. of the Annual Reliability and Maintainability Symposium, pp. 210-215, 2000.
+[25] V. Ravi, P.J. Reddy, and H.J. Zimmermann, Fuzzy global optimization of complex system reliability, IEEE Trans. on Fuzzy Systems, vol. 8, no.3, pp. 241-248, 2000.
+
+1007
+

@@ -1,0 +1,403 @@
+The RegTech Book: The Financial Technology Handbook for Investors, Entrepreneurs and Visionaries in Regulation Edited by Janos Barberis, Douglas W. Arner and Ross P. Buckley Copyright © 2019 Millennial Ltd.
+Forging a Responsibility and
+Liability Framework in the AI
+
+power to dramatically broaden AI application.3 As a corollary,
+cloud-based ML as a service (MLaaS) is now an important new business model.4
+
+Era for RegTech
+
+2. Data. The lower costs of data storage,5 wireless communication for cloud-connected internet of things (IoT) devices
+
+By Brian Tang
+
+Founder, ACMI and LITE Lab@HKU
+235
+
+Blockchain and AI in RegTech
+
+Artificial intelligence (AI), and more precisely machine learning (ML), is now indeed no longer the exclusive domain of science fiction fans and cognitive science researchers at universities or in the military.
+Four critical areas have undergone tremendous development, leading to both Fortune and Forbes naming 2017 ‘the year of AI’:1
+
+3 Concurrently, Google has developed proprietary tensor processing units (TPUs) with application-specific integrated circuits (ASICs) specifically developed for ML with higher volume and reduced precision and wattage that has been used to improve relevancy of search results in RankBrain, accuracy and quality of maps and navigation in Street View, as well as to ‘think’ much faster and look further ahead in AlphaGo: ‘Building an AI Chip Saved Google from Building a Dozen New Data Centers’, (Wired, 5 April 2017); https://www.wired.com/2017/04/building-ai-chip-saved-google-
+
+1. Computational power. Parallel computing for ML using graphical processing units (GPUs) originally developed for video games2 has lowered the cost and wattage with increased computational
+1 ‘2017 Will Be the Year of AI’, Fortune, 30 December 2016, http://fortune. com/2016/12/30/the-year-of-artificial-intelligence; ‘Why 2017 Is the Year of Artificial Intelligence’, Forbes, 27 February 2017; https://www.forbes.com/ sites/forbestechcouncil/2017/02/27/why-2017-is-the-year-of-artificial -intelligence 2 See, e.g. A. Coates, B. Huval, T. Wang, D. Wu, A. Ng, and B. Catanzaro, ‘Deep Learning with COTS HPC Systems’; http://ai.stanford.edu/~acoates/ papers/CoatesHuvalWangWuNgCatanzaro_icml2013.pdf For context, according to Nvidia, a Google Data Center traditionally consisted of 1,000 computer processing unit (CPU) servers with 2,000 CPUs for 16,000 cores that used 600 kW and cost US$5 million; yet the Stanford AI Lab was built using three graphics processing unit (GPU)– accelerated servers with 12 GPUs for 18,432 cores that used 4 kW and cost $33,000: Nvidia presentation at seventh DBSx CAL Talk: ‘AI or Human’ in Hong Kong (3 March 2017).
+
+building-dozen-new-data-centers
+4 See, for example, Nvidia and Microsoft’s HGX-1 hyperscale GPU accelerator; http://nvidianews.nvidia.com/news/nvidia-and-microsoftboost-ai-cloud-computing-with-launch-of-industry-standard-hyperscalegpu-accelerator; Amazon Web Services’ (AWS’s) Deep Learning AMI and three new AI services (Amazon Lex, Amazon Polly, and Amazon Rekognition): ‘AWS Announces Three New AI Services’, Business Wire, 30 November 2016; http://www.businesswire.com/news/ home/20161130006126/en/AWS-Announces-Amazon-AIServices; ‘Cloud Wars: Google, Amazon and Microsoft Battle to Own the Future of Computing’, Telegraph, 26 March 2016; www.telegraph.co.uk/ technology/2016/03/25/cloud-wars-google-amazon-and-microsoft-battleto-own-the-future. Cloud-based models also exacerbate concerns regarding magnification of coding error or failure across many at the end of the value chain as well as cyber security protocols being breached: ‘Regulatory Hurdles for RegTech’, SIA Partners, 27 March 2017; http:// en.finance.sia-partners.com/20170327/regulatory-hurdles-regtech
+5 The rate of increase of hard disk density and corollary drop in price has been known as Kryder’s Law, named after the founder of Carnegie Mellon University’s Data Storage Systems Center and CTO of Seagate Technology: ‘Kryder’s Law’, Scientific American, 1 August 2005; https:// www.scientificamerican.com/article/kryders-law
+
+(e.g. voice, text, images, video, biometric), and digitization of
+
+­encourage more developers, domain expert trainers, and use
+
+paper records6 has resulted in an explosion of structured and
+
+cases to embrace their frameworks.10
+
+unstructured big data that can be processed and analysed for
+
+better ML.
+
+If AI can best be applied to areas of intense data, then its
+
+236
+
+3. Algorithms. Silicon Valley and other US companies like Google, Facebook, Microsoft, Amazon, and IBM, as well as Chinese tech giants Alibaba, Baidu,7 and Tencent, have been courting
+
+application to RegTech11 for regulatory surveillance, monitoring, analysing, reporting, recommendations, and compliance seems ideal.
+
+AI talent in a manner compared to top US National Football League quarterback prospects,8 even resulting in lawsuits.9
+
+Compliance with regulations requires understanding and analysing many complex rules applicable to a multitude of factual
+
+4. Infrastructure. Leading software companies offer cognitive
+
+permutations and possibilities.
+
+services through application programming interfaces (APIs),
+
+such as IBM Watson and Microsoft Azure. Increasingly, compa- Organizations such as financial institutions comprise a large
+
+nies such as Google, Facebook, Microsoft, and Baidu and
+
+constituency of employees and stakeholders whose behaviour
+
+many newer cloud computing services from Alibaba, Tencent
+
+and actions need to be monitored, analysed, and guided to
+
+and Huawei are experimenting with open sourcing deep learn- influence behaviour and detect, report, and address breaches and
+
+ing frameworks, tools, and platforms to ‘democratize AI’ and
+
+perhaps predict rogue behaviour. Moreover, these firms are highly
+
+Blockchain and AI in RegTech
+
+6 This has even been done on a nationwide basis, as can be seen by India’s India Stack (https://indiastack.org) and e-Estonia (https://e-estonia. com).
+7 For example, ‘Here’s How Baidu’s Founder Thinks AI Will Change the World’, Tech In Asia, 26 August 2016; https://www.techinasia.com/ baidu-founder-ai-future
+8 ‘The Race to Buy the Human Brains Behind Deep Learning Machines’, Bloomberg, 28 January 2014; https://www.bloomberg.com/news/ articles/2014-01-27/the-race-to-buy-the-human-brains-behinddeep-learning-machines; see also Kai-Fu Lee, AI Super-Powers: China, Silicon Valley and the New World Order (2018)
+9 ‘Uber v Google: And Now, the Self-driving Car War Gets Nasty’, Mashable, 20 May 2017; http://mashable.com/2017/05/20/uber-vs-googlewaymo-self-driving-car-wars-get-nasty/#2u5WgIWMC5qi
+
+10 See, e.g. ‘Google Just Open Sourced TensorFlow, Its Artificial Intelligence Engine’, Wired, 9 November 2015; https://www.wired. com/2015/11/google-open-sources-its-artificial-intelligence-engine; and then its DeepMind Lab training codebase ‘Open-sourcing DeepMind Lab’, 12 December 2016; https://deepmind.com/blog/open-sourcing-deepmindlab; ‘FAIR [Facebook AI Research] Open Sources Deep-learning Modules for Torch’, 16 January 2015; https://research.fb.com/fair-open-sourcesdeep-learning-modules-for-torch; ‘Deep Learning with Microsoft Cognitive Toolkit CNTK’, Microsoft Research, 10 February 2017; https://blogs.msdn. microsoft.com/uk_faculty_connection/2017/02/10/microsoft-cognitivetoolkit-cntk; ‘Baidu Follows US Tech Giants and Open Sources Its Deep Learning Tools [PaddePaddle Toolkit]’, The Verge, 1 September 2016; https://www.theverge.com/2016/9/1/12725804/baidu-machine-learningopen-source-paddle
+11 See definition in, e.g. Arner, Barberis, and Buckley, ‘FinTech, RegTech and the Reconceptualization of Financial Regulation’, Northwestern Journal of International Law & Business 37, no. 3 (2017); https://ssrn.com/ abstract=2847806
+
+incentivized to reduce costs and operational risks after the hefty fines of recent years.12
+AI in RegTech is being used as part of FinTech13 in areas such as:
+
+• Regulatory radar of new regulations, assessing applicability, and flagging for interpretation.15
+• Surveillance by regulators.16
+
+• Risk management modelling and forecasting.
+
+Tech giant IBM showed that it was a serious RegTech AI player
+
+when it acqui-hired Promontory and its 600 former senior
+
+• Surveillance of employee behaviour.
+
+government regulator employees17 to accelerate Watson’s
+
+• Know your client (KYC), anti–money laundering (AML), and fraud development and ML of cognitive solutions for risk and
+
+237
+
+detection.
+
+compliance. In 2017, millions of Super Bowl fans learned of its tax
+
+• Compliance chatbots.14
+
+preparation partnership with H&R Block.18
+
+Blockchain and AI in RegTech
+
+Applying Current Legal Frameworks in the AI Era
+
+Common law courts developed the concept of tort, whereby all persons owe duties of care in relation to any breaches of such
+
+12 See, e.g. ‘Banks Trimming Compliance Staff as $321 Billion in Fines Abate’, Bloomberg, 23 March 2017; https://www.bloomberg.com/news/ articles/2017-03-23/banks-trimming-compliance-staff-as-321-billion-infines-abate
+13 See, e.g. ‘Application of AI in RegTech’, Let’s Talk Payments, 11 November 2016, https://letstalkpayments.com/application-of-ai-in-regtech; ‘The RegTech Top 100 Power List: The Most Influential RegTech Firms’, Planet Compliance, 21 March 2017, http://www.planetcompliance. com/2017/03/21/regtech-top-100-power-list-influential-regtech-firms; ‘Rise of the Machines: RegTech and AI’, RegTech Forum, March 2017, https://regtechforum.co/wp-content/uploads/2017/03/RegTech_Forum_ Rise_Of-The_Machines.pdf; Institute of International Finance, ‘Regtech in Financial Services: Solutions for Compliance and Reporting’, 22 March 2016, https://www.iif.com/publication/research-note/regtech-financialservices-solutions-compliance-and-reporting
+14 ‘In the Continuing Ascendency of Artificial Intelligence, Yet Another Investment Bank Hires Robots and Fires Humans’, Compliance X, 2 May 2017; http://compliancex.com/continuing-ascendancy-artificialintelligence-yet-another-investment-bank-hires-robots-fires-humans
+
+15 This would be helped by the development of a common and standard ontology of terminology: see Ireland’s Governance Risk and Compliance Technology Centre’s Financial Industry Regulatory Ontology: http://www. grctc.com/platform-research/firo; Chris Skinner, ‘The Semantic Regulator (#RegTech Rules)’, January 2017, https://thefinanser.com/2017/01/ semantic-regulator-regtech-rules.html
+16 See e.g. ‘Financial Regulators Embrace Artificial Intelligence’ (Institutional Investor, 27 March 2017): https://www.institutionalinvestor.com/ blogarticle/3667648/financial-regulators-embrace-artificial-intelligence/ banking-and-capital-markets-trading-and-technology.html#.WR6ZklSGPIU
+17 ‘IBM Buying Promontory Heralds AI Juggernaut for Bank Compliance’, Bloomberg, 1 October 2016, https://www.ft.com/content/fd80ac50-738311e6-bf48-b372cdb1043a; ‘IBM Is Set to Emerge as a Key RegTech Player’, Business Insider, 16 June 2017, http://www.businessinsider.com/ ibm-is-set-to-emerge-as-a-key-regtech-player-2017-6
+18 See the Super Bowl commercial: https://www.youtube.com/ watch?v=UujLUcssIZU
+
+duties that could reasonably result in losses to third parties
+
+Civil liability of parents for minors22 and of owners of domestic
+
+(including customers and end users). Liability allocation is
+
+animals23 provide some analogies to an AI agent acting
+
+often sought to be contractually modified between the parties
+
+independently from its human developers and trainers.24 Yet,
+
+(vendor and corporate entity; corporate entity and end user), and although there exists legislation against racial incitement for
+
+addressed through insurance coverage.
+
+example,25 teachers are generally not responsible for the acts of
+
+their students (a relevant analogy given the role of training
+
+Yet, regulators tend to focus on the accountability of regulated
+
+in ML).
+
+238 entities, and increasingly individuals,19 and plaintiff litigators
+
+will seek novel causes of action. Product liability legislation
+
+also often exists to protect consumers, including potentially for defective software,20 and the use of open-source software further complicates liability allocation.21
+
+Key Issues for Forging a Responsibility and Liability
+
+Framework in the AI Era At the heart of legal policy is attributing responsibility for a decision
+
+(conscious or spur of the moment) made by a human actor or
+
+Six key issues need to be addressed to forge a responsibility and
+
+agent, where a judge and/or jury may determine culpability for civil liability framework in the AI era, and some are especially important
+
+monetary and/or criminal action for damage caused.
+
+to RegTech AI.
+
+Blockchain and AI in RegTech
+
+19 See, e.g. ‘Yates Memo’, 9 September 2015, https://www.justice.gov/ archives/dag/file/769036/download; ‘Senior Managers and Certification Regime: One Year On’ (see Financial Conduct Authority, 7 March 2017): www.fca.org.uk/news/news-stories/senior-managers-and-ce rtification-regime-one-year; ‘New SFC Measures to Heighten Senior Management Accountability’, Securities and Futures Commission, 16 December 2016, https://www.sfc.hk/edistributionWeb/gateway/EN/ news-and-announcements/news/doc?refNo=16PR143
+20 See, e.g. Levi and Bell, ‘Software Product Liability: Understanding and Minimizing the Risks’, Berkeley Technology Law Journal 5, no. 1 (January 1990); http://scholarship.law.berkeley.edu/cgi/viewcontent. cgi?article=1079&context=btlj
+21 See, e.g. Nimmer, ‘Legal Issues in Open Source and Free Software Distribution’ (adapted from The Law of Computer Technology, 1997, 2005 Supp.); http://www.ipinfoblog.com/archives/Open%20Source%20 Legal%20Issues.pdf
+
+22 See, e.g. Matthiesen, Wickert, and Lehrer, ‘Parental Responsibility Laws in All 50 States’, 8 June 2016; https://www.mwl-law.com/wp-content/ uploads/2013/03/parental-responsibility-in-all-50-states.pdf
+23 See, e.g. Law Reform Commission of Ireland, ‘Report on Civil Liability for Animals’, May 1982; http://www.lawreform.ie/_fileupload/Reports/ rCivilLiabilityForAnimals.htm
+24 D.C. Vladeck, ‘Machines Without Principals: Liability Rules and Artificial Intelligence’, Washington Law Review 89, no. 1 (2014): 117–150; http://digital.law.washington.edu/dspace-law/bitstream/ handle/1773.1/1322/89WLR0117.pdf?sequence=1
+25 Muntarbhorn ‘Study on the Prohibition of Incitement to National, Racial or Religious Hatred: Lessons from the Asia Pacific Region’, United Nations Human Rights Office of the High Commissioner, July 2011; http://www.ohchr.org/Documents/Issues/Expression/ICCPR/Bangkok/ StudyBangkok_en.pdf
+
+Data Reliability, Cleansing, and Consent
+Data sets on which ML relies risk coming from bad data,26 being tainted by malicious actors (internal or external), or even being subject to unconscious bias.27
+How do we address ‘garbage in, garbage out’?
+Data wrangling,28 or the capture, cleaning, and regularizing of data, is critical, including establishing appropriate data architecture and data lakes of centralized clean data for decision models. Appropriate consent for data use is also critical.29
+
+Algorithm Model Bias and Law-breaking or
+Law-avoidance Activity
+Algorithm models and not just data sets can be biased against communities and/or laws – intentionally or otherwise.30 Volkswagen’s ‘defeat devices’ were designed to fake nitrogen peroxide pollutant tests;31 Uber’s Greyball program detected law enforcement officials,32 and its Hell program tracked its competitor 239 Lyft’s cars.33
+
+Blockchain and AI in RegTech
+
+26 For example, defective IoT sensors, data feeds going down, or behavioural analysis based on accounts that are shared and/or purchases made for third-party gifts.
+27 See, e.g. Buolamwini, ‘InCoding – In the Beginning’, 17 May 2016; https://medium.com/mit-media-lab/incoding-in-the-beginning4e2a5c51a45d . See also ‘Twitter Taught Microsoft’s AI Chatbot to Be a Racist Asshole in Less Than a Day’, The Verge, 24 March 2016; https:// www.theverge.com/2016/3/24/11297050/tay-microsoft-chatbot-racist; ‘Big Data: A Tool for Inclusion or Exclusion?’, Federal Trade Commission, January 2016; https://www.ftc.gov/system/files/documents/ reports/big-data-tool-inclusion-or-exclusion-understanding-issues /160106big-data-rpt.pdf
+28 See, e.g. ‘For Big-Data Scientists, “Janitor Work” Is Key Hurdle to Insights’, New York Times, 17 August 2014; https://www.nytimes. com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insightsis-janitor-work.html?_r=0
+29 See, e.g. ‘NHS Gave Google’s DeepMind “Legally Inappropriate” Access to Patient Records’, Financial Times, 16 May 2017; https://www .ft.com/content/2cf5a8d7-932e-3d9d-809d-a92fd4db2112
+
+30 See, e.g. O’Neil, Weapons of Math Destruction: How Big Data Increases Inequality and Threatens Democracy (New York: Broadway Books, 2006); ‘Algorithms Aren’t Bad, But the People Who Write Them May Be’, Wall Street Journal, 14 October 2016; https://www.wsj.com/articles/algorithmsarent-biased-but-the-people-who-write-them-may-be-1476466555; ‘Hiring Algorithms Are Not Neutral’, Harvard Business Review, 9 December 2016; https://hbr.org/2016/12/hiring-algorithms-are-not-neutral
+31 See, e.g. ‘Volkswagen: The Scandal Explained’, BBC News, 10 December 2015, http://www.bbc.com/news/business-34324772; ‘How Volkswagen’s “Defeat Devices” Worked’, New York Times, 16 March 2017; https://www.nytimes.com/interactive/2015/business/international/vwdiesel-emissions-scandal-explained.html
+32 ‘How Uber Deceives the Authorities Worldwide’, New York Times, 3 March 2017; https://www.nytimes.com/2017/03/03/technology/uber-greyball-program-evade-authorities.html?_r=0
+33 ‘Former Lyft Driver Sues Uber over “Hell” Tracking Program’, Fortune, 25 April 2017; http://fortune.com/2017/04/24/lyft-uber-driver-lawsuit-trackingprogram-hell
+
+Yet, was there unconscious racial bias in the COMPAS algorithm for criminal sentencing risk assessments?34 Do Facebook’s algorithms have a confirmation bias because fake news has received more views than real news?35
+Competition authorities are increasingly looking into the concentration of data with the emerging ‘TechFin’ companies.36 They are
+240
+
+also focused on the risk that autonomous repricing algorithms can collude to establish more effective cartels with no need for human intervention. In the words of EU Commissioner Vestager: ‘I think we need to make it very clear that companies cannot escape responsibility for collusion by hiding behind a computer program.’37
+Correlation-, Not Causation-, Based
+
+Blockchain and AI in RegTech
+
+34 See ‘Machine Bias’, ProPublica, 23 May 2016; https://www.propublica.org/ article/machine-bias-risk-assessments-in-criminal-sentencing; ‘False Positives, False Negatives, and False Analyses: A Rejoinder to “Machine Bias: There’s Software Used Across the Country to Predict Future Criminals. And It’s Biased Against Blacks”’, Community Resources for Justice, September 2016; http:// www.crj.org/page/-/publications/rejoinder7.11.pdf; ‘A Computer Program Used for Bail and Sentencing Decisions Was Labeled Biased Against Blacks. It’s Actually Not That Clear’, Washington Post, 17 October 2016; https://www. washingtonpost.com/news/monkey-cage/wp/2016/10/17/can-an-algorithmbe-racist-our-analysis-is-more-cautious-than-propublicas/?utm_ term=.36b7b5bf3b9c; see also Pasquale, The Black Box Society: The Secret Algorithms That Control Money and Information (Cambridge, MA: Harvard University Press, 2015); ‘The Code We Can’t Control’, Slate, 14 January 2015; http://www.slate.com/articles/technology/bitwise/2015/01/black_box_society_ by_frank_pasquale_a_chilling_vision_of_how_big_data_has.html
+35 ‘Facebook’s Fake News Crackdown: It’s Complicated’, Bloomberg, 23 November 2016; https://www.bloomberg.com/news/articles/2016-11-23/ facebook-s-quest-to-stop-fake-news-risks-becoming-slippery-slope; ‘Of Course Facebook Is Biased. That’s How Tech Works Today’, Wired, 11 May 2016; https://www.wired.com/2016/05/course-facebook-biased-thatstech-works-today
+36 ‘The World’s Most Valuable Resource Is No Longer Oil, but Data’, Economist, 6 May 2017; http://www.economist.com/news/ leaders/21721656-data-economy-demands-new-approach-antitrust-rulesworlds-most-valuable-resource. The phrase ‘TechFin’ is distinguished from ‘FinTech’ by Alibaba founder Jack Ma in seeking to ‘rebuild the system with technology’ rather than merely improving it: ‘TechFin: Jack Ma Coins Term to Set Alipay’s Goal to Give Emerging Markets Access to Capital’, SCMP, 2 December 2016; http://www.scmp.com/tech/article/2051249/techfin-jackma-coins-term-set-alipays-goal-give-emerging-markets-access
+
+For many years, enterprise systems have implemented expert systems, decision-tree work flows, and rule-based technology solutions to sift through documents for e-discovery during litigation, and for monitoring and reporting of regulatory compliance matters.
+By comparison, AI based on ML and deep learning through layers of neural networks relies on large amounts of data, statistics, and pattern recognition, and has an evolutionary and even iterative dynamic:38 it is based on correlation as opposed to causation, and on context more than content.
+This raises two critical questions regarding responsibility and liability in the AI era.
+37 See ‘EU Antitrust Enforcement 2.0 – European Commission Raises Concerns About Algorithms and Encourages Individual Whistleblowers’, Kluwer Competition Law Blog, 21 March 2017; http://kluwercompetitionlawblog.com/2017/03/21/ eu-antitrust-enforcement-2-0-european-commission-raises-concerns-aboutalgorithms-and-encourages-individual-whistleblowers. See also Ezrachi and Stucke, Virtual Competition: The Promise and Perils of the Algorithm Economy (Cambridge, MA: Harvard University Press, 2016), which warns of the ‘frenemy’ relationship between Frightful Five super platforms: ‘Tech’s “Frightful 5” Will Dominate Digital Life for Foreseeable Future’, New York Times, 20 January 2016; https://www.nytimes.com/2016/01/21/technology/techs-frightful-5-will-dominatedigital-life-for-foreseeable-future.html 38 Katz, ‘Artificial Intelligence and Law – A Primer’, 28 July 2016; https:// www.slideshare.net/Danielkatz/artificial-intelligence-and-law-a-primer
+
+First, what are the accuracy and acceptable error rates of such
+
+recognition for surveillance), which could lead to civil liability and
+
+predictions? A fundamental analytical question is: if the same data loss of one’s liberty.41
+
+without a machine were presented to a human, would a reasonable
+
+human make the same decision?
+
+Diminishing Role of Human Agency in ML
+
+The law does not expect humans to be error-free: mainly that
+
+they did not have ill intent and/or they acted reasonably in the
+
+Discerning the different levels of human agency in ML is
+
+circumstances. Yet, even though machines can analyse more data essential.
+
+241
+
+and theoretically make better-informed decisions than humans, are we still viewing machines too mechanically and deterministically, and unreasonably holding machines up to an almost strict liability standard of care?
+
+Supervised learning is typically driven by carefully labelled data supervised by human labellers, which the machine repeats with more data (such as learning to identify cats on YouTube videos42 or speech recognition).43 Human agency remains in
+
+What would and should be the acceptable error rate for false predictions, especially in the context of RegTech AI?39
+
+the data collection and training by the classifier with domain expertise.
+
+Blockchain and AI in RegTech
+
+Second, if constant data capture through, e.g. internet of things (IoT) sensory, mobile communication, and transactional surveillance means that no one is effectively invisible and all behavioural data can lead to individual profiles for predictive analytics for future regulatory compliance, are we relying too much on predispositions rather than actions for determining culpability and liability (à la Minority Report)?40
+This is important where ML is used for elective societal and financial access and pricing benefits such as credit ratings, search engines, bank loans, university applications, and health insurance, and is even more crucial when applied to RegTech (such as facial
+39 Could Six Sigma type approaches used for improving process output quality in manufacturing and business processes by identifying and removing defect causes and minimizing variability emerge for AI? 40 Philip K. Dick, ‘The Minority Report’ (1956), a science fiction short story that became a 2002 movie of the same name directed by Steven Spielberg and starring Tom Cruise about a Precrime Division that arrests suspects prior to their infliction of public harm.
+
+Unsupervised learning draws inferences from data sets consisting of input data without human-labelled responses, through techniques such as cluster analysis and generative models.
+41 See e.g, “MIT researchers: Amazon’s Rekognition shows gender and ethnic bias (updated)” VentureBeat (January 2019): https://venturebeat.com/2019/01/24/amazon-rekognition-bias-mit/; “Florida is Using Facial Recognition to Convict People Without Giving Them a Chance to Challenge The Tech”, ACLU (March 2019): https://www.aclu.org/blog/ privacy-technology/surveillance-technologies/florida-using-facial-recognition-convict-people 42 ‘Google’s Artificial Brain Learns to Find Cats’, Wired, 26 June 2012, https://www.wired.com/2012/06/google-x-neural-network; Le, Ranzato, Monga, Devin, Chen, Corrado, Dean, and Ng, ‘Building High-level Features Using Large Scale Unsupervised Learning’ (2012); http://ai.stanford. edu/~ang/papers/icml12-HighLevelFeaturesUsingUnsupervisedLearning. pdf 43 Xiong, Droppo, Huang, Seide, Seltzer, Stolcke, Yu, and Zweig, ‘The Microsoft 2016 Conversational Speech Recognition System’, Microsoft Research, 2016; https://www.microsoft.com/en-us/research/wp-content/ uploads/2017/01/ms_swbd16.pdf
+
+New methods like reinforcement learning44 involve AI agents that take actions in an environment so as to maximize some notion of cumulative reward,45 such as DeepStack and Liberatus AI
+separately learning to beat human professional card players at Texas hold ‘em poker46 (an imperfect information game),
+and OpenAI being used to learn to play Atari 2600 Pong from raw game pixels.47 Other methodologies such as generative
+242
+
+adversarial networks (GANs)48, transfer learning49 and Google’s federated learning50 are emerging too.
+‘Augmented intelligence’ seems the preferred industry phrase,51 but the increasingly reduced role of human agency in AI decisionmaking, and current ongoing research directions.52 complicated by the real possibility of human mischief,53 add to the complexity of whom to hold culpable for damage caused by RegTech AI.
+
+Blockchain and AI in RegTech
+
+44 See, e.g. ‘OpenAI Gym Beta’, 27 April 2016; https://blog.openai.com/ openai-gym-beta; ‘Deep Reinforcement Learning: Pong from Pixels’, Andrey Karpathy Blog, 31 May 2016; http://karpathy.github.io/2016/05/31/ rl; Jaderberg, Mnih, Czarnecki, Schaul, Leibo, Silver, and Kavukcuoglu, ‘Reinforcement Learning with Unsupervised Auxiliary Tasks’, 16 November 2016; https://deepmind.com/blog/reinforcement-learning-unsupervised-auxiliary-tasks; Minh, Kavulcuoglu, Silver, Graves, Antonoglou, Wierstra, and Riedmiller, ‘Playing Atari with Deep Reinforcement Learning’, 19 December 2013; https://arxiv.org/pdf/1312.5602.pdf
+45 These could involve, e.g. policy gradient methods that attempt to learn functions that directly map an observation to an action, and Q-learning, which attempts to learn the value of being in a given state and taking a specific action there.
+46 ‘Artificial Intelligence Goes Deep to Beat Humans at Poker’, Science, 3 March 2017; http://www.sciencemag.org/news/2017/03/artificialintelligence-goes-deep-beat-humans-poker; Moravcik, Schmid, Burch, Lisy, Morrill, Bard, Davis, Waugh, Johanson, and Bowling, ‘DeepStack: Expert-level Artificial Intelligence in Heads-up No-limit Poker’, Science, 2 March 2017; http://science.sciencemag.org/content/early/2017/03/01/ science.aam6960; ‘Inside Libratus, the Poker AI That Out-bluffed the Best Humans’, Wired, 1 February 2017, https://www.wired.com/2017/02/ libratus; Brown and Sandholm, ‘Safe and Nested Endgames Solving for Imperfect-information Games’, Carnegie Mellon, 15 December 2016; http://www.cs.cmu.edu/~noamb/papers/17-AAAI-Refinement.pdf. This is unlike AlphaGo, which analysed 30 million Go moves from human players before refining skills by playing with itself.
+47 ‘Human-level Control Through Deep Reinforcement Learning’, Nature, 25 February 2015; http://www.nature.com/nature/journal/v518/n7540/abs/ nature14236.html
+
+Philosopher’s Trolley Problem Applied to ML
+The moral philosopher’s classic problem has become a touchstone AI question when literally applied to autonomous driving – is a trolley hitting a child instead of a couple a justifiable choice, or vice versa?
+48 See, e.g. ‘Google’s Dueling Neural Networks Spar to Get Smarter, No Humans Required’, Wired, 11 April 2017; https://www.wired.com/2017/04/ googles-dueling-neural-networks-spar-get-smarter-no-humans-required
+49 See, e.g. ‘“Transfer Learning” Jumpstarts New AI Projects’, InfoWorld, 9 January 2017; http://www.infoworld.com/article/3155262/analytics/transferlearning-jump-starts-new-ai-projects.html
+50 See e.g., “Federated Learning: Collaborative Machine Learning without Centralized Training Data” (April 2017); https://ai.googleblog. com/2017/04/federated-learning-collaborative.html 51 See, e.g. ‘IBM: AI Should Stand for “Augmented Intelligence”’, Information Week, 4 August 2016; http://www.informationweek.com/government/ leadership/ibm-ai-should-stand-for-augmented-intelligence/d/ d-id/1326496; see also Ito, ‘Extended Intelligence’, 10 April 2017, https://www.pubpub.org/pub/extended-intelligence
+52 Furthermore, research and ideas grow in complexity, including backpropogation (backprop), convolutional neural networks (ConvNets), and long short-term memory (LSTM) recurrent neural networks. See, e.g. Domingos, The Master Algorithm: How the Quest for the Ultimate Learning Machine Will Remake Our World (New York: Basic Books, 2015). 53 See e.g. “Hackers are the Real Obstacle for Self Driving Vehicles” MIT Technology Review (August 2017): https://www.technologyreview. com/s/608618/hackers-are-the-real-obstacle-for-self-driving-vehicles/; “Voice Fraud Climbs 350%” Security Magazine, September 2018: https://www.securitymagazine.com/articles/89432-voice-fraud-climbs-350
+
+When Mercedes’s initial response was to protect its passengers Without explainable AI,57 how would a regulator or court know what
+
+first, it understandably faced tremendous criticism.54 Should
+
+an AI has learned in the past that led to it making its decision that
+
+algorithm writers programme frameworks of comparable values led to loss suffered, to help determine culpability?58
+
+or pricing as ‘ethical guidelines’, especially given cultural
+
+ethical variations as shown from 40 million decisions by users
+
+from 244 countries and territories who used MIT’s Moral
+
+The Road Ahead: Addressing
+
+Opacity and Complexity for AI Machine?55 Or should a randomizer ensure processes and
+responses are unscripted? Alternatively, should the law’s need
+
+243
+
+Responsibility for a responsible human agent ultimately limit the full application
+
+of AI?
+
+To address concerns such as those just described, amongst many
+
+solutions being proposed,59 the European Union has already
+
+Blockchain and AI in RegTech
+
+Assessing Model Risk in ML Black Boxes
+When Google Search transitioned from rule-based to neural net-based algorithms, some former Google employees were concerned that ‘it was more difficult to understand why neural nets behaved the way it did, and more difficult to tweak their behaviour’.56
+54 ‘Mercedes-Benz’s Self-Driving Cars Would Choose Passenger Lives Over Bystanders’, Fortune, 15 October 2016; http://fortune. com/2016/10/15/mercedes-self-driving-car-ethics 55 See Awad, Dsouza, Kim, Schultz, Henrich, Shariff, Bonnefon and Rahwan, The Moral Machine Experiment, Nature (24 October 2018): https://www.nature.com/articles/s41586-018-0637-6.pdf 56 See ‘AI Is Transforming Google Search. The Rest of the Web Is Next’, Wired, 4 February 2016, https://www.wired.com/2016/02/ai-is-changing-the-technologybehind-google-searches; ‘Google Translate AI Invents Its Own Language to Translate With’, New Scientist, 30 November 2016; https://www.newscientist.com/ article/2114748-google-translate-ai-invents-its-own-language-to-translate-with
+
+57 Explainable Artificial Intelligence (XAI) is actually the name of a US Defense Advanced Research Projects Agency (DARPA) program focused on this important issue: see ‘Explainable AI: Cracking Open the Black Box of AI’, ComputerWorld, 10 April 2017; www.computerworld.com.au/ article/617359/explainable-artificial-intelligence-cracking-open-black-box-ai
+58 Ribeiro, Singh, and Guestrin, ‘“Why Should I Trust You?” Explaining the Predictions of Any Classifier’ (2016); http://www.kdd.org/kdd2016/papers/ files/rfp0573-ribeiroA.pdf. See also description of ‘The Dark Secret at the Heart of AI’, MIT Technology Review, 11 April 2017; https://www.technologyreview.com/s/604087/the-dark-secret-at-the-heart-of-ai
+59 Some ideas include: a US federal agency that certifies AI (see Scherer, ‘Regulating Artificial Intelligence Systems: Risks, Challenges, Competen­ cies, and Strategies’, Harvard Journal of Law & Technology 29, no. 2 (Spring 2016); https://ssrn.com/abstract=2609777); and California introducing the world’s first law on autonomous vehicles in ‘California’s Finally Ready for Truly Driverless Cars’, Wired, 11 March 2017; https://www.wired. com/2017/03/californias-finally-ready-truly-driverless-cars. More radical suggestions include recognizing AI agents as legal persons (see Samir Chopra and Laurence F. White, A Legal Theory for Autonomous Artificial Agents (Ann Arbor: University of Michigan Press, 2011); Asaro, ‘The Liability Problem for Autonomous Artificial Agents’; http://www.peterasaro.org/ writing/Asaro,%20Ethics%20Auto%20Agents,%20AAAI.pdf; AI oversight systems as AI Guardians in ‘Designing AI Systems That Obey Our Laws and Values’, Communications of the ACM, September 2016; https://cacm. acm.org/magazines/2016/9/206255-designing-ai-systems-that-obey-ourlaws-and-values/fulltext
+
+passed the General Data Protection Regulation (GDPR)60 that came into effect in May 2018.
+
+in high-dimensionality characteristic of machine learning and the demands of human-scale reasoning and styles of interpretation’.64
+
+This, in turn, points potentially to the ultimate need to develop
+
+Under Article 22, all natural persons have a ‘right to an explanation’ RegTech algorithms to examine RegTech and other ML algorithms, regarding automated evaluation and decision making,61 including and direct real-time regulatory reporting.65 The increased open
+
+the right to ‘meaningful information about the logic involved’
+
+sourcing of AI tools complicates the liability analysis.
+
+and the right to safeguards, including ‘the right to obtain human 244 intervention...to express his or her point of view and to contest the Historical AI applications and successes arose primarily in rule-
+
+Blockchain and AI in RegTech
+
+decision’.
+
+based games with zero-sum outcomes, such as chess, Jeopardy!, Go,66 and poker, with machines that can ‘experience’ more than
+
+Data privacy laws worldwide are going in only one direction – tighter any human can in a single lifetime with a time horizon that can
+
+and requiring data to be held onshore – and blockchain distributed outlast the lives of its creators and those of its progeny. ledger technology (DLT)62 and Merkle trees63 have been suggested
+
+as depositaries of knowledge that change over time to help provide As Viktor Mayer-Schonberger and Kenneth Cukier remind us,
+
+a searchable audit-like trail of AI data, training, and models.
+
+for every Moneyball 67 example about the effectiveness of data
+
+analysis, there exists the risk of catastrophic decisions made under
+
+Yet, this disclosure paradigm raises the issue of the technical
+
+a ‘dictatorship of data’ as seen in US Secretary of Defense Robert
+
+literacy gap and a ‘mismatch between the mathematical optimization McNamara’s focus on body counts during the Vietnam War.68
+
+Especially given that RegTech AI can apply to regulation of nearly
+
+all aspects of our human lives on this planet, including markets,
+
+60 ‘EU Data Protection Law May End the Unknowable Algorithm’, Information Week, 18 July 2016; http://www.informationweek.com/ government/big-data-analytics/eu-data-protection-law-may-end-theunknowable-algorithm/d/d-id/1326294
+61 Goodman and Flaxman, ‘European Union Regulations on Algorithmic Decision-making and a “Right to Explanation”’, 12 July 2016; https://arxiv. org/pdf/1606.08813v2.pdf
+62 ‘Blockchains for Artificial Intelligence’, BigChainDB, 3 January 2017; https:// blog.bigchaindb.com/blockchains-for-artificial-intelligence-ec63b0284984. Blockchain can provide provenance in a crypto­graphically verifiable manner of input data to identify and catch supply chain leaks; training input/output (X/y) data; testing input (X) data and output (yhat) data; model building and model simulation; and models themselves.
+
+elections, and even our food chain, and its network effects can
+64 Burrell, ‘How the Machine “Thinks”: Understanding Opacity in Machine Learning Algorithms’ (Big Data and Society, 6 January 2016); http:// journals.sagepub.com/doi/abs/10.1177/2053951715622512 65 See, e.g. Austria initiative in ‘Reforming Regulatory Reporting: Are We Headed Toward Real-time?’ (Bearing Point Institute, November 2015); http:// www.bessgmbh.com/ecomaXL/files/BearingPoint-Institute_006-19Regulatory-reporting-1-1.pdf 66 See, e.g. ‘The Rise of Artificial Intelligence and the End of Code’, Wired, 19 May 2016; https://www.wired.com/2016/05/google-alpha-go-ai 67 Michael Lewis, Moneyball: The Art of Winning an Unfair Game (New York: W.W. Norton, 2004).
+
+63 Google’s DeepMind is experimenting with Verifiable Data Audit as Merkle trees rather than blockchains for UK health data: ‘Google’s AI Subsidiary Turns to Blockchain Technology to Track UK Health Data’, The Verge, 10 March 2017; https://www.theverge.com/2017/3/10/14880094/ deepmind-health-uk-data-blockchain-audit
+
+68 Viktor Mayer-Schonberger and Kenneth Cukier, Big Data: A Revolution That Will Transform How We Live, Work and Think (London: John Murray, 2013), 163. See also Emanuel Derman, Models Behaving Badly: Why Confusing Illusion with Reality Can Lead to Disaster, on Wall Street and in Life (New York: Free Press, 2011).
+
+lead to algorithm collusion69 equivalent to being ‘too big to fail’, it is critical that we get this right.
+It is hoped that human ingenuity, foresight, and humility will lead to the emergence of a new framework70 and ethos of ML developer and trainer professionalism71 together with objective
+
+ML verification and balanced oversight. Increased and inclusive international, interdisciplinary, intergenerational and private-public discourse on global algorithmic development and deployment best practices will serve us all.72
+
+69 See, e.g. Organisation for Economic Co-operation and Development,
+
+245
+
+‘Algorithms and Collusion – Background Note by the Secretariat’, 16 May
+
+2017; https://one.oecd.org/document/DAF/COMP(2017)4/en/pdf
+
+Blockchain and AI in RegTech
+
+70 For example, Donella Meadows provides a framework for thinking about places to intervene in complex and dynamic systems – see Meadows, ‘Leverage Points: Places to Intervene in a System’, Sustainability Institute, December 1999; http://donellameadows.org/archives/leverage-pointsplaces-to-intervene-in-a-system
+71 Mayer-Schonberger and Cukier call such professionals “algorithmists”; Cathy O’Neil suggested a Modeler’s Hippocratic Oath; after the 2008 global financial crisis, Emanuel Derman and Paul Wilmott developed ‘The Financial Modeler’s Manifesto’ (Risk Management, September 2009) (file:///C:/Users/user/Downloads/jrm-2009-iss17-derman.pdf), which could be a good starting point:
+
+• I will remember that I didn’t make the world, and it doesn’t satisfy my equations.
+• Though I will use models boldly to estimate value, I will not be overly impressed by mathematics.
+• I will never sacrifice reality for elegance without explaining why I have done so.
+• Nor will I give the people who use my model false comfort about its accuracy. Instead, I will make explicit its assumptions and oversights.
+• I understand that my work may have enormous effects on society and the economy, many of them beyond my comprehension.
+This is analogous to the promotion of capital markets professionalism for human financial services actors: see Tang, ‘Promoting Capital Markets Professionalism: An Emerging Asian Model’ in Buckley, Avgouleas, and Arner, Reconceptualising Global Finance and Its Regulation (Cambridge: Cambridge University Press, 2016).
+
+72 While private initiatives such as Partnership for AI initially arose, increasingly, the broader push has recently come from data commissioners worldwide, including the Declaration on Ethics and Data Protection in Artificial Intelligence by Data Protection and Privacy Commissioners from the EU and 17 different countries (October 2018), that reflect the approach of the IEEE Global Initiative for Ethical Considerations in Artificial Intelligence and Autonomous Systems, to which the author is a member of the Policy Committee.
+

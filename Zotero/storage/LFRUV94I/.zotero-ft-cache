@@ -1,0 +1,767 @@
+The International Journal of Advanced Manufacturing Technology https://doi.org/10.1007/s00170-019-03533-4
+ORIGINAL ARTICLE
+
+Specific cutting energy: a physical measurement for representing tool wear
+Antoine Proteau1 & Antoine Tahan1 & Marc Thomas1
+Received: 21 December 2018 / Accepted: 27 February 2019 # Springer-Verlag London Ltd., part of Springer Nature 2019
+Abstract In a machining context, unexpected tool breakage is still one of the primary causes of increase costs and machine downtimes. Hence, to increase productivity and ensure a company’s financial survival, a way to monitor cutting tool is essential. Thus, this paper proposes to show that it is possible to predict tool wear, with a low error, by using a recurrent neural network with a long short-term memory architecture. However, to achieve a general tool condition monitoring model, a proposition requiring no training is needed. Therefore, this paper introduces the concept of specific cutting energy based on the work of Debongnie [1], which is defined as the amount of energy required to remove 1 cm3 of material. Based on our work, we show that this feature is highly correlated (R > 90%) to the tool wear value. This concept also achieve a high adjusted R2 (R2 > 90%) with a linear regression model. These results are based on an experimental dataset provided by Agogino and Goebel [2]. We succeed in achieving our objectives; however, future work should include a methodology to measure the residual useful life of a cutting tool based on the specific cutting energy and an industrial application of our methodology to see if the results support our conclusions. Still, our proposition could help machining companies accurately monitor their cutting tool wear condition with a single feature.
+Keywords Tool condition monitoring . Cutting energy . EWMA chart . Machine learning . Recurrent neural network . Long short-term memory architecture
+
+1 Introduction
+In today’s economy, a machining process by material removal is still widely accepted as the best method to obtain a complex workpiece. However, in the current context of globalization, digital transformation, and the arrival of new disruptive technologies (artificial intelligence, additive manufacturing, etc.), it is increasingly difficult for companies to stay ahead of the competition. This global context combined with an evergrowing demand for a rise in both productivity and quality at a lower cost forces companies to look for every possible improvement. To help them, they can now rely on new concepts such as Industry 4.0 to provide them with a new vector to invigorate the manufacturing industry and stimulate innovation through new technologies [3]. In the specific context of machining, it is known that Industry 4.0 can have a positive
+* Antoine Proteau antoine.proteau.1@ens.etsmtl.ca
+1 Department of Mechanical Engineering, École de technologie supérieure, Montréal, Qc H3C 1K3, Canada
+
+impact on productivity and profitability by providing new technologies. Nevertheless, unexpected tool breakages or machine downtimes are all problems still affecting machining companies today. It is generally known that cutting tool defect is still one of the primary causes of poor quality, increase in production costs, and machine downtime [4–8]. Therefore, monitoring its state and being able to predict either its Remaining Useful Life (RUL) or the amount of wear is a key toward an optimal usage of this resource. Ultimately, to achieve the Industry 4.0 dream of a fully automated production process, a more optimal cutting tool usage through tool condition monitoring (TCM) is essential.
+Still today, TCM is a very active research field that has concentrated its effort on two aspects: direct and indirect monitoring [7]. Direct methods will use technologies to make an actual and precise measurement of the tool condition. Indirect methods will try to determine the tool condition through the measurement and analysis of signals acquired from sensors such as accelerometers or current sensors [4, 9, 10]. Indirect measurement has been widely used both in research and in an industrial context since they require less investment and are less invasive in the production unit [4].
+
+Int J Adv Manuf Technol
+
+One of the main challenges of TCM is coming up with a general TCM model. In fact, most of the published work still proposes “tool specific” models (e.g., Yu et al. [8], Jiang et al. [7], or Lamraoui et al. [11]). To achieve a general model, we believe it is primordial to have access to a feature accurately representing the tool wear behavior. This feature should also be obtainable through indirect monitoring. What we saw from the literature is that most papers are based on the same statistical features to describe tool wear. For instance, Gebremariam et al. [5] used features such as the mean and the kurtosis of a signal. In Yu et al. [8], they decided to only use the root mean square of the vibration signal to predict the tool wear. Another example is Fu et al. [12] where they used all the above and added the standard deviation and mean power in the frequency domain. However, most of them do not represent the physics behavior happening in the CNC machine. For a more exhaustive review of the commonly used features in TCM, the reader can refer himself to the work of Zhou and Xue [4], AbellanNebot and Romero Subirón [13], or Elattar et al. [14].
+Since cutting parameters may vary during production, the ability of the model to represent non-linear phenomenon is needed [9]. Data-driven methods such as those from machine learning (support vector machine, artificial neural networks, deep learning, etc.) have been widely seen in the literature to perform such tasks. For instance, in Chen et al. [15], they used machine learning algorithms to predict the tool wear. They also included a comparative study between three types of models: a deep belief network, an artificial neural network, and a least square support vector regression. However, one drawback of such methods is the need for a high numbers of training examples to achieve generalization to other types of tools, which makes it harder to reach a general TCM model. Plus, these data-driven methods are as good as the quality of the features used in their training. Consequently, we believe that a feature representing more accurately the behavior of a cutting tool health state through time is a key to the development of a more general TCM model. Consequently, the aim of this paper is to demonstrate that a physics approach to feature engineering could better represent tool wear than traditional statistical feature engineering seen in the literature. Recently, authors such as Jiang et al. [16] and Jia et al. [17] have used the physical concept of power to either monitor and model a CNC machine or make predictions with good results, hence strengthening our hypothesis that a physical approach could deliver better outcomes.
+This paper develops two propositions: first, to demonstrate that it is possible to accurately predict the tool wear amount using data-driven methods such as those provided by the field of machine learning. Second, to establish the performance of a feature called specific cutting energy (SCE) based on the work of Debongnie [1]. To accomplish this aim, our proposal is based on the NASA Milling Dataset [2]. We first show that it is possible to predict the tool wear value with a model based
+
+on an artificial neural network. To build this network, we first performed a correlation analysis and a Principal Component Analysis to construct an input vector and then we built and trained the neural network. At that point, we introduced our proposed feature: the specific cutting energy. To validate its performance and support our claim that it can better represent tool wear than commonly used features, we detailed the results of correlation analysis and a linear regression analysis. We finally applied our data to a control chart. Thus, this paper is structured as follows: section 2 will present the methodology we used in this paper as well as some concept definitions. Section 3 will describe the experimental dataset used. Section 4 will then exhibit the neural network we built and its results. Finally, sections 5 and 6 will respectively detail our proposed feature and our conclusion.
+2 Methodology
+In this section, we defined our proposed methodology to establish that the SCE concept can accurately represent the behavior of a cutting tool degradation process. To do so, we first present the concepts used in our neural network model. Then, a principal component analysis will be performed to illustrate correlation phenomena between features and to help us in selecting the features for our neural network’s input vector. After that, we present the used neural network. A recurrent neural network (RNN) based on a long short-term memory (LSTM) architecture is used in our study. These types of neural networks are well suited to model time series such as the dataset we used in this paper [18]. Then, the results of this step are detailed and will show that it is possible to accurately predict the tool wear value with a low Mean Square Error (MSE). At that point, we introduce our proposed feature, which, in our opinion, is a step toward a general TCM model. Then, we present the results of multiple statistical analysis showing its ability to accurately describe the degradation behavior of a cutting tool.
+At this point, we also like to introduce a condition for which we believe could affect our work or its implementation. It is well known that to extract meaningful information from a signal, the ratio signal-to-noise (S/N) must be greater than 1 (S/ N > 1). If this condition is not respected, in our context, we believe it will cause the tool wear signal to vanish in the spindle default noise. Although we have not empirically tested this condition or the limits of our proposed methodology, we believe anyone interested in reproducing or implementing our work should be aware of the limit in which this work has been developed.
+Next, we detail the features used in our LSTM network. The list is drawn from the work of Abellan-Nebot and Romero Subirón [13], Lei et al. [19], and Elattar et al. [14]. After that, we describe the dataset on which this paper is based.
+
+Int J Adv Manuf Technol
+
+2.1 Extracted features
+
+2.1.1 Feature #1: root mean square
+
+2.1.5 Feature #6: frequency window
+
+The first feature we calculated is the root mean square (RMS) computed from the mean value. It is a well-known feature that represents the signal in terms of its energy content. It is given by Eq. (1).
+
+sﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+
+RMS ¼
+
+1 N
+
+N
+∑
+
+ðxi−xÞ2
+
+i¼1
+
+ð1Þ
+
+where N is the number of samples acquired, xi is the value of each sample, and x is the average of the signal values.
+
+The last and final feature used, AWindow, is the measure of the energy amplitude of a signal in the frequency domain between two specified frequency values. In our case, the cutting speed (RPM) is 826 RPM for all experimentations. This gives us an equivalent value of 13.8 Hz. Hence, the frequency of the tool is 82.6 Hz (13.8 × 6 (inserts)). The value of the window’s amplitude is given by Eq. (6).
+
+sﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+
+b
+
+Awindow ¼ ∑ A2i
+
+ð6Þ
+
+i¼a
+
+2.1.2 Feature #2: kurtosis
+The second feature is the kurtosis (K). It represents the ratio between the fourth-order moment and the square of the second moment. The kurtosis is a statistical signal highly sensitive to the spikiness (shocks) in the data [20]. It is given by Eq. (2).
+
+where Ai is the amplitude of the signal at the i-th frequency and a and b are the two corners of the window. In our case, we assigned a = 75 Hz and b = 85 Hz; around the frequency of interest.
+
+ 4
+
+∑Ni¼1 xi−x
+
+K¼ 1 N
+
+∑Ni¼1xi−x2!2
+
+ð2Þ
+
+2.1.3 Feature #3 and #4: peak and peak-to-peak
+The third and fourth features are respectively the peak (Peak) and peak-to-peak (PTP) values, which are defined as the maximum amplitude and the range between the maximum and minimum amplitude. They are given by Eq. (3) and Eq. (4).
+
+Peak ¼ maxðxÞ
+
+ð3Þ
+
+PTP ¼ maxðxÞ−minðxÞ
+
+ð4Þ
+
+2.1.4 Feature #5: crest factor
+From Thomas [20], we defined the fifth feature, the crest factor (xcrest), as being the ratio between the Peak and the RMS. For a harmonic vibration, its value will be equal to 1.41 and will increase over 3 for a random signal. It is given by Eq. (5).
+
+xcrest
+
+¼
+
+Peak RMS
+
+ð5Þ
+
+3 Experimental dataset
+To determine the validity and capability to adequately represent a cutting tool’s wear behavior, we based all our experiments on the Milling Dataset developed and provided by NASA AMES and UC Berkeley [2]. This dataset record various signals (vibration, acoustic emission and current) as well as several other information contextualizing the signals. This dataset encompasses 16 experiments where the cutting parameters were varied between each experiment. Each experiment is comprised of several machining runs where the flank wear (VB) was recorded at the end. VB is a well-known metric to measure a cutting tool wear and is defined as the distance from the cutting edge to the end of the abrasive wear on the flank face of the tool [2].
+To conduct these experiments, the authors used a Matsuura machining center model MC-510 V with a 70-mm face mill mounted with 6 KC710 (Kennametal) inserts. The cutting parameters for each experiment are displayed in Table 1. In this paper, we used the dataset’s current and vibration signals that were acquired from a current sensor: OMRON model K3TB-A1015 (1 phase of the spindle motor) and a vibration sensor mounted on the spindle: ENDEVCO model 7201-50 (0–13 kHz range). For complete and detailed description of this dataset, the reader can refer himself to Agogino and Goebel [2].
+Even though this dataset is of quality, some data preparation was required. Below, we defined our work hypothesis regarding the dataset:
+
+Int J Adv Manuf Technol
+
+Table 1 Cutting parameters. Adapted from Agogino and Goebel [2]
+
+Experiment
+
+Depth of cut [mm]
+
+Width of cut [mm]
+
+Feed [mm rev−1]
+
+Speed [m min−1]
+
+1
+
+1.5
+
+5.842
+
+0.5
+
+200
+
+2
+
+0.75
+
+5.842
+
+0.5
+
+200
+
+3
+
+0.75
+
+5.842
+
+0.25
+
+200
+
+4
+
+1.5
+
+5.842
+
+0.25
+
+200
+
+5
+
+1.5
+
+5.842
+
+0.5
+
+200
+
+7
+
+0.75
+
+5.842
+
+0.25
+
+200
+
+8
+
+0.75
+
+5.842
+
+0.5
+
+200
+
+9
+
+1.5
+
+5.842
+
+0.5
+
+200
+
+10
+
+1.5
+
+5.842
+
+0.25
+
+200
+
+11
+
+0.75
+
+5.842
+
+0.25
+
+200
+
+12
+
+0.75
+
+5.842
+
+0.5
+
+200
+
+13
+
+0.75
+
+5.842
+
+0.25
+
+200
+
+14
+
+0.75
+
+5.842
+
+0.5
+
+200
+
+15
+
+1.5
+
+5.842
+
+0.25
+
+200
+
+16
+
+1.5
+
+5.842
+
+0.5
+
+200
+
+1. Since voltage (V) is not measured at each run, we estimated it to 400 V. It is a common value found in most recent CNC machines (e.g., Kessler spindles)
+2. Since we do not have access to the exact current (I) value, we estimated it by doing the RMS of the current sensor signal at each run
+3. Since width of cut is missing across all runs, we estimated it as being the radius of the smallest circle encompassing the insert. The estimated value is 5.842 mm.
+
+good performance since it is built on top of the renowned Tensorflow Library (Google).
+The LSTM network we built is composed of four components: an input vector composed of three features (see section 4.1), two LSTM layers of 50 neurons each, a flattening layer, and a dense layer with one output neuron with a sigmoid activation function. The chosen loss function is the Mean Square Error (MSE) (see Eq. (7)). This type of measure is typically well suited for regression problems since it compares the error between the observed value (y) and the predicted value (^y ). In our case, a lower value is better and means higher prediction accuracy.
+
+MSE
+
+¼
+
+1 n
+
+n
+∑
+
+ðyi−^yiÞ2
+
+i¼1
+
+ð7Þ
+
+Since neural networks are a stochastic process by nature, we must perform multiple iterations of each configuration. By doing so, we can obtain the average error which is nearer to the “true” error of the network. In this case, the reported MSE value is the average obtained after 30 training cycles. In other words, we trained each configuration of our LSTM network 30 times and calculated the average of all the MSE values. The configuration presenting the best results is conveyed in this paper.
+Finally, to train our network, we separated our dataset in three distinct groups: training, validation, and test with the
+
+In the next section, we present the results of the statistical analysis and the LSTM performance.
+
+4 Neural networks
+
+As of today, RNN, including the LSTM architecture (Fig. 1), is one of the most effective sequences (x(1), … , x(t)), also known as time series, model used in practical application [18]. For instance, in Aydin and Guldamlasioglu [21], they used an LSTM network to predict the RUL of an engine with success.
+Their capability to accurately model time series is particularly useful in our situation since we are exactly looking at that: understanding and modeling the evolution (degradation in our case) of the tool wear phenomenon through time. For a more exhaustive description of the internal mechanics of a RNN and the LSTM architecture, the reader can refer himself to the work of Goodfellow et al. [18]. In this paper, we made use of the Keras library [22] to build our LSTM network. This library is useful to quickly prototype neural networks with
+
+Fig. 1 LSTM computational graph. From Goodfellow et al. [18]
+
+Int J Adv Manuf Technol
+
+following proportion—60%:20%:20% (9:3:3 samples). The training and validation groups are going to be used for the training part of the LSTM development where the network is trained on the training group. Performance measurement is then going to be made on the test group. This is where we measure the generalization capability of our LSTM network. Next, we present our results.
+4.1 Results and discussion
+
+As stated in our methodology, we performed a linear Pearson’s correlation analysis between all listed features and the tool wear value as defined in Agogino and Goebel [2]. Results of this process for each experiment are shown in Table 2.
+A first observation we can make from the results of Table 2 is that there is not a clear pattern that seems to draw out. However, we can see that most features have multiple negative R coefficient, especially with the frequency domain feature (AWindow). This could be due to the fact that, because of tool wear, there is less shock or impact between the workpiece and the tool, hence resulting in a decreasing signal amplitude through time. In the end, no feature seems to express a clear pattern of linear correlation.
+Then, we performed a Principal Component Analysis (PCA) based on the correlation matrix over all the features values. Results are presented as follows: Fig. 2 shows the loading plot and Table 3 detailed the results of the PCA.
+From Fig. 2, we can see that three directions seem to exist, but each is comprised of two features. When we look at the correlation between both features, for each direction, we see
+
+Fig. 2 PCA loading plot
+that each pair is highly correlated (linear Pearson’s correlation) together: 91.4% between RMS and AWindow, 98.8% between PTP and Peak and 89.0% between K and xCrest. Therefore, to build and train our LSTM network, we discarded the following features: AWindow, PTP, and xCrest and kept the three other features due to their physics significances. Also, by using three features in our input vector, we explain 97.7% of the dataset variance (Table 3). By including the features explaining most of the variance, it will surely help the performance of our LSTM network as well as reducing computing time due to a lower network complexity. The results regarding the performance of the LSTM network presented below are based on this input vector.
+We trained an LSTM neural network to predict the tool wear. Results of the test phase are recorded in Table 4. This
+
+Table 2 Linear correlation between each feature and the tool wear per experiment
+
+Exp. number RMS
+
+K
+
+PTP
+
+Peak
+
+xCrest
+
+AWindow
+
+R
+
+P value R
+
+P value R
+
+P value R
+
+P value R
+
+P value R
+
+P value
+
+1
+
+− 0.82 0.00
+
+0.08 0.77
+
+− 0.79 0.00
+
+− 0.73 0.00
+
+0.59 0.01
+
+− 0.89 0.00
+
+2
+
+− 0.56 0.05
+
+0.29 0.34
+
+− 0.76 0.00
+
+− 0.61 0.03
+
+− 0.07 0.81
+
+− 0.62 0.02
+
+3
+
+− 0.30 0.30
+
+0.08 0.79
+
+− 0.12 0.68
+
+0.08 0.79
+
+0.10 0.73
+
+− 0.36 0.20
+
+4
+
+− 0.81 0.03
+
+− 0.04 0.94
+
+− 0.57 0.18
+
+− 0.47 0.29
+
+− 0.02 0.97
+
+− 0.81 0.03
+
+5
+
+− 0.54 0.27
+
+− 0.15 0.77
+
+− 0.45 0.37
+
+− 0.27 0.60
+
+− 0.16 0.76
+
+− 0.55 0.26
+
+7
+
+− 0.45 0.31
+
+0.16 0.72
+
+0.16 0.74
+
+0.18 0.70
+
+0.26 0.58
+
+− 0.46 0.30
+
+8
+
+0.02 0.97
+
+0.11 0.84
+
+0.08 0.88
+
+0.10 0.84
+
+0.11 0.84
+
+− 0.43 0.40
+
+9
+
+− 0.21 0.59
+
+0.73 0.03
+
+0.01 0.98
+
+0.37 0.33
+
+0.64 0.06
+
+− 0.60 0.09
+
+10
+
+− 0.31 0.38
+
+− 0.43 0.22
+
+− 0.38 0.28
+
+− 0.38 0.28
+
+− 0.31 0.39
+
+− 0.48 0.16
+
+11
+
+− 0.45 0.03
+
+0.44 0.03
+
+− 0.24 0.27
+
+0.08 0.72
+
+0.53 0.01
+
+− 0.65 0.00
+
+12
+
+0.07 0.81
+
+0.09 0.76
+
+0.05 0.87
+
+0.06 0.83
+
+− 0.36 0.21
+
+0.08 0.78
+
+13
+
+− 0.45 0.09
+
+− 0.01 0.98
+
+− 0.07 0.81
+
+− 0.06 0.82
+
+0.14 0.62
+
+− 0.17 0.54
+
+14
+
+− 0.08 0.84
+
+0.55 0.12
+
+0.37 0.33
+
+0.39 0.30
+
+0.37 0.32
+
+− 0.19 0.62
+
+15
+
+− 0.55 0.20
+
+− 0.55 0.20
+
+− 0.52 0.23
+
+− 0.52 0.23
+
+− 0.41 0.36
+
+0.38 0.40
+
+16
+
+− 0.98 0.00
+
+− 0.88 0.02
+
+− 0.97 0.00
+
+− 0.96 0.00
+
+0.26 0.62
+
+− 0.48 0.34
+
+Int J Adv Manuf Technol
+
+Table 3 PCA results
+
+PC1 PC2 PC3 PC4 PC5 PC6
+
+Eigenvalue Proportion Cumulative
+
+3.6942 0.6160 0.6160
+
+1.9425 0.3240 0.9390
+
+0.2264 0.0380 0.9770
+
+0.1013 0.0170 0.9940
+
+0.0341 0.0060 1.0000
+
+0.0015 0.0000 1.0000
+
+table presents the MSE value for the test phase (all three samples) and in detail for each test sample (experiment number).
+From Table 4, we can see that our proposed LSTM neural network produces good results. In fact, a low MSE value for each test sample indicates a good generalization capability in our context. Therefore, by choosing features with a physic meaning, we can accurately predict the tool wear amount. Our results also support the work of Aghazadeh et al. [9] where a machine learning approach was also used to predict tool wear using the same dataset as us.
+As we can see, by using a LSTM network, we are able to achieve very good prediction capability. However, in a general TCM model mindset, the drawback of this prediction capability is the amount of data required in order to generalize these results to multiple different types of cutting tools. In other words, since the neural network must be trained on data, it makes the task of bringing this concept to an industrial application very complex in terms of data collection since it exists thousands of cutting tools’ types, sizes, coatings, etc. Thus, we believe that a feature accurately describing cutting tool wear and easily obtainable in an industrial context is essential and would certainly reduce the gap toward a general TCM model. To answer this need, we propose a single feature to accurately represent the behavior of a cutting tool wear process: the specific cutting energy.
+
+5 Specific cutting energy
+This proposition is based on the concept of specific cutting energy (kc) developed by Debongnie [1]. It is defined as the amount of energy required to remove 1 cm3 of material and has J/cm3 as its unit. In other words, we consider that a cutting tool (drill, end mill, tap, cutting insert, etc.), in a certain state, will consume a certain amount of energy to keep a constant material removal rate (Q) [cm3s−1] in a defined material (assuming that the raw material’s proprieties are constant). The
+
+Table 4 LSTM neural network MSE results
+
+Test
+
+14
+
+15
+
+MSE
+
+0.0239
+
+0.0368
+
+0.0150
+
+16 0.0200
+
+fundamental hypothesis behind this concept is because of tool wear, the energy required to keep this material removal rate in the same raw material will increase due to an increase in friction by cause of the cutting effort rising. This logic is also indirectly supported by Balan and Epureanu [23] since they affirmed that tool wear will lead to an increase in the cutting forces and Fu et al. [12] that stated that motor current varies nearly linearly according to the tool wear. Equation (8) gives us the SCE.
+
+kc
+
+¼
+
+P½W Q½cm3s−1
+
+¼
+
+½ Js−1 ½cm3s−1
+
+¼
+
+Â Jcm−3Ã
+
+ð8Þ
+
+where P [W] is the power (P = I ∙ V) and Q [cm3s−1] is the material removal rate given by Eq. (9).
+
+&
+
+Q¼
+
+∝ae ap V f ; ∝V c ap f n;
+
+for milling for turning
+
+ð9Þ
+
+where ae is the radial depth of cut [mm], ap is the axial depth of cut [mm], Vf is the table feed [mm min−1], Vc is the cutting speed [m min−1], and fn is the feed per revolution [mm rev−1].
+Based on Jiang et al. [16], we could consider a CNC machine as a closed system and draw its boundaries. This definition is represented by Fig. 3. Because it is a closed system, all the energy submitted to the machine is used and transformed in either work (e.g., cutting, movement, and pumps rotation) or heat (e.g., electrical cabinet heat emission, and friction). Based on Jiang et al. [16], we defined a simplified model on which we developed our work with Eq. (10).
+
+PTotal ¼ PTool þ PIdle
+
+ð10Þ
+
+where PTotal [W] is the total power consumed by the machine, PTool [W] is the power needed to cut the workpiece (the actual metal removing process), and PIdle [W] is related to all the power consumption to keep the machine on and ready to cut. PIdle is given by Eq. (11).
+
+PIdle ¼ PSpindle þ PBasic
+
+ð11Þ
+
+where PSpindle [W] is the power required to keep the spindle rotating and PBasic [W] is related to the power required to keep all the machine’s basic systems alive (e.g., computer, pumps, electrical cabinet, and light system).
+From these definitions, we conclude that the value PIdle varies little throughout the machining process and that the variation in the power consumption comes from the actual work being executed. Therefore, we could rewrite Eq. (8) and get Eq. (12).
+
+Int J Adv Manuf Technol
+Fig. 3 System boundaries for a CNC machine. Inspired by Jiang et al. [16]
+
+kc
+
+¼
+
+PTool½W Q½cm3s−1
+
+¼
+
+½ Js−1 ½cm3s−1
+
+¼
+
+Â Jcm−3Ã
+
+ð12Þ
+
+By returning to the fundamental physics understanding of a CNC machine system and the behavior between a cutting tool and the raw material, we consider this concept can better represent the evolution of the degradation of the tool health and thus, provide a way to model tool wear in a TCM model. Also, the clarity of its mathematical development makes it easier to be implemented in an industrial context.
+5.1 Results and discussion
+As we did previously, we also performed a linear Pearson’s Correlation analysis between the tool wear and the SCE. Results for this analysis are presented in Table 5.
+A first observation we can make from the results of Table 5 is that our proposed feature seems to be highly correlated to the tool wear measurement as defined in Agogino and Goebel [2]. Pearson’s R coefficient is over 0.90 (90%) for all experiments and most P values are near zero, which is very good. In other words, our feature, derived from a physics understanding of the relation between the cutting tool and the workpiece, provides good linear correlation results across all experiments.
+Also, it seems that our feature expresses a clear pattern of linear relationship. When we compare these results with the ones in Table 2, we see that kc is clearly superior in terms of linear relationship. In other words, even though there is less impact due to tool wear, the energy required to keep the same material removal rate is increasing. Therefore, it appears that our data support our claim that the SCE can better represents the behavior of a tool wear degradation process than typical features found in the literature.
+
+Also, if we plot (see Fig. 4) our proposed concept versus the tool wear measured as VB, we can clearly see this linear relationship. Moreover, this figure shows the existence of two “phases” in the cutting tool degradation process: a stability phase where the tool is working properly and no wear is occurring and a degradation phase where tool wear is happening. It then supposes the existence of some kind of moment where the state is changing from one phase to the other.
+To demonstrate that the SCE can explain the tool wear behavior, we performed a linear regression analysis over each experiment with a statistical software. Results of this process are shown in Table 6.
+From Table 6, we see that most adjusted R2 are over > 90%, which is very good and a good indicator that this concept can accurately explain a tool wear degradation process. At this point in our study, we can conclude with a certain amount of confidence that, in fact, the SCE can represent tool wear more efficiently than most features used in the literature. But what about its practical use and its relation to a general TCM model? In our opinion, a general TCM would need to require little to no training (i.e., not based on machine learning).
+By looking at Fig. 4, we thought we could exploit this notion of stability phase, degradation phase, and moment of state change. Hence, we decided to apply an Exponentially Weighted Moving Average (EWMA) control chart to each experiment. This kind of chart is used to detect small shifts in a process. To perform this task, we calculated the limits of the chart on the stability phase data and then performed the EWMA analysis. For such control chart to work in our context, limits must be calculated against the stability phase data since this is the section of the data that reflects a process under control. Otherwise, if estimated from the whole data, the limits will be too high and will not provide the desired outcome. For instance, we applied this methodology to experiment #2 and its results are shown in Fig. 5. From this figure, we clearly see
+
+Table 5 Correlation between kc and the tool wear per experiment
+
+Exp. number 1
+
+2
+
+3
+
+4
+
+5
+
+7
+
+8
+
+9
+
+10 11 12 13 14 15 16
+
+R P value
+
+0.98 0.98 0.95 0.97 0.97 0.97 0.99 0.96 0.97 0.95 0.97 0.99 0.98 0.99 0.92 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.01
+
+Fig. 4 Scatter plot of kc vs VB, data from experiment #2
+
+Int J Adv Manuf Technol
+
+that something has changed between the third and fourth run, that, is that the degradation process has begun. Then, as soon as the data exceed the upper limit, the degradation process increase.
+Data outside the control limits do mean that cutting tool degradation is happening. However, it does not imply that a cutting tool change must be performed. To do so, a threshold value based on the criteria, such as the workpiece quality,
+
+could be implemented so that as soon as SCE crosses it, a tool change is requested. It could also be interesting to try to estimate the RUL to know the amount of “time” between the current tool wear value and the threshold value to better plan a cutting tool change and avoid unexpected breakages.
+Still, without any sort of specific training we were able to identify when the tool wear started. This methodology could, in our opinion, be easily implemented in an industrial context
+
+Table 6 Linear regression results
+
+Exp. number 1
+
+2
+
+3
+
+4
+
+5
+
+7
+
+8
+
+9
+
+10 11 12 13 14 15 16
+
+R2
+
+0.96 0.96 0.90 0.92 0.94 0.93 0.96 0.92 0.94 0.91 0.94 0.97 0.95 0.98 0.98
+
+Fig. 5 EWMA chart results, data from experiment #2
+
+Int J Adv Manuf Technol
+
+and be used to monitor a cutting tool’s condition. Even though our work is also tool specific due to the nature of the dataset we used, we believe that this methodology could stay true with other types and variances of cutting tools since we based this concept on a physic understanding of the process.
+6 Conclusion
+To conclude, let us first remind ourselves the objectives of this paper. Our goals were to be able to predict tool wear while also establishing that the SCE concept can better represent the evolution of a tool wear value through time compared to typically used features in the literature. To do so, we first shown that it is possible to accurately predict tool wear using a LSTM neural network and achieved an overall MSE of 0.0239. To build this network, we used multiple features commonly used in the literature. They were selected after performing a linear correlation analysis and a PCA. This analysis showed no clear pattern for linear relationship and also that some features were negatively correlated. These results allowed us to conclude that it is possible to predict tool wear using data-driven method. However, the requirements to achieve such precision makes it difficult for an industry-wide application, hence problematic to achieve a general TCM model.
+To lessen the gap toward a general TCM, we presented the concept of SCE which is based on a physic approach to tool wear. Results from a linear correlation analysis has shown that our concept is linearly correlated (over 90%) with the tool wear as measured in the experimental dataset. Additionally, a linear regression analysis showed an adjusted R2 of, again, more than 90%. Finally, we proposed a methodology based on a EWMA control chart to monitor when tool wear starts since Fig. 5 showed that there are two phases in a cutting tool life: a stability phase and a degradation phase. By using this type of control chart, it was possible to show when a shift occurred in the process, thus, allowing us to closely monitor the degradation evolution.
+Even though we were able to propose some kind of general methodology, using a EWMA chart would not give us the capability to measure the RUL of the cutting tool. Also, while we believe that our approach is more general than a datadriven one, we cannot state that we achieved a general TCM model since all our work is based on a tool-specific dataset. Hence, future work should include first, the investigation of a way to measure a cutting tool RUL based on the concept of SCE while still minimizing the need for any kind of training. Second, future work should also include the implementation of the concept of SCE and our methodology at an industrial partner’s facility. By doing so, we will have access to much more data about more types, sizes, and variances of cutting tools used in multiple types of material thus, paving the way for a general TCM model. Nonetheless, our methodology, in
+
+its current state, could surely help machining companies to better monitor their cutting tools, hence reducing the cost due to unexpected breakages.
+Acknowledgements The authors would like to thank UC Berkely and NASA Ames Prognostic Data Repository for providing the Milling Dataset.
+Funding information This work received financial support from the Fonds de Recherche du Québec – Nature et Technologies (FRQNT) through grant #257668.
+References
+1. Debongnie J-F (2006) Usinage. Editions du CEFAL, 2. Agogino A, Goebel K (2007) Milling Data Set https://ti.arc.nasa.
+gov/tech/dash/groups/pcoe/prognostic-data-repository/. Accessed 23 May 2018 3. Kohler D, Weisz J-D (2016) Industrie 4.0 Les défis de la transformation numérique du modèle industriel allemand. France 4. Zhou Y, Xue W (2018) Review of tool condition monitoring methods in milling processes. Int J Adv Manuf Technol:1–15 5. Gebremariam MA, Xiang Yuan S, Azhari A, Lemma TA (2017) Remaining tool life prediction based on force sensors signal during end milling of Stavax ESR Steel. In: ASME 2017 International Mechanical Engineering Congress and Exposition, Tampa, Florida, USA, November 3-9, 2017. vol 58356. Volume 2: Advanced Manufacturing, p V002T002A094 6. Zhang JZ, Chen JC (2008) Tool condition monitoring in an endmilling operation based on the vibration signal collected through a microcontroller-based data acquisition system. Int J Adv Manuf Technol 39(1):118–128 7. Jiang X, Li B, Mao X, Hao C, Liu H (2018) Tool condition monitoring based on dynamic sensitivity of a tool-workpiece system. Int J Adv Manuf Technol 98:1–20 8. Yu J, Liang S, Tang D, Liu H (2016) A weighted hidden Markov model approach for continuous-state tool wear monitoring and tool life prediction. Int J Adv Manuf Technol:1–11 9. Aghazadeh F, Tahan A, Thomas M (2018) Tool condition monitoring using spectral subtraction algorithm and artificial intelligence methods in milling process. IJMERR 7(1):30–34 10. Uekita M, Takaya Y (2017) Tool condition monitoring for form milling of large parts by combining spindle motor current and acoustic emission signals. Int J Adv Manuf Technol 89(1):65–75 11. Lamraoui M, Thomas M, El Badaoui M (2014) Cyclostationarity approach for monitoring chatter and tool wear in high speed milling. Mech Syst Signal Process 44(1):177–198 12. Fu P, Hope A, King G (1998) Intelligent tool condition monitoring in milling operation. 13. Abellan-Nebot JV, Romero Subirón F (2010) A review of machining monitoring systems based on artificial intelligence process models. Int J Adv Manuf Technol 47(1):237–257 14. Elattar HM, Elminir HK, Riad A (2016) Prognostics: a literature review. Complex & Intelligent Systems 2(2):125–154 15. Chen Y, Jin Y, Jiri G (2018) Predicting tool wear with multi-sensor data using deep belief networks. Int J Adv Manuf Technol:1–10 16. Jiang Z, Gao D, Lu Y, Kong L, Shang Z (2019) Electrical energy consumption of CNC machine tools based on empirical modeling. Int J Adv Manuf Technol 100(9-12):2255–2267 17. Jia S, Yuan Q, Cai W, Lv J, Hu L (2019) Establishing prediction models for feeding power and material drilling power to support sustainable machining. Int J Adv Manuf Technol 100(9-12):2243–2253
+
+Int J Adv Manuf Technol
+
+18. Goodfellow I, Bengio Y, Courville A (2016) Deep learning. The MIT Press,
+19. Lei Y, Li N, Guo L, Li N, Yan T, Lin J (2018) Machinery health prognostics: a systematic review from data acquisition to RUL prediction. Mech Syst Signal Process 104:799–834
+20. Thomas M (2011) Fiabilité, maintenance prédictive et vibration des machines. Presses de l’Université du Québec, Montréal
+21. Aydin O, Guldamlasioglu S (2017) Using LSTM networks to predict engine condition on large scale data processing framework. In: 2017 4th International Conference on Electrical and Electronic Engineering (ICEEE), 8-10 April 2017. pp 281-285
+
+22. Chollet F (2017) Keras (2015). https://keras.io. Accessed 28 Oct 2018
+23. Balan GC, Epureanu A (2008) The monitoring of the turning tool wear process using an artificial neural network. Part 1: the experimental set-up and experimental results. Proc Inst Mech Eng B J Eng Manuf 222(10):1241–1252
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+

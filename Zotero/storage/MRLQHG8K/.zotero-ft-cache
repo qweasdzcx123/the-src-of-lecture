@@ -1,0 +1,4966 @@
+Journal Pre-proof
+
+Improved Differential Evolution for Noisy Optimization
+
+Pratyusha Rakshit
+PII: DOI: Reference:
+To appear in:
+Received Date: Accepted Date:
+
+S2210-6502(18)30826-5 https://doi.org/10.1016/j.swevo.2019.100628 SWEVO 100628
+Swarm and Evolutionary Computation
+26 September 2018 24 November 2019
+
+Please cite this article as: Pratyusha Rakshit, Improved Differential Evolution for Noisy Optimization, Swarm and Evolutionary Computation (2019), https://doi.org/10.1016/j.swevo. 2019.100628
+
+This is a PDF file of an article that has undergone enhancements after acceptance, such as the addition of a cover page and metadata, and formatting for readability, but it is not yet the definitive version of record. This version will undergo additional copyediting, typesetting and review before it is published in its final form, but we are providing this version to give early visibility of the article. Please note that, during the production process, errors may be discovered which could affect the content, and all legal disclaimers that apply to the journal pertain.
+© 2019 Published by Elsevier.
+
+Journal Pre-proof
+Improved Differential Evolution for Noisy Optimization
+Pratyusha Rakshit Electronics and Telecommunication Engineering Department, Jadavpur University, Kolkata- 700032,
+India
+Abstract— A novel approach is proposed in this paper to improve the optimization proficiency of the differential evolution (DE) algorithm in the presence of stochastic noise in the objective surface by utilizing the composite benefit of four strategies. The first strategy is devised with an aim to employ reinforcement learning scheme of stochastic learning automata for autonomous selection of the sample size of a trial solution (for its repeated fitness evaluation) based on the characteristics of the fitness landscape in its local neighborhood. The second stratagem is proposed to estimate the effective fitness measure from multiple fitness samples of a trial solution, resulting from sampling. The novelty of the second policy lies in considering the distribution of noisy samples during effective fitness evaluation, instead of their direct averaging. The third strategy deals with amelioration of the DE/current-to-best/1 mutation scheme to judiciously direct the search in promising region, even in prevailing existence of noise in the objective surface. Finally, the greedy selection policy of the traditional DE is modified by introducing the principle of probabilistic crowding induced niching to ensure both the population quality and the population diversity. Comparative analysis performed on simulation results for diverse noisy benchmark functions reveal the statistically significant superiority of the proposed algorithm to its contenders with respect to function error value.
+Index terms— differential evolution; stochastic noise; learning automata; crowding based niching; fitness estimates.
+I. INTRODUCTION
+Real world problems usually attempt to determine estimator variables from a given set of measurements. Because of poor physical models of the sensors and/or sensor aging, measurement variables are often found to be contaminated with noise. The estimator variables being connected with measurement variables through a process model, the estimators too get contaminated with noise. In a single objective optimization problem, the objective function represents the system model and trial solutions are instantiations of the system variables. The output variables of the objective estimate represent the estimators. Determining the optimum in the objective surface in the presence of noisy measurements is an interesting problem, usually referred to as noisy single objective optimization problem (NSOOP) [2], [3], [25], [50], [56].
+Traditional evolutionary algorithms (EAs) generate trial solutions by a population-based evolutionary procedure and employ a selection strategy to promote trial solutions having better objective estimate (often-called fitness measure) to the next generation population. The rest of the population is abandoned to maintain a uniform population size over generations of the algorithms. In an NSOOP, the fitness estimate being noisy, the selection operator may decline a quality trial solution from being promoted to the next generation population due to its illusive (noisy) fitness estimate, while allowing accommodation of a deceptive solution in the population with misleading good fitness [11], [24], [37], [42], [64].
+Recently researchers are taking keen interest to design new EAs to address NSOOP. Traditional EAs developed for solving NSOOPs can be categorized primarily into three classes [24], including sampling (or explicit averaging), population sizing (or implicit averaging) and modified selection. Sampling strategy is concerned with the measurements of the fitness of a trial solution quite a number of times (referred to as ‘fitness samples’) [11], [23], [37], [42], [44], [64], [75] to check the possibility of infiltration of noise in the trial solution. The drawback of sampling lies in the context of increased computational complexity. The problem can be alleviated by considering a large population size [4], [6], [18], [19], [58]. It is based on the observation that the detrimental effect of noise on a population member can be compensated by the average behavior of similar members in a large population due to inherent
+
+Journal Pre-proof
+explorative capability of EAs. The deterministic selection strategy of traditional EAs has been modified in [7], [10], [14], [33], [59] to carefully identify the quality solutions over evolutionary generations. Among the other NSOOP techniques, uncertainty handling in covariance matrix adaptation-evolutionary strategy [20], local search [38], optimal computing budget allocation [30], [40], opposition based learning [47], logistic map-induced chaotic jump [35] and Kalman formulation of genetic algorithm [66] need special mentioning.
+The present work addresses the issues of decisive selection of quality solutions over generation in a NSOOP by introducing four policies. Differential evolution (DE) [5], [13], [43], [45], [51], [65], [70], [71] is selected as the basic framework of our NSOOP because of its wide popularity as a real-parameter optimizer [15]. One or more of the proposed four strategies can be integrated with the DE to enhance its performance on complicated noisy fitness landscape.
+First, it proposes an adaptive system to judiciously select sample size of a trial solution based on the noise characteristics in its local neighborhood. The reinforcement learning dynamics of stochastic learning automata (SLA) [27], [39] is utilized here to allocate a small (and a large) sample size to a solution located in a less (and more) noisy region in the objective space. It effectively balances the tradeoff between computational accuracy and run-time complexity.
+Second, the paper considers a weighted median approach of the fitness samples of a trial solution to estimate its effective fitness. The weight of a sample determines its contribution towards the effective fitness estimate. The weight assignment policy is devised here with an aim to reduce the influence of a noisy fitness sample measure (differing significantly from the aggregated measure of the remaining samples) towards estimation of effective fitness of the given solution.
+Third, the paper proposes an amendment of DE/current-to-best/1 mutation scheme [13], [15], [45] to astutely select the noise-robust participants of the mutation policy. Furthermore, the scale factors are determined to surmount the misleading search direction of noise.
+Finally, a probabilistic crowding based niching method is employed to allow “competition among similar (geographically near) members in an ecosystem” [28], [32], [36]. The strategy overcomes deterministic dismissal of quality solutions and simultaneously preserves population diversity by maintaining several “niches” (local optima) in the presence of noise.
+The benefits of the four noise-handling strategies adopted in the paper over the existing noisy optimization algorithms are enlisted below.
+The first stratagem, adaptive sampling using SLA, addresses the issue of dynamic sampling. The existing dynamic sampling policies [3], [11], [41], [44], [63], [67] vary the sample size based on hypothesis tests or with progress in evolutionary generation without capturing the jeopardizing effect of noise in the local neighborhoods of trial solutions. This problem has been circumvented in our previous works [48], [49], [5255] by setting sample size proportional to the fitness variance in the local neighborhood of the trial solutions. However, only the fitness variance sensitive proportional selection of sample size does not work well at different sub-space of the fitness landscape, probably because of varying convexity of the landscape. In addition, the correctness of identifying the sample size of a trial solution is dependent on the appropriate selection of its mathematical relationship (linear or non-linear) with the fitness variance of the subpopulation around the given solution.
+This paper gives an alternative approach to address the present problem by incorporating SLA [27], [39] to determine the sample size for periodic fitness evaluation of a given trial solution. The inherent learning dynamics of the SLA naturally selects the sample size by capturing non-uniform local distribution of noise using both the fitness estimate and the inter-quartile range (IQR) of fitness estimates of sub-population in the local neighborhood of a trial solution.
+The second policy proposed here handles the intriguing issue of NSOOP to estimate the fitness of a trial solution based on the measure of its fitness samples [61], [62]. The average estimate of noisy fitness samples [23], [30], [40], [44], [64] being contingent upon their uniform probability of occurrence, also seems to be noisy. The alternative approaches proposed in [52], [54] divide the sample space (in objective space) into a number of predefined intervals. The density of samples in each interval describes the noise
+
+Journal Pre-proof
+induced uncertainty in their measurements. It is worth mentioning that the performances of the proposed approaches greatly rely on the proper selection of the number of intervals in the sample space.
+To overcome the shortcomings, we here adopt a new policy for the measurement of effective fitness of a trial solution based its noisy fitness samples. The proposed method considers weighted median of the fitness samples in the neighborhood, where the weight of each fitness sample is determined by an aggregation of the fitness measure of other samples. An aggregation function has been devised to assign larger value to a weight µl corresponding to the fitness sample Jl, if the median fitness of all samples, excluding the l-th sample Jl, differs slightly with the fitness measure of the l-th sample.
+Third, the proposed algorithm introduces a modification in the traditional mutation strategy. The difference vector term in the traditional DE/current-to-best/1 mutation scheme [13], [15], [45] selects two members randomly from the entire population. However, in noisy optimization, random selection of population members from a relatively high noisy zone may result in poor donor vectors. This is avoided in the paper by adopting a strategy that involves two main steps. In the first step, we rank the members of the population based on their respective effective fitness estimate and weighted inter-quartile range (IQR) separately. Next, we evaluate the rank of a member by the product of their ranks in the above two sorting. The population members are then sorted in ascending order of their ranks. The two members, to be picked up for the mutation scheme, are then selected randomly from the candidates of the first half of the sorted list (relatively more robust than the rest of the population). The paper also recommends a novel strategy of adaptively tuning the mutation scale factors based on the fitness of population members.
+The paper further addresses the issue of uncertainty management through introduction of ‘niching behavior’ [28], [32], [36] in the selection phase of the traditional single objective optimization algorithm. The principle of “niching” is introduced here to form and maintain multiple, diverse sub-populations with identical or varying fitness in the noisy objective surface. In the traditional single objective optimization, a trial solution participates in a competitive selection with its respective parent for being promoted to the next generation population. This parental selection strategy [14], [47] may fail to preserve representatives in multiple local optima in the noisy objective surface. The problem here is circumvented by following the principle of crowding which allows a trial solution to contend with its “geographically near member in the ecosystem [28]”. Crowding thus helps in preserving the population diversity by maintaining several “niches” (local optima) of the “ecosystem” (population of trial solutions) in the presence of noise in the objective surface.
+Experiments have been undertaken to test the efficiency of the proposed approach for noisy optimization by contaminating the objective surface with noise samples taken from seven different types of noise distribution: i) zero mean Gaussian, ii) Poisson, iii) Rayleigh, iv) exponential, v) Gamma, vi) Cauchy and vii) random. The performance of the proposed noisy single objective optimization algorithm realized with DE (hereafter referred to as noisy differential evolution-NDE) is compared with ten state-of-art techniques [14], [21], [23], [35], [38], [40], [47], [62], [73], [75] to handle two well-known sets of benchmark functions [17], [29]. Experiments reveal that the proposed realization outperforms other algorithms by function error value.
+The paper is divided into five sections. Section II overviews the DE algorithm and the basic principle of SLA. Section III provides the noise handling mechanisms in NDE. Experimental settings for the benchmarks and simulation strategies are explained in section IV. Conclusions are given in section V.
+II. PRELIMINARIES
+A. Differential Evolution Algorithm
+This section overviews the main steps of differential evolution (DE) [5], [13], [15], [43], [45], [51], [65], [70], [71] a well-known meta-heuristic algorithm.
+
+Journal Pre-proof
+
+
+
+
+
+1. Initialization: DE randomly initializes a population Ω(t)  {X (t), X (t),..., X (t)} of S real-valued target
+
+
+
+1
+
+2
+
+S
+
+vectors, each of dimension prescribed search space
+
+D, denoted 
+boundary[ X
+
+by 
+l,X
+
+Xi (t h],
+
+) = {xi,1(t where
+
+),
+
+..., xi, j  Xl =
+
+(t),..., xi,D (t)} {x1l , x2l ,..., xDl
+
+for i = } and
+
+1, 2, …, S, within the
+
+X h = {x1h , x2h ,..., xDh } at
+
+generation t = 0. This is realized by setting
+
+x (0)  xl  rand  (xh  xl )
+
+i, j
+
+j
+
+jj
+
+(1)
+
+for j = 1, 2, …, D and i = 1, 2, …, S. Here rand represents a number selected from uniform distribution of
+
+random numbers in (0, 1). The crossover ratio CR is initialized in [0, 1]. The objective function value
+
+J ( Xi (0))
+
+is
+
+evaluated
+
+for
+
+the
+
+target
+
+vector
+
+
+X
+
+i
+
+(0)
+
+with
+
+i
+
+=
+
+1,
+
+2, 
+
+…,
+
+S.
+
+2. Mutation:
+
+For
+
+each 
+
+target
+
+vector 
+
+X
+
+i
+
+(t
+
+)
+
+,
+
+a
+
+donor
+
+vector Vi (t)
+
+is
+
+generated
+
+by
+
+randomly
+
+picking
+
+up
+
+two
+
+different members X r1(t) and X r2 (t) from Ω(t) apart from Xi (t) for i = 1, 2, …, S. The policy is given by
+
+
+
+
+
+
+
+
+
+
+
+Vi (t)
+
+
+
+Xi (t)
+
+
+
+ 1
+
+(
+
+X
+
+best (t)
+
+
+
+Xi (t))
+
+
+
+ 2
+
+(
+
+X
+
+r1
+
+(t
+
+)
+
+
+
+X r2 (t))
+
+(2)
+
+ where η1 and η 2 are scale factors in [0, 2] and i = 1, 2,…, S. Here X best (t) symbolizes the best candidate of current population. For a minimization problem, J ( X best (t)) is the minimum objective function value of
+
+the entire Ω(t). The mutation operation described by (2) is called DE/current-to-best/1. Details of alternative mutation policies are available in [65]. 3. Crossover: Among two different crossover strategies available in literature [65], binomial crossover is employed here based on its established performance irrespective ofproblem dimension [15]. The strategy is concerned with generating a trial vector Zi (t) for each pair of Xi (t) and Vi (t) for i = 1, 2, , S. This is
+realized by
+
+zi,
+
+j
+
+(t )
+
+
+
+vi,   xi,
+
+j j
+
+(t ), (t ),
+
+if rand  CR otherwise
+
+or
+
+j
+
+
+
+jr
+
+(3)
+
+for j = 1, 2, …, D and i = 1, 2, …, S. Here jr represents an integer randomly selected from {1, 2, …, D}.
+
+4. Selection: To ensure the quality of the population while keeping its size fixed at S, a greedy selection
+
+process
+
+is
+
+eventually
+
+employed
+
+to
+
+keep
+
+either
+
+the
+
+target
+
+vector
+
+Xi (t)
+
+or
+
+its
+
+respective
+
+
+trial
+
+competitor
+
+
+Zi
+
+(t
+
+)
+
+in the next generation population based on their objective function values J (Xi (t)) and J (Zi (t)) for i = 1, 2,
+
+…, S. For the minimization problem, the selection strategy is given by
+
+
+
+
+
+
+
+
+
+Xi (t 1)  Zi (t), if J (Zi (t))  J ( Xi (t))
+
+(4)
+
+ Xi (t), otherwise
+
+5. Convergence: After each evolution step, steps 2 to 4 are repeated to achieve the terminating criterion. The condition includes restricting the number of generations or maintaining error limits or the both, whichever is achieved earlier.
+
+B. Stochastic Learning Automata
+
+Journal Pre-proof
+
+Stochastic learning automata (SLA) is a well-known member of the class of reinforcement learning [27], [39]. In SLA, an agent at a given state τ(i){τ(1), τ(2), …, τ(M)} selects and executes an action α(j) from a set of possible N actions {α(1), α(2), …, α(N)} and eventually receives a reward/penalty from its environment. It helps the agent to learn a control policy to reach a definite goal by increasing the probability of its correct response. Let, pi,j be the probability of selecting the action α(j) at state τ(i) for i = 1, 2, …, M and j = 1, 2, …, N.
+To ensure unbiased selection of actions in the initial phase, equal selection probability of 1/N is assigned to each action for each state. At a particular instant of SLA, the agent occupies a state τ(i){τ(1), τ(2), …, τ(M)}, consults the action probabilities pi,l, for l = 1, 2, …, N to select and execute an action α(j) {α(1), α(2), …, α(N)} and consequently receives a response from the environment. Based on the observed response from the environment, the action probabilities pi,l, for l = 1, 2, …, N at state τ(i) are
+n
+modified keeping  pi,l  1 with pi,l ≥0. The currently updated values of the action probabilities are used
+l 1
+to guide the agent to judiciously select its actions at state τ(i) in subsequent instants. Evidently, the reinforcement learning policy used to update the action probabilities plays the vital role to ensure the quality performance of SLA. The linear reinforcement learning scheme LR-P [27], [39] is employed here to update the action probabilities as described below.
+On receiving a reward from the environment at state τ(i) by executing action α(j)
+
+pi, j  pi, j  1  (1  pi, j ) and
+
+(5)
+
+pi,l  (1  1) pi,l ,
+
+for l  1, 2,, N but l  j.
+
+Contrarily, if a penalty response is obtained by the environment by execution of action α(j) at state τ(i), then
+
+pi, j  (1  2 )  pi, j
+
+and
+
+pi,l
+
+
+
+2 N
+
+1
+
+
+
+(1
+
+
+
+
+
+2
+
+)
+
+
+
+pi,l ,
+
+for l  1, 2,, N but l  j.
+
+(6)
+
+The parameters β1 [0, 1] and β2 [0, 1] are respectively associated with the reward and penalty response. In this work, we set β1 = β2 following the LR-P model [27], [39].
+III. OPTIMIZATION IN PRESENCE OF NOISE
+This section extends the traditional DE algorithm by four strategies to improve its optimization capability when the objective function values of the population members are contaminated with stochastic noise. The extensional strategies include i) estimation of effective fitness (EEF), ii) adaptive mutation (AM), iii) adaptive sampling using SLA (ASSLA) and iv) niching-induced selection (NS). The schematic diagrams of the traditional DE and the proposed NDE (DE integrated with the proposed noise handling policies) algorithms are given in Fig. 1. The four extensions incorporated in NDE are elaborately discussed next.
+
+Journal Pre-proof
+
+Population initialization
+
+Fitness evaluation of target vectors
+
+Mutation Crossover (a)
+
+Fitness evaluation of target vectors
+
+Selection
+
+Population initialization
+
+Estimation of effective fitness of target vectors
+
+Local neighborhoods
+
+Formation of local
+neighborhoods
+
+Adaptive mutation
+(b)
+
+Adaptive sampling using SLA
+Trial vector
+Crossover
+
+Sample size for trial vector
+
+Estimation of effective fitness of trial vectors
+
+Nichinginduced selection
+
+Fig. 1 Schematic architecture of (a) the traditional DE and (b) the proposed NDE
+
+A. Estimation of Effective Fitness (EEF)
+
+The primary concern of a NSOOP is to reduce the possible risk of promoting inferior solution to the
+
+next generation based on the fitness measures of contending solutions in the presence of noise in the
+
+fitness landscape. The certainty in assessing fitness measure of a population member Xi is enhanced by
+
+sampling its objective function
+
+J(Xi)
+
+for
+
+a
+
+number
+
+of
+
+times,
+
+called 
+
+sample
+
+
+size
+
+n(Xi )
+
+.
+
+The
+
+first
+
+strategy
+
+proposed here is concerned with estimation of effective fitness
+
+
+
+
+
+J (Xi)
+
+of Xi from the measurement values
+
+of n( Xi ) samples of J ( Xi ) .
+
+
+
+
+
+The 
+
+existing
+
+literature
+
+on
+
+NSOOP usually
+
+takes
+
+an
+
+average
+
+of
+
+n( Xi ) samples
+
+of
+
+J ( Xi ) to estimate
+
+J ( Xi ) disregarding
+
+the
+
+degree
+
+of
+
+contamination 
+
+of
+
+noise
+
+on 
+
+individual
+
+samples.
+
+A
+
+large
+
+value
+
+of
+
+a
+
+severely noise-affected
+
+sample among
+
+n( Xi ) samples of
+
+J(Xi)
+
+in turn makes the average estimate to be 
+
+an
+
+erroneous
+
+one. 
+
+This
+
+impasse has 
+
+been
+
+overcome
+
+here
+
+by
+
+considering
+
+weighted
+
+average
+
+of
+
+n(Xi )
+
+samples of J ( Xi ) to estimate J ( Xi ) . The weights are assigned to individual samples based on their
+
+location in the fitness landscape with respect to others. The strategy assigns larger (and smaller) weight to
+
+a sample in the crowded (and sparse) region in the objective surface. The weight here signifies the degree
+
+of creeping of noise in the specific fitness sample.
+
+
+
+Let the 
+
+fitness samples
+
+of
+
+J(Xi) ,
+
+sorted
+
+in
+
+the ascending order, be
+
+symbolized by Jl ( Xi )
+
+for
+
+l
+
+= 1,
+
+2,
+
+…, n( Xi ) with
+
+
+
+
+
+
+
+J1( Xi
+
+)
+
+
+
+J2(Xi
+
+)
+
+
+
+J  n( Xi
+
+)(Xi
+
+)
+
+.
+
+(7)
+
+Moreover, let
+
+Jl
+
+/
+
+(
+
+ X
+
+i
+
+)
+
+be the median of 
+
+
+
+
+
+J ( Xi ) considering all its samples excluding Jl ( Xi ) . In the
+
+proposed between
+
+approach, 
+Jl ( Xi ) and
+
+the Jl/ (
+
+weight µl of J  Xi ) , given by
+
+l
+
+(
+
+X
+
+i
+
+)
+
+is
+
+modeled
+
+as
+
+a
+
+decreasing
+
+function
+
+of
+
+the
+
+absolute
+
+difference
+
+  l
+
+ exp
+
+
+
+Jl
+
+(
+
+ X
+
+i
+
+)
+
+
+
+Jl
+
+/
+
+(
+
+ X
+
+i
+
+)
+
+(8)
+
+Journal Pre-proof
+
+
+
+
+
+for l = 1, 2, …, 
+
+n(
+
+Xi
+
+)
+
+.
+
+It
+
+is
+
+evident
+
+from
+
+(8)
+
+that
+
+less
+
+(and
+
+more) 
+
+is
+
+the
+
+discrepancy
+
+between
+
+Jl ( Xi ) and
+
+Jl( Xi ) , larger (and smaller) the hl, which indicates that Jl ( Xi ) conforms to the remaining samples
+
+(captured by their median) to the large (and small) extent affirming a high (and a low) level of correctness
+
+in the measurement of 
+
+Jl ( Xi ) in
+
+the presence of noise. 
+
+After
+
+evaluating the
+
+weights 
+
+0
+
+< µl < 1 for
+
+all
+
+fitness samples
+
+Jl (Xi)
+
+for l = 
+
+1,
+
+2,
+
+…,
+
+n( 
+
+X
+
+i
+
+)
+
+,
+
+the weighted median
+
+of
+
+n( Xi ) samples
+
+is
+
+used as
+
+the
+
+effective
+
+fitness
+
+estimate J ( Xi ) .
+
+For
+
+n(
+
+X
+
+i
+
+)
+
+ordered 
+
+sequence
+
+of
+
+fitness
+
+samples,
+
+given
+
+by
+
+(7),
+
+with
+
+respective positive 
+
+weights
+
+µl
+
+for
+
+l
+
+=
+
+1,
+
+2,
+
+…,
+
+n(Xi ) ,
+
+the
+
+weighted
+
+median
+
+is
+
+the
+
+k-th
+
+sample
+
+(with
+
+k  {1,
+
+2, …, n( Xi ) } ) where
+
+
+
+
+
+
+
+    k1 l
+l 1
+
+
+
+1 2
+
+n( l
+
+Xi 1
+
+)
+
+l
+
+and
+
+n(Xi )
+l
+lk 1
+
+
+
+1 2
+
+n(Xi )
+l
+l 1
+
+.
+
+(9)
+
+
+
+The
+
+weighted
+
+median 
+
+of
+
+n( Xi ) samples
+
+used
+
+effective
+
+fitness
+
+estimate
+
+in
+
+(9)
+
+thus
+
+obtained
+
+provides
+
+a
+
+robust measure of J ( Xi ) against outlier.
+
+
+
+The
+
+accuracy in 
+
+the
+
+multiple
+
+measurements
+
+of
+
+J(Xi
+
+)
+
+can
+
+be
+
+determined 
+
+by
+
+its
+
+weighted
+
+
+inter-quartile
+
+range
+
+(IQR) R( Xi ) revealing
+
+the 
+
+spread
+
+of
+
+sample
+
+values of
+
+J(Xi) .
+
+Smaller
+
+the R(Xi ) , less
+
+is
+
+the
+
+contamination level of noise. R(Xi ) is defined as
+
+ R( Xi )  Q0.75  Q0.25
+
+(10.a)
+
+ where Q0.25 and Q0.75 respectively denote the first and third weighted quartiles of the n( Xi ) fitness
+samples, sorted in ascending order. To evaluate Qp where p{0.25, 0.75}, we evaluate k such that
+
+k
+
+n(
+
+ Xi
+
+)
+
+
+
+p
+
+k 1
+
+n(
+
+ X
+
+i
+
+)
+
+(10.b)
+
+and then we set Qp as
+
+Qp
+
+
+
+
+
+
+
+Jk ( Xi )  (Jk 1( Xi ) 
+
+Jk
+
+ ( Xi ))
+
+p
+
+n(
+
+ X
+
+i
+
+)
+
+
+
+k
+
+k 1  k
+
+where
+
+
+
+k
+
+ (k 1)k
+
+
+
+k 1
+
+ (n( Xi ) 1)  l
+
+l 1
+
+with χ1 = 0 and
+
+n(
+
+ X
+
+i
+
+)
+
+
+
+(n(
+
+ X
+
+i
+
+)
+
+
+
+n( Xi
+1) 
+
+)
+
+l
+
+l 1
+
+.
+
+(10.c) (10.d)
+
+B. Adaptive Mutation (AM)
+
+The mutation policy of DE is primarily responsible for controlling its population diversity [15], which eventually controls its exploitative and explorative capabilities. An accurate balance between exploration and exploitation governs the efficacy of DE in identifying the true global optimum in noisy multi-modal fitness landscape. It is evident from (2) that the second term X best  X i helps the target vector X i to perform
+
+Journal Pre-proof
+
+
+
+local exploitation around the population best position X best in the search space. The attraction of all target
+
+vectors towards 
+
+X best ensures faster convergence. Again, the perturbation of
+
+
+
+
+
+X i by the differential
+
+mutation part X r1  X r2 of (2) helps X i to globally explore the search space. The scale factors η1 and η2
+
+respectively control the exploitative and explorative proficiency, the two cornerstones of DE.
+
+However, in the present context of noisy optimization, it is expected that the best performance of DE
+
+cannot be achieved by equal setting of scale factors for all population members. For example,the solution
+
+with the minimum objective function value J ( X best ) is declared as the population best X best , which
+
+
+
+attracts the target vectors for their exploitation. It is noteworthy that J ( X best ) is calculated using the noisy
+
+
+
+samples of J target vector
+
+(X  Xi
+
+best ) following (9). Intuitively, the scale factor 
+towards X best should be modulated with the 
+
+η1 controlling the degree of level of noise-contamination
+
+attraction of 
+of J ( X best )
+
+a .
+
+As indicated by (10), the weighted IQR R( X best ) quantitatively provides an estimate of the degree of the
+
+
+
+
+
+
+
+jeopardizing effect of noise on J ( X best ) . More the R( X best ) , more is J ( X best ) affected by the noise and
+
+
+
+
+
+hence less is the desired degree of orientation of X i towards X best . This is realized by setting η1 as
+
+    
+1  1l  11l  exp R( X best )
+
+(11)
+
+where η1l denotes the minimum permissible value of η1.
+
+ 
+
+Similarly,
+
+the
+
+remaining
+
+scale
+
+factor
+
+η2
+
+controlling
+
+the 
+
+degree
+
+of
+
+perturbation 
+
+of
+
+X i by
+
+X r1  X r2 is also
+
+set as a decreasing function of the maximum of IQR( X r1) and IQR( X r2 ) , as given by (12).
+
+     
+
+
+
+2  2l  12l  exp  max R( X r1), R( X r2 )
+
+(12)
+
+
+
+
+
+It is also observed that complete random selection of
+
+
+
+
+
+X
+
+r1
+
+and 
+
+X r2 from the population may mislead the
+
+direction of search by
+
+X i in deceptive zones if
+
+X
+
+r1
+
+and/or 
+
+X
+
+r
+
+2
+
+is largely 
+
+affected
+
+by
+
+noise.
+
+The
+
+paper
+
+proposes a novel approach to judicious selection of X r1 and X r2 from the population by avoiding
+
+misleading effect of noise.
+
+To achieve this, for each population member, we compute the following composite measure
+
+ (Xi) 
+
+
+
+J
+S
+
+(
+
+X
+
+i)
+
+
+
+
+
+R(
+S
+
+X
+
+i)
+
+(13)
+
+ J (X j )  R(X j )
+
+j 1
+
+j 1
+
+for i = 1, 2, …, S. Then, the population members are sorted in ascending order of their respective
+
+composite measures. For each target vector
+
+Xi ,
+
+X r1 and
+
+X
+
+r2
+
+are
+
+then 
+
+randomly 
+
+selected
+
+from
+
+the
+
+top
+
+S/2
+
+target vectors of the sorted population to generate a donor vector
+
+Vi from
+
+X
+
+i
+
+following
+
+the
+
+DE/current-to-
+
+
+best/1
+
+mutation
+
+provided
+
+r1
+
+≠
+
+r2
+
+≠
+
+i.
+
+
+Expression
+
+(13)
+
+reveals
+
+
+that
+
+the
+
+composite
+
+measure
+
+( Xi ) is
+
+influenced by both fitness estimate J (Xi ) and weighted IQR R(Xi ) . A solution possessing small measure
+
+for both
+
+J (.) and
+
+R(.)
+
+appears
+
+in
+
+the
+
+forefront
+
+of
+
+the
+
+population
+
+sorted
+
+in
+
+the
+
+ascending 
+
+order
+
+of
+
+φ(.),
+
+representing its robustness against noise. Hence the controlled random selection of X r1 and X r2 from the
+
+Journal Pre-proof
+
+ noise-resilient set of top S/2 sorted population members ensures the exploration of Xi in the promising regions of the noisy fitness landscape.
+
+C. Adaptive Sampling Using Stochastic Learning Automata (ASSLA)
+
+
+
+
+
+After generating
+
+a
+
+trial vector Zi
+
+from its
+
+respective
+
+target
+
+vector 
+
+Xi
+
+through
+
+
+the
+
+proposed
+
+AM
+
+strategy
+
+and
+
+crossover
+
+policy, we
+
+
+need
+
+to
+
+identify
+
+the
+
+sample
+
+
+size
+
+n(Zii )
+
+of
+
+Zi for
+
+periodic
+
+evaluation
+
+of its
+
+
+objective function J (Zi ) . More the sample size n(Zi ) , better is the accuracy in the assessment of J (Zi ) ,
+
+given by (9). But a large sample size increases computational complexity. This in turn calls for an
+
+adaptive
+
+strategy
+
+for
+
+sample
+
+size selection.
+
+
+In
+
+the
+
+present
+
+work,
+
+n(Zi
+
+) is
+
+
+adapted
+
+based on the fitness
+
+profile
+
+in
+
+the
+
+local neighborhood
+
+(LN) of
+
+Zi .
+
+The
+
+LN
+
+of
+
+the
+
+trial
+
+
+vector
+
+Zi is formed
+
+by the
+
+target
+
+vectors
+
+of
+
+the
+
+current
+
+population
+
+which
+
+are
+
+in
+
+the
+
+close
+
+proximity
+
+of
+
+Zi
+
+in
+
+the
+
+parameter
+
+space.
+
+
+The
+
+weighted
+
+IQR
+
+of
+
+the
+
+fitness
+
+estimates
+
+of
+
+the sub-population
+
+
+surrounding
+
+Zi thus
+
+formed
+
+
+represents
+
+the
+
+intensity
+
+of
+
+noise
+
+contamination
+
+in
+
+the
+
+LN
+
+of
+
+Zi .
+
+Evidently,
+
+a
+
+large
+
+IQR
+
+in the
+
+
+LN
+
+of
+
+Zi indicates
+
+the
+
+need
+
+of
+
+a
+
+large
+
+sample
+
+size
+
+n(
+
+
+Zi
+
+)
+
+.
+
+Moreover,
+
+for
+
+a
+
+minimization
+
+problem, if
+
+
+Zi falls
+
+in
+
+an
+
+LN
+
+with
+
+small
+
+fitness estimate, a
+
+
+large
+
+n(Zii ) is
+
+required
+
+to
+
+guarantee
+
+the
+
+true
+
+quality
+
+of
+
+Zi .
+
+Otherwise,
+
+a
+
+small value
+
+of
+
+n(Zi ) is used to reduce the run-time. This adaptive selection of sample size is realized here using SLA.
+
+The following steps elaborately discuss the implementation of the proposed sample size selection
+
+strategy.
+
+1. Local Neighborhood Formation
+
+The LNs are identified from the population already sorted in ascending order of the composite measure
+
+φ(.) given by (13). The target vector at the top most position of the sorted population Ω is selected as the
+
+first local guide X 1,lg of the first LN ψ1. The the population Ω lying within the hyperspace
+
+members bounded
+
+of by
+
+LN [Δ X
+
+ψ1 1,l ,
+
+ΔinXt1h,he]l,owcahleitrye
+
+of
+
+X 1,lg is identified from
+
+Δ
+
+ X
+
+1,l
+
+ {x11,lg
+
+ Δ x1, x12,lg
+
+ Δ x2 ,..., x1D,lg
+
+ Δ xD}
+
+and
+
+Δ
+
+ X
+
+1,h
+
+ {x11,lg
+
+
+
+Δ x1, x12,lg
+
+
+
+Δ x2 ,..., x1D,lg
+
+Δ
+
+xD}
+
+(14.1)
+
+and
+
+∆xj= (xjh –xjl)/S
+
+for j = 1, 2, …, D.
+
+(14.2)
+
+guiNdeexXt,2,tlghewsiothluittisonsuabt othrdeintoaptesmowsitthpionsit[iΔonX
+
+of 2,l ,
+
+the ΔX
+
+sorted list {Ω− 2,h ] (following
+
+ψ1} is (14))
+
+recorded as forming the
+
+the second local second LN ψ2.
+
+Continuation of this procedure assigns each member of Ω to an LN and therefore segments the D-
+
+dimensional search space into a number of LNs. Let the number of LNs thus identified in the current
+
+generation be denoted by C. The LNs formed in a one-dimensional search space with their respective
+
+local guides are pictorially presented in Fig. 2.
+
+Journal Pre-proof
+
+ψ2
+J (X) X2,lg
+
+ψ3
+
+ψ1 X1,lg
+
+X3,lg
+
+X l X 2,l X 2,h
+
+X 1,l X 1,h X 3,l X 3,h Xh X
+
+Fig. 2 Identification of local neighborhoods in one-dimensional search space with their respective local guides
+2. Fitness Estimate and Weighted IQR in Local Neighborhood
+
+Composite measures of effective fitness estimates and weighted IQR of the constituent members are
+
+used to characterize the corresponding LN. For LN ψj, its fitness estimate ρj and the weighted IQR δj are computed following the principles of evaluating weighted median and weighted IQR as discussed in
+
+section III.A for j = 1, 2, …, C. The procedure for determining fitness estimate ρj and the fitness variance
+
+δj of the LN ψj based on its constituent members is summarized below.
+
+
+
+Let
+
+X
+
+j ,l
+
+be
+
+the
+
+l-th
+
+member
+
+of
+
+the
+
+j-th
+
+LN
+
+ψj
+
+with
+
+its
+
+effective
+
+fitness
+
+estimate 
+
+J ( X j,l )
+
+for l = 1, 2, …,
+
+|ψj|. Here |ψj| denotes the size of ψj. First the effective fitness estimates J ( X j,l ) for l = 1, 2, …, |ψj| of the
+
+members of the LN ψj are sorted in the ascending order with
+
+
+
+
+
+
+
+J ( X j,1)  J ( X j,2 )   J ( X j, ψ j ) .
+
+(15)
+
+Moreover,
+
+let 
+
+J
+
+/
+
+(
+
+ X
+
+j,l
+
+)
+
+be
+
+the
+
+median
+
+of the 
+
+sorted
+
+list
+
+of
+
+effective
+
+fitness
+
+estimates
+
+of
+
+all
+
+members
+
+of
+
+ψj excluding J ( Xl ) . The contribution of J ( X j,l ) towards evaluation of fitness estimate ρj of ψj is captured
+
+by its weight wl, given by
+
+  wl
+
+ exp
+
+
+
+J
+
+(
+
+ Xl
+
+)
+
+
+
+J
+
+/
+
+(
+
+ X
+
+l
+
+)
+
+.
+
+(16)
+
+for l = 1, 2, …, |ψj|. After evaluating the weights 0 < wl < 1 for l = 1, 2, …, |ψj|, the weighted median of
+the sorted list, described by (15), is used as the fitness estimate ρj of LN ψj. For |ψj| ordered sequence of effective fitness estimates of members X j,l of ψj with respective positive weights wl for l = 1, 2, …, |ψj|,
+the weighted median is the k-th sample (with k{1, 2, …, |ψj|} ) where
+
+    k1 wl
+l 1
+
+
+
+1 2
+
+ψj l 1
+
+wl
+
+and
+
+ψj
+wl
+lk 1
+
+
+
+1 2
+
+ψj
+wl
+l 1
+
+.
+
+(17)
+
+Journal Pre-proof
+
+The weighted IQR δj of ψj is defined as  j  Q j,0.75  Q j,0.25
+
+(18.a)
+
+where Qj,0.25 and Q j,0.75 respectively denote the first and third weighted quartiles of the sorted list of
+effective fitness estimates of the members of |ψj|. To evaluate Qj,p where p{0.25, 0.75}, we evaluate k
+such that
+
+k  p  k 1
+
+
+
+
+
+ψj
+
+ψj
+
+(18.b)
+
+and then we set Qj,p as
+
+Q j, p
+
+
+
+ J (X
+
+j,k
+
+)  (J
+
+ (X
+
+j,k 1) 
+
+ J (X
+
+j,k ))
+
+p ψj
+ ψj
+
+ k  k
+
+(18.c)
+
+where
+
+    k1
+
+ψj
+
+k  (k 1)wk 
+
+ψj
+
+1
+
+ wl
+l 1
+
+with χ1 = 0 and
+
+ ψj
+
+
+
+ψ j 1  wl .
+l 1
+
+(18.d)
+
+Once we obtain ρj and δj for all neighborhoods j = 1, 2, …, C, the normalized fitness estimate ˆ j [0,1] and the normalized IQR ˆj [0,1] of ψj are computed using (19) for j = 1, 2, …, C.
+
+C
+
+C
+
+ˆ j   j  l
+
+and ˆj   j  l
+
+(19)
+
+l 1
+
+l 1
+
+Evidently, ˆ j and ˆj for j = 1, 2, …, C belong to (0, 1).
+
+3. Design of State-Action Table
+A three-dimensional state-action table is designed as shown in Fig. 3 to help ASSLA to select a sample size for a trial vector from the pool {2, 3, …, N} where N denotes the maximum sample size. The sample size thus selected is used for estimation of effective fitness and weighted IQR of the given trial vector. A
+trial vector occupies a state-pair <τ1(m), τ2(l)> with τ1(m){τ1(1), τ1(2), …, τ1(M)} and τ2(l){τ2(1), τ2(2),
+…, τ2(L)} based on the normalized fitness estimate and IQR of its LN respectively. Evidently, here {τ1(1), τ1(2), …, τ1(M)} and {τ2(1), τ2(2), …, τ2(L)} of the state-action table respectively symbolize set of possible M and L states of the population Ω based on the normalized fitness estimate ˆ and the normalized IQR ˆ
+of their LNs. The states τ1(m) and τ2(l) correspond to the population members with normalized LN fitness estimate ˆ and IQR ˆ in [(m – 1)/M, m/M) and [(l – 1)/L, l/L) for m = 1, 2, …, M and l = 1, 2, …, L
+respectively. The indices of the third dimension of the table correspond to uniformly quantized values of the sample size {2, 3, …, N}, to be used for the periodic fitness evaluation of a trial vector. The component pm,l,α of the state-action table denotes the probability of selecting a sample size α {2, 3, …,
+N} at a specific state-pair <τ1(m), τ2(l)> for m {1, 2, …, M} and l {1, 2, …, L}.
+
+Journal Pre-proof
+
+States based on normalized IQR in LNs
+τ2( l)
+
+τ2( 1)
+
+States based on normalized fitness estimate in LNs
+τ1(1) ………. τ1(m) …….. τ1(M)
+
+τ2( L)
+2
+
+pm,l,α
+α
+
+Sample Size
+
+N
+
+Fig. 3 State-action table for SLAAS
+
+4. Identification of Local Neihborhood of a Trial Vector
+
+
+
+
+
+Next, a trial vector Zi is generated from its respective parent Xi using the proposed AM strategy and
+
+the traditional crossover phase. Then we find out the local guide X k,lg (for k  {1, 2, …, C}) which is the
+
+nearest formed
+
+
+local guides
+
+around X k,lg
+
+to Zi among C current local guides. Therefore, Zi is accommodated in . Hence ˆk and ˆk are respectively used as the normalized fitness estimate
+
+the and
+
+LN IQR
+
+ψk of
+
+Zi for assigning its state-pair in the state-action table.
+
+5. State-pair Assignment of a Trial Vector
+
+
+Zi is assigned
+
+to
+
+the state-pair
+
+<τ1(m),
+
+τ2(l)>
+
+if
+
+ˆk
+
+ [(m – 1)/M,
+
+m/M) and
+
+ˆk  [(l – 1)/L, l/L)
+
+for
+
+m
+
+{1, 2, …, M} and l {1, 2, …, L}.
+
+6. Adaptive Selection of Sample Size using Stochastic Learning Automata
+
+SLA helps the trial vectors to judiciously select their sample sizes based on the action probabilities pm,l,α which are adapted based on the reward and penalty received during selection of sample size α at state-pair <τ1(m), τ2(l)> in the previous generations for m = 1, 2, …, M, l = 1, 2, …, L and α = 1, 2, …, N. For example, at a specific state-pair <τ1(m), τ2(l)>, pm,l,α ≥ pm,l,  for  = 2, 3, …, N indicates that the selection of particular sample size α was rewarded many times before in the evolution process. Naturally, the learning experience directs a trial vector Zi at state-pair <τ1(m), τ2(l)> to select the sample size n(Zi ) =
+α with the highest selection probability. However, selection of sample size only based on the highest action probability may result in premature
+convergence. To overcome the impasse, the Roulette-choice strategy [51] is employed for selection of
+
+Journal Pre-proof
+
+
+sample size. The strategy selects a sample size α from the pool {2, 3, …, N} for a target vector Zi at state-pair <τ1(m), τ2(l)> if the following condition holds.
+
+ 1
+
+
+
+ pm,l,  r   pm,l,
+
+ 1
+
+ 1
+
+(20)
+
+7. Reward/Penalty-based Update of Action Probabilities
+
+
+
+
+
+The
+
+sample
+
+size
+
+n(Zi
+
+)
+
+=
+
+α
+
+
+selected
+
+for
+
+Zi in
+
+the
+
+last
+
+step
+
+is
+
+used
+
+for
+
+its
+
+periodic
+
+fitness
+
+evaluation,
+
+effective fitness estimate 
+
+J
+
+(Zi
+
+)
+
+and
+
+weighted 
+
+IQR
+
+R(Zi ) , using (9) and (10) respectively. The weighted
+
+
+IQR R(Zi ) captures the spread of the n(Zi ) fitness samples of J (Zi ) in the noisy objective surface.
+
+Intuitively, the sample size resulting in small (and large) weighted IQR of a solution is rewarded (and
+
+penalized).
+
+The
+
+reinforcement
+
+learning
+
+scheme
+
+of
+
+SLA
+
+is
+
+used
+
+to
+
+update the
+
+
+action
+
+probabilities
+
+based
+
+on
+
+this reward/penalty. To determine whether the selection n(Zi ) = α by Zi at state-pair <τ1(m), τ2(l)> is to
+
+be rewarded or penalized, we first identify the nearest neighbor X j (from the pool of target vectors) of
+
+the given target vector Zi in its LN ψk. Symbolically,
+
+
+
+
+
+ 
+
+Zi  X j
+
+ arg  min  Xlψk
+
+Zi  Xl
+
+. 
+
+(21)
+
+
+
+
+
+where ||.|| denotes the Eucledian norm. It is worth mentioning that the nearest neighbors Zi and X j in the
+
+same
+
+LN
+
+ψk
+
+have
+
+the
+
+identical
+
+normalized
+
+LN
+
+fitness
+
+estimate 
+
+ˆk
+
+and IQR
+
+ˆk
+
+.
+
+Hence,
+
+they
+
+occupy 
+
+the
+
+identical state-pair <τ1(m), τ2(l)>. However, the sample size
+
+n(
+
+X
+
+j
+
+)
+
+selected
+
+by
+
+the
+
+target
+
+vector
+
+
+Xj
+
+for its
+
+periodic
+
+fitness
+
+evaluations in
+
+
+the
+
+last
+
+generation
+
+may
+
+be
+
+different
+
+from
+
+
+the
+
+sample 
+
+size
+
+n(Zi )
+
+=
+
+α
+
+selected
+
+by the current trial vector Zi , resulting in unequal weighted IQRs R(Zi ) ≠ R(X j ) , even at the same state-
+
+pair <τ1(m), τ2(l)>. Smaller the weightedIQR, more robust is a solution against noise. The sample size assigned to the robust contender among Zi and X j is thus expected to be more appropriate for solutions
+
+falling in the LN ψk in the future generations.
+
+In other words,
+
+if
+
+the selection of
+
+n(Zi ) =
+
+α (by
+
+
+the Roulette-choice strategy of SLA) enhances
+
+the
+
+precision
+
+in 
+
+measuring
+
+the
+
+fitness 
+
+samples 
+
+of
+
+Zi in
+
+the
+
+presence
+
+of
+
+noise
+
+as
+
+compared to 
+
+its
+
+nearest
+
+
+neighbor X j , captured by R(Zi )  R( X j ) , a positive reward is given to the selection of n(Zi ) = α by Zi at
+
+state-pair <τ1(m), τ2(l)>. The corresponding action probability pm,l,α is then increased following the SLA policy given in (5). If the selected action results in no improvement in fitness precision, a penalty is given to the selected action n(Zi ) = αat state-pair <τ1(m), τ2(l)> by a reduction in pm,l,α following (6).
+
+Mathematically,
+
+
+
+
+
+if R(Zi )  R( X j ) , then
+
+pm,l,  pm,l,  1  (1 pm,l, )
+
+pm,l,  (1 1) pm,l, ,
+
+for   {2,3,..., N},    ,
+
+(22)
+
+Journal Pre-proof
+
+Fitness
+
+otherwise,
+
+pm,l,  (1 2 )  pm,l,
+
+pm,l,
+
+
+
+2  (1 N 1
+
+2 ) 
+
+pm,l,
+
+,
+
+for   {2,3,..., N},   .
+
+(23)
+
+Steps (4) to (7) are repeated for all trial vectors. The adaptation of sample size using the ASSLA strategy is represented in Fig. 4.
+
+
+
+Xj
+
+
+
+ψ1
+
+Zi
+
+ψ2
+
+ Xi
+
+ψ3
+
+Search Space Target vectors (parent population),
+
+
+Local neighborhoods Trial vector Zi
+
+Identification of local neighborhood ψk of Zi
+
+ˆk
+
+ˆk
+
+
+
+State-pair assignment of Zi
+
+
+
+Identification of X j in ψknearest to
+
+Zi and EFE of X j
+
+
+
+R(X j )
+
+
+
+
+
+e  R(Zi )  R(X j )
+
+State based on ˆk
+
+State based
+
+Yes
+
+on ˆk
+
+e ≤ 0? No
+
+Three-dimensional state-action table
+
+Reward Penalty
+
+as in Fig. 3 Roulette-choice selection of sample
+size n(Zi )
+
+Update state-action table
+
+
+
+
+EEF of Zi
+
+R(Zi )
+
+
+
+J (X j)
+
+
+
+  Calculate p ( X j  Zi )
+
+J(Xi )
+
+rand(0,1) 
+
+
+No
+
+p (X j  Zi )?
+
+Yes 
+Replace X j by Zi
+
+ Retain X j
+
+NS
+
+ASSLA
+
+
+
+
+
+
+
+
+
+Trial vector (offspring), X i : i-th target vector, Zi : Trial vector (offspring) of X i , X j : Nearest neighbor of Zi
+
+ Fig. 4 ASSLA strategy for selection of n(Zi ) based on the normalized fitness estimate ˆk and weighted IQR ˆk in its local
+neighborhood ψk
+
+D. Niching induced Selection (NS)
+The deterministic greedy selection process of the traditional DE, as described by (4), keeps either the generated trial vector Zi or the respective target vector Xi in the population of next generation based on their objective functio n value only, however, ignoring the location of the vectors in the search space. The promotion of either Zi or Xi only based on their fitness measures in the presence of noise, may reduce the population diversity if the discarded solution is located in the sparse zone of the search space. It in turn may miss to explore promising regions (with few population members) in the search space. To overcome this problem faced by deterministic selection strategy, niching method is employed to simultaneously preserve the population quality and diversity. The probabilistic crowding policy of niching mechanism is utilized here to allow “competition among similar (geographically near) members in an ecosystem” [28], [32], [36].
+There are two primarily two phases in the conventional probabilistic crowding based niching including pairing and replacement. In the pairing phase, for each trial vector Zi , 1 < w ≤ S members are randomly selected from the population. Among these randomly selected w individuals, the candidate most similar to Zi (in the parameter space) participates in the competition with Zi for promotion to next generation [28], [32], [36]. The aim of pairing phase is to allow similar members of the population to participate in the local competition. The parameter w is called the window size. However, the efficacy of local exploitation by this pairing policy is determined by an appropriate selection of the window size w. It in turn requires apriori knowledge about the location and spacing of the local optima. An accurate replacement can be ensured by
+
+Journal Pre-proof
+
+choosing w = S (population size), but at the cost of additional computational overhead of distance calculation of each population member from Zi .
+
+The pairing policy proposed in the present work is devised with an aim to attain pairing efficiency
+
+equivalent to w = S, but by avoiding distance measurements with all members of the population. The proposed policy allows the trial vector Zi with its nearest neighbor X j in its LN ψk (which is already
+
+identified by the principle described in section III.C.4). To realize this, first we identify the local guide
+
+X k,lg
+
+,
+
+for
+
+k {1,
+
+2,
+
+…,
+
+C}, which
+
+
+is
+
+nearest
+
+to
+
+Zi among
+
+all possible
+
+
+C
+
+local
+
+guides
+
+discovered
+
+in
+
+step-1
+
+under
+
+section
+
+III.C. 
+
+Thus
+
+
+Zi
+
+is
+
+placed
+
+in
+
+the
+
+LN
+
+ψk
+
+around
+
+X k,lg
+
+for k {1, 2, …, C}. Next, we select the
+
+nearest neighbor 
+
+X j of
+
+Zi in the LN ψk for the subsequent competitive selection. Evidently, the solution
+
+
+
+
+
+X
+
+j
+
+providing
+
+
+minimum distance
+
+from
+
+the
+
+trial
+
+vector
+
+Zi is
+
+not necessarily
+
+identical
+
+
+with 
+
+Zi
+
+’s
+
+immediate
+
+parent Xi . Hence even after discarding one solution after competition among Zi and X j , the remaining
+
+one is still kept as a member of the LN ψk, thus preserving the population diversity. Moreover, the proposed pairing policy computes distancefor C+|ψk| times (C times for LN identification and |ψk| times for identifying the nearest neighbor X j of Zi in the LN ψk) to discover X j , the nearest neighbor of Zi .
+
+In the replacement phase ofcrowding policy, a probabilistic estimate is used to decide the substitution
+
+of
+
+the 
+
+nearest
+
+neighbor 
+
+X
+
+j
+
+by
+
+Zi
+
+for
+
+the
+
+next
+
+generation.
+
+
+Smaller 
+
+the
+
+J (Zi ) (and
+
+R(Zi ) )
+
+with respect
+
+to
+
+J (X j ) (and R(X j ) ), more is the probability of Zi to replace X j . This is captured by the following
+
+replacement probability.
+
+ p( X
+
+j
+
+
+
+ Zi )
+
+
+
+1 exp((J
+
+ (X
+
+1 j ) R(X
+
+j)
+
+ J (Zi )
+
+ R(Zi )))
+
+(24)
+
+
+
+
+
+
+
+
+
+
+
+It is evident from (24) that p( X j  Zi )  1if J ( X j )  J (Zi ) and R( X j )  R(Zi ) . The strategy is
+
+pictorially represented in Fig. 4.
+
+The pseudo-code for the proposed NDE algorithm is given below.
+
+Pseudo code of the Proposed NDE
+
+Procedure DEN Input: Noisy optimization problem, stopping criterion, maximum (N) sample size, number of states M and L of the state-action
+Output:tOabpltei,mmalaxsoimluutimonvXalubeesot f. scale factor η1h and η2h, stochastic learning parameters β1 and β2.
+
+Begin
+
+1. Initialization:
+
+   
+
+
+
+1.(i). Randomly initialize a population of S, D–dimensional individuals Ω(t)  X (t), X (t),..., X (t) following (1) at t= 0.
+
+
+
+
+
+1
+
+2
+
+S
+
+1.(ii). Set the sample size n( Xi (t)) of the objective function J ( Xi (t)) to the minimum sample size 2 for i = 1, 2, …, S.
+
+1.(iii).Initialize [pm,l,α]= 0.1 where m = 1, 2, …, M andl = 1, 2, …, Land α = {2, 3, … , N}. 1.(iv).Effective Estimation of Fitness: Evaluate J ( Xi (t)) and R( Xi (t)) using n( Xi (t)) fitness samples for i = 1, 2, …, S using
+
+(9) and (10) respectively.
+
+  1.(v). Set
+
+ X
+
+best
+
+(t)
+
+
+
+arg
+
+ 
+
+m in
+
+ Xi (t)
+
+ J ( Xi (t))
+
+  for minimization problem. 
+
+2. While stopping criterion is not reached do begin 2.(i) Local Neighborhood Formation: Identify C(t) local neighborhoods in the D-dimensional parameter space using the
+
+principle stated in section III.C.1. Compute ˆ j and ˆj using (19) for j = 1, 2, …, C(t).
+
+2.(ii) For i =1to S do begin
+
+Journal Pre-proof
+
+
+
+
+
+a) Adaptive Mutation: Generate Vi (t) corresponding to Xi (t) using (2) and following the AM strategy proposed in
+
+section III.B.
+
+
+
+
+
+
+
+b) Binomial Crossover: Generate Zi (t) for the pair Xi (t) and Vi (t) using (3). 
+
+c) Local Neighborhood Identification: Discover the local neighborhood ψk of Zi (t) following the principle of section
+
+III.C.4 for k {1, 2, …, C(t)}.
+
+
+
+d) Nearest Neighbor Identification: Identify X j (t)  ψk satisfying (21).
+
+
+
+e) State Assignment in State-Action Table: Assign Zi (t) to the state-pair <τ1(m), τ2(l)> if ˆk  [(m−1)/M, m/M) and
+
+ˆk
+
+ [(l−1)/L,
+
+l/L)
+
+for
+
+m
+
+{1,
+
+2,
+
+…,
+
+M} 
+
+and
+
+l
+
+{1,
+
+2,
+
+…,
+
+L}
+
+respectively.
+
+f)
+
+Roulette-Wheel Selection:
+
+Select
+
+n(Zi
+
+(t
+
+))
+
+=α
+
+from 
+
+{2,
+
+3,
+
+…, N) following 
+
+the
+
+principle given
+
+in section
+
+III.C.6.
+
+g) Effective Estimation of Fitness: Evaluate J (Zi (t)) and R(Zi(t)) using (9) and (10) respectively.
+
+
+
+h)
+
+Reward/Penalty-based Update of Action Probabilities (of
+
+
+
+
+
+Zi (t) at state-pair <τ1(m), τ2(l)> and action
+
+n(Zi (t)) =α):
+
+If R(Zi (t))  R( X j (t)) then do
+
+Update the action probabilities at state-pair <τ1(m), τ2(l)> by (22).
+
+Else do
+
+Update the action probabilities at state-pair <τ1(m), τ2(l)> by (23).
+
+End If.
+
+
+
+
+
+i)
+
+Modified Probabilistic Crowding based Niching: Select either
+
+
+
+
+
+
+
+
+
+Zi (t) or its nearest neighbor
+
+X j (t) as follows.
+
+X j (t  1)  Zi (t), if rand(0,1)  p( X j (t)  Zi (t))
+
+ X j (t), otherwise
+
+j)
+
+Set
+
+ X
+
+best
+
+(t
+
+ 1)
+
+
+
+ X j (t  1),
+
+if
+
+J
+
+ (X
+
+j
+
+(t
+
+ 1))
+
+
+
+J
+
+ (X
+
+best
+
+(t ))
+
+.
+
+End For. 2.(iii) Set t←t+1.
+End While; End.
+
+IV. EXPERIMENTS AND RESULTS
+This section abridges the experiments undertaken to analyze the relative performance of the proposed algorithm with its competitors and summarizes the results when the efficacy of the contender algorithms is tested on noisy benchmark functions.
+A. Benchmark Functions and Evaluation Metrics
+1. Benchmark Functions: The performance of the proposed NDE algorithm is analyzed here with respect to following two sets of well-known benchmark functions, which effectively represent such real world fitness landscapes. BF1: It comprises 28 CEC’2013 recommended benchmark functions [29]. Among these benchmarks, five (f01−f05) are unimodal, fifteen (f06−f20) are multimodal and the remaining eight (f21−f28) are composition test functions. These functions here are made noisy by additive noise, discussed in the next sub-section.
+The noisy version of each function of BF1 is realized by contaminating each function with additive noise samples drawn from certain distribution, including Gaussian [9], Poisson [26], Rayleigh [22], exponential [34], Gamma [1], Cauchy [22] and random [8].
+
+Journal Pre-proof
+
+BF2: It consists of 30 noisy benchmark functions, recommended in GECCO’2010 [17]. Among these benchmarks, six (101−106) are affected with moderate noise, fifteen (107−121) with severe noise and the rest (122−130) are highly multimodal functions with severe noise.
+2. Comparative Framework and Parameter Settings: The comparative framework is formed by selecting widely popular algorithms in NSOOP domain. The list includes increased populationuncertainty handling-covariance matrix adaptation-evolutionary strategy (IPOP-UH-CMA-ES) [21], memetic for uncertainties DE (MUDE) [38], subset based LA incorporated particle swarm optimization (LAPSO) [73], noise tolerant genetic algorithm (NTGA) [23], immune algorithm with adaptive sampling (IAAS) [75], PSO with OCBA and hypothesis test (PSOOHT) [40], bare bones PSO with chaotic jump (BBPSO-CJ) [35], opposition-based DE (ODE) [47], DE with random scale factor and stochastic selection (DE-RSF-SS) [14], and genetic algorithm with memory-based fitness evaluation (MFEGA) [62]. For all competitors, a population of 50 solutions is initialized with same random seed except IPOPUH-CMA-ES to ensure fair comparison. Apart from this, the maximum function evaluations (FEs) for all contenders is fixed at 104×D for D-dimensional search space problem. The parametric set-up adopted for all the competitor algorithms is given in Table-I.
+
+TABLE I-A: PARAMETER SETTINGS OF COMPARATIVE FRAMEWORKS IN D-DIMENSIONAL SEARCH SPACE
+
+NDE
+
+IPOP-UH-CMA-ES
+
+MUDE
+
+LAPSO
+
+Parameters Values Parameters Values
+
+Parameters
+
+Values
+
+Parameters
+
+Values
+
+Number of
+
+newly
+
+Sample size
+
+Adaptive
+
+sampled
+candidate 4  3 ln D
+solutions in
+
+Minimum scale factor
+
+0.1 Network topology
+
+Star
+
+each
+
+generation
+
+Size of state-
+
+transition table
+
+10×10×20
+
+Learning rate for mean
+
+1
+
+Maximum scale factor
+
+0.9 Acceleration c1
+
+1.49618
+
+M×L× N
+
+parameters
+
+Fitness Weighted estimation averaging
+
+αcov
+
+0.5
+
+Probability to update scale factor
+
+0.1
+
+c2
+
+1.49618
+
+Probability of
+
+generating offspring
+
+Mutation
+
+AM
+
+λmintarget
+
+0.66
+
+using scale factor 0.04
+
+golden selection
+
+Inertia
+
+0.729844
+
+search (SFGSS)
+
+Probability of
+
+η1l
+
+0.6
+
+α−old
+
+0.5
+
+generating offspring using scale factor
+
+0.07
+
+Maximum velocity 0.25|zmax−zmin|
+
+hill climb (SFHC)
+
+η2l
+
+0.6
+
+Initial exploratory radius of SFHC
+
+0.1
+
+Total computing budget constraint
+
+250
+
+Selection
+
+Probabilistic crowding
+
+Maximum budget for SFGSS
+
+Initial simulation 40 FEs replications of each
+design (solution)
+
+5
+
+SLA parameter
+
+0.5 each
+
+Maximum budget for SFHC
+
+100 FEs
+
+Additional simulation replications
+
+50
+
+Maximum number
+
+of evaluations per
+
+each individual for 30
+
+Threshold
+
+0.9
+
+noise analysis based
+
+selection
+
+Subset capacity
+
+3
+
+NTGA
+
+Parameters
+
+Values
+
+Size of mating pool
+
+2
+
+Size of buffer pool
+
+50
+
+Initial sample size
+
+3
+
+Crossover rate
+
+0.6
+
+Mutation operator
+
+Polynomial
+
+Mutation rate
+
+1/D
+
+Selection
+
+Probabilistic restricted tournament
+
+Journal Pre-proof
+
+TABLE I-B: PARAMETER SETTINGS OF COMPARATIVE FRAMEWORKS IN D-DIMENSIONAL SEARCH SPACE
+
+IAAS Parameters Values
+
+PSOOHT
+
+BBPSO-CJ
+
+ODE
+
+DE-RSF-SS
+
+MFEGA
+
+Parameters Values Parameters Values Parameters Values Parameters Values Parameters Values
+
+Initial sample size
+
+2
+
+c1 3.85
+
+c1 0.25 Scale factor 0.5 Scale factor [0.5, 1] Crossover UNDX
+
+Control
+
+parameter for maximum sample
+
+100
+
+size
+
+Acceleration
+
+Acceleration
+
+parameters
+
+parameters
+
+c2 0.25
+
+c2
+
+Differential 0.25 amplification 0.1
+factor
+
+Crossover rate
+
+0.9 Children size 5
+
+Reproduction
+
+Dyna mic
+
+Constriction factor 0.729
+
+Constriction factor
+
+0.729
+
+Crossover rate
+
+0.9
+
+Mutation
+
+Hypermutation
+
+Total computing budget constraint
+
+2000
+
+Scaling
+
+parameter
+
+[0.1%, 10%] of D
+
+Mutation
+
+DE/rand/ 1/bin
+
+Control parameters
+
+λ
+
+for mutation probability
+
+T0
+
+0.9 Initial simulation replications of each 10
+100 design (solution)
+
+Maximum stagnation
+interval
+
+5
+
+Jumping rate constant
+
+0.3
+
+Gaussian β1 0.01 mutation parameter β2 0.3
+
+Adjustable
+
+parameter for suppression
+
+0.4
+
+radius
+
+Control
+
+parameter for 0.3
+
+suppression prob.
+
+Additional simulation replications
+
+10
+
+Range of chaotic jump
+
+[−1, 1]
+
+Chaos control parameter
+
+4
+
+3. Performance Metric: Function error value (FEV) is used to investigate the comparative analysis of performance of NDE and its contenders. FEV is defined by J (X )  J (X *) where J (X ) denotes the
+
+median objective function value obtained by an algorithm over K runs (say 50) and J (X *) represents the
+true fitness of the global optimum of a particular benchmark function. Smaller the FEV better is the performance of the algorithm.
+
+B. Results and Performance Analysis
+
+This section first examines the effectiveness of settings of the control parameters tabulated in Table-I. the section then provides the relative merits of the individual extensions embedded in NDE through computer simulations. A comparative analysis of the performance of NDE with its competitors is also undertaken in this section. The latter part of the experiment attempts to improve the performance of some well-known self-adaptive DE variants by integrating the proposed uncertainty management strategies in the algorithms for quality performance in the noisy fitness landscape. It is worth mentioning that all the experiments are undertaken with respect to both noisy versions of BF1 and BF2 benchmark functions for different dimensions of the search space. The BF1 benchmark functions are contaminated with all possible settings of different noise models to validate the proficiency of the proposed noise handling mechanisms. However, a few results are reported in the paper for space limitation.
+
+1. Sensitivity Analysis of Control Parameters of NDE
+
+A relative analysis of the performance of the proposed NDE for different settings of its control
+parameters, including the number of states of the state-action table M and L, the maximum sample size N, the minimum value of sale factors η1l and η2l, the ASSLA control parameters β1 and β2 is undertaken in this section. The sensitivity analysis approach proposed in [57], [60] is used here to validate the effect of individual NDE control parameter p {M, L, N, η1l, η2l, β1, β2} on its optimization performance.
+To examine the influence of a specific parameter p from {M, L, N, η1l, η2l, β1, β2}, keeping the rest of the parameters (excluding p) fixed at the values given in Table-I, only p is varied from its permissible
+
+Journal Pre-proof
+
+minimum value (with Label −1) to its maximum value (with Label +1) as indicated in Table-II. For example, during examining the effect of the maximum sample size N, it is varied from 15 to 25 with other NDE control parameters set as M = 20, L = 20, η1l = 0.6, η2l = 0.6, β1 = 0.5 and β2 = 0.5 following Table-I.
+
+TABLE II: LOW, MEDIUM AND HIGH VALUES OF CONTROL PARAMETERS OF NDE USED FOR SENSITIVITY ANALYSIS
+
+Control Parameters
+
+Number of states in state-
+
+M
+
+action table
+
+L
+
+Maximum sample size N
+
+Minimum scale factors
+
+η1l η1l
+
+ASSLA control parameter
+
+α β
+
+Low (Label −1) 5 5 10 0.1 0.1 0.2 0.2
+
+Medium (Label 0) 10 10 20 0.6 0.6 0.5 0.5
+
+High (Label +1) 15 15 30 1 1 1 1
+
+To assess the sensitivity of a specific control parameter p set at a specific label l  {−1, 0, +1}, NDE is run 50 times on a particular benchmark function J in D-dimensional search space and the corresponding FEV values and run-times (RTs) are recorded. The effect of p with label l on the performance of NDE is then captured by its sensitivity factor, given by
+
+SFJ ,D,l ( p)
+
+
+
+  
+
+FEVmed FEVmax
+
+
+
+RTmed RTmax
+
+  J ,D,l
+
+(25)
+
+Here FEVmed (and FEVmax) and RTmed (and RTmax) respectively denote the median (and maximum) value of FEV and RT obtained after 50 independent runs of NDE. Here J  {1, 2, …, 58} (28 BF1 and 30 BF2 benchmark functions) indicates the benchmark function index and D {10, 30, 50, 100} represents the search space dimension. Evidently, smaller the value of SFJ,D,l(p), better is the performance of NDE on the function J in the D-dimensional search space with the parameter p fixed at its l-th label. The sensitivity factor of p at its l-th label, SFl(p) is now defined by (26).
+
+  SFl
+
+(
+
+p)
+
+
+
+1 4
+
+ 
+
+ 
+
+1
+
+ 
+
+D10,30,50,100
+
+
+
+58
+
+58
+SFJ ,D,l
+J 1
+
+(
+
+ p)
+
+
+   
+
+(26)
+
+Small value of SFl(p) demonstrates the quality performance of NDE to achieve the optimal trade-off between FEV and RT metrics. Fig. 5 portrays the measures of SFl(p) for all possible combinations of p and l with p = {M, L, N, η1l, η2l, β1, β2}and l = {−1, 0, +1} (i.e., low, medium, high). Fig. 5 reveals that the setting of each NDE control parameter p as given in Table-I yield the minimum SF value among all
+possible labels of p.
+
+Journal Pre-proof
+
+0.8 0.75
+
+Low (Label -1) Medium (Label 0) High (Label +1)
+
+Sesitivity Factor 
+
+0.7
+
+0.65
+
+0.6
+
+0.55
+
+0.5
+
+M
+
+L
+
+N
+
+1l
+
+2l
+
+1
+
+2
+
+Fig. 5 Sensitivity analysis of control parameters of NDE
+
+Similar approach is considered to validate the parameter settings of the rest of the algorithms in the comparative framework. Tables III-A to III-J present the SFs of the control parameters for their different label of settings (within parenthesis). The minimum SF value and the corresponding parameter setting are set in bold. The results reported in Table-III also support the optimal settings of the parameters as given in Table-I.
+
+TABLE III-A: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF IPOP-UH-CMA-ES
+
+Control Parameters
+Learning rate for mean αcov
+λmintarget α−old
+
+(Low Value with Label −1)
+0.692 (0.2) 0.676 (0.1) 0.678 (0.2) 0.586 (0.1)
+
+SF (Medium Value with Label 0)
+0.691 (0.5)
+0.481 (0.5) 0.474 (0.66)
+0.519 (0.5)
+
+(High Value with Label +1)
+0.489 (1) 0.653 (1) 0.608 (1) 0.689 (1)
+
+TABLE III-B: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF MUDE
+
+Control Parameters
+
+Minimum scale factor
+
+Maximum scale factor
+
+Probability to update scale factor
+
+Probability of generating offspring using
+
+SFGSS SFHC
+
+Initial exploratory radius of SFHC
+
+Maximum budget for SFGSS
+
+Maximum budget for SFHC
+
+Maximum number of evaluations per each individual
+
+(Low Value with Label −1)
+0.854 (0.05) 0.838 (0.85) 0.793 (0.05) 0.845 (0.02) 0.774 (0.05) 0.645 (0.01) 0.761 (20 FEs) 0.604 (80 FEs) 0.757 (10)
+
+SF (Medium Value with Label 0)
+0.679 (0.1)
+
+(High Value with Label +1)
+0.796 (0.15)
+
+0.552 (0.9)
+
+0.656 (0.95)
+
+0.742 (0.1)
+
+0.855 (0.15)
+
+0.513 (0.04)
+
+0.814 (0.06)
+
+0.751 (0.07)
+
+0.780 (0.09)
+
+0.563 (0.1)
+
+0.742 (0.2)
+
+0.511 (40 FEs) 0.602 (60 FEs)
+
+0.517 (100 FEs) 0.535 (120 FEs)
+
+0.617 (30)
+
+0.851 (50)
+
+Journal Pre-proof
+
+TABLE III-C: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF LAPSO
+
+Control Parameters
+
+Acceleration Parameters
+
+c1
+
+c2
+
+Total computing budget constraint
+
+Initial simulation replications of each design Additional simulation replications Threshold Subset capacity
+
+Inertia
+
+(Low Value with Label −1)
+0.662 (0.5) 0.794 (0.5)
+0.681 (100)
+0.779 (2) 0.742 (40) 0.855 (0.85) 0.716 (2) 0.687 (0.528)
+
+SF (Medium Value with Label 0)
+0.512 (1.496) 0.569 (1.496)
+0.664 (250)
+0.602 (5) 0.560 (50) 0.544 (0.9) 0.582 (3) 0.594 (0.729)
+
+(High Value with Label +1)
+0.641 (2) 0.783 (2)
+0.739 (400)
+0.762 (10) 0.751 (60) 0.684 (0.95) 0.625 (5) 0.777 (0.918)
+
+TABLE III-D: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF NTGA
+
+Control Parameters
+Size of mating pool Size of buffer pool Initial sample size
+Crossover rate
+
+(Low Value with Label −1)
+0.788 (2)
+0.747 (40) 0.668 (3) 0.819 (0.5)
+
+SF (Medium Value with Label 0)
+0.840 (4)
+0.637 (50) 0.669 (5) 0.665 (0.6)
+
+(High Value with Label +1)
+0.859 (6)
+0.640 (60) 0.826 (10) 0.850 (0.7)
+
+TABLE III-E: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF IAAS
+
+Control Parameters
+
+Initial sample size
+
+Control parameter for maximum sample size
+
+Control parameters for mutation
+
+λ
+
+probability
+
+T0
+
+Gaussian mutation parameter
+
+β1
+
+β2
+
+Adjustable parameter for suppression radius
+
+Control parameter for suppression probability
+
+(Low Value with Label −1)
+0.552 (2) 0.728 (50) 0.818 (0.85) 0.788 (50) 0.629 (0.01) 0.501 (0.1) 0.862 (0.2) 0.708 (0.1)
+
+SF (Medium Value with Label 0)
+0.575 (4) 0.617 (100) 0.700 (0.9) 0.590 (100) 0.708 (0.2) 0.492 (0.3) 0.524 (0.4) 0.474 (0.3)
+
+(High Value with Label +1)
+0.616 (6) 0.668 (150) 0.715 (0.95) 0.855 (150) 0.786 (0.4) 0.692 (0.5) 0.797 (0.6) 0.667 (0.5)
+
+TABLE III-F: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF PSOOHT
+
+Control Parameters
+
+(Low Value with Label −1)
+
+Acceleration Parameters Constriction factor
+
+c1
+
+0.867 (1.5)
+
+c2
+
+0.639 (0.1)
+
+0.836 (0.523)
+
+Total computing budget constraint
+
+0.840 (1000)
+
+Initial simulation replications of each design 0.646 (5)
+
+Additional simulation replications
+
+0.853 (5)
+
+SF (Medium Value with Label 0)
+0.585 (3.85)
+0.595 (0.25) 0.737 (0.729) 0.683 (2000)
+0.644 (10) 0.708 (10)
+
+(High Value with Label +1)
+0.703 (5.5)
+0.807 (0.5) 0.806 (0.864) 0.771 (3000)
+0.820 (15) 0.798 (15)
+
+Journal Pre-proof
+
+TABLE III-G: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF BBPSO-CJ
+
+Control Parameters
+Acceleration Parameters c1 c2
+Constriction factor Maximum stagnation interval
+Chaos control parameter
+
+(Low Value with Label −1)
+0.715 (0.1) 0.665 (0.1) 0.673 (0.523) 0.611 (2) 0.905 (2)
+
+SF (Medium Value with Label 0)
+0.71 (0.25)
+0.651 (0.25) 0.556 (0.729)
+0.550 (5) 0.565 (4)
+
+(High Value with Label +1)
+0.906 (0.5) 0.888 (0.5) 0.837 (0.864) 0.679 (10) 0.911 (6)
+
+TABLE III-H: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF ODE
+
+Control Parameters
+Scale factor Differential amplification factor
+Crossover rate Jumping rate constant
+
+(Low Value with Label −1)
+0.786 (0.3) 0.793 (0.1)
+0.881 (0.8)
+0.759 (0.1)
+
+SF (Medium Value with Label 0)
+0.765 (0.5) 0.838 (0.3)
+0.705 (0.9)
+0.713 (0.3)
+
+(High Value with Label +1)
+0.776 (0.7) 0.845 (0.5)
+0.862 (1)
+0.843 (0.5)
+
+TABLE III-I: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF DE-RSF-SS
+
+Control Parameters
+Minimum scale factor Crossover rate
+
+(Low Value with Label −1)
+0.734 (0.3)
+0.753 (0.8)
+
+SF (Medium Value with Label 0)
+0.730 (0.5)
+0.691 (0.9)
+
+(High Value with Label +1)
+0.746 (0.7)
+0.752 (1)
+
+TABLE III-J: SENSITIVITY ANALYSIS OF CONTROL PARAMETERS OF MFEGA
+
+Control Parameters Children Size
+
+(Low Value with Label −1)
+0.832 (2)
+
+SF (Medium Value with Label 0)
+0.624 (5)
+
+(High Value with Label +1)
+0.878 (7)
+
+2. Effectiveness of Different Extensions of NDE
+In section III, NDE is developed by integrating four strategies in the traditional DE, including EEF, AM, ASSLA, and NS to solve NSOOPs. The proposed strategies treat four different issues to overcome deceptive effect of noise in the fitness measure and hence they are mutually independent of each other. To examine the efficacy of individual four policies implanted in NDE, as well as their all possible combinations, a list of fifteen noisy DE variants are considered. The list consists of DE-EEF, DE-AM, DE-ASSLA, DE-EEF-AM, DE-EEF-ASSLA, DE-AM-ASSLA, DE-EEF-AM-ASSLA, DE-NS, DEEEF-NS, DE-AM-NS, DE-ASSLA-NS, DE-EEF-AM-NS, DE-EEF-ASSLA-NS, DE-AM-ASSLA-NS, and NDE.
+The effectiveness of the above-mentioned fifteen groups is tested with respect to the FEV metric values while minimizing noisy version of 28 functions of BF1. The noisy version is realized by contaminating each function of BF1 with additive random noise samples of amplitude within  30% of the true fitness values. The results, comprising the median and the inter-quartile range IQR (within parentheses) of the FEV metric values obtained by each noisy DE variant after 50 independent runs, each with 300000 FEs in a 30-dimensional search space are reported in Table-IV. For each benchmark
+
+Journal Pre-proof
+
+function, the best metric value is set in bold. It is evident from Table-IV that NDE, comprising all four strategies, outperforms other noisy DE variants (with less than four policies) in achieving lower value of FEV metric. It substantiates the significance of all four policies in handling the presence of noise in the fitness landscape.
+
+TABLE IV-A: COMPARISON OF INDIVIDUAL AND COMBINATION OF PROPOSED EXTENSIONS EMBEDDED IN NDE WITH RESPECT TO FEV METRIC VALUES FOR 50 INDEPENDENT RUNS IN PRESENCE OF RANDOM NOISE (OF AMPLITUDE WITHIN  30% OF TRUE FITNESS
+VALUES) IN FITNESS LANDSCAPE FOR BF1: f01 TO f24
+
+Func. DE-EEF
+
+DE-AM
+
+DEASSLA
+
+DE-EEF- DE-EEFAM ASSLA
+
+DE-AMASSLA
+
+DE-EEFAM-
+ASSLA
+
+DE-NS
+
+DE-EFENS
+
+DE-AMNS
+
+DEASSLA-
+NS
+
+DE-EFEAM-NS
+
+DE-EFEASSLA-
+NS
+
+DE-AMASSLA-
+NS
+
+NDE
+
+1.78e-09 1.89e-09 1.26e-09 7.44e-10 1.51e-10 2.59e-10 0.00e+00 1.80e-09 5.74e-10 9.06e-10 2.14e-10 8.04e-12 0.00e+00 7.57e-12 0.00e+00 f01
+(1.1e-08) (1.2e-08) (1.0e-08) (7.6e-09) (6.7e-09) (7.0e-09) (0.0e+00) (1.2e-08) (7.0e-09) (7.6e-09) (7.0e-09) (5.4e-09) (0.0e+00) (2.1e-09) (0.0e+00)
+
+9.12e+02 1.51e+03 7.09e+02 5.41e+02 2.35e-02 1.81e+02 6.52e-06 9.42e+02 2.64e+02 6.41e+02 9.93e+01 2.21e-02 2.68e-06 1.80e-02 9.31e-07 f02
+(1.2e+02) (1.0e+02) (1.0e+02) (6.5e+01) (2.4e-01) (3.0e+01) (9.0e-05) (1.2e+02) (5.0e+01) (8.8e+01) (2.0e+01) (1.7e-01) (8.2e-05) (1.6e-01) (6.0e-05)
+
+2.33e+02 2.48e+02 1.89e+02 1.37e+02 1.24e+01 7.18e+01 2.27e-03 2.42e+02 8.14e+01 1.67e+02 5.35e+01 8.99e+01 2.22e-02 8.23e+00 1.70e-02 f03
+(1.5e+01) (4.0e+01) (2.6e+01) (2.1e+01) (2.6e+00) (7.3e+00) (2.4e-02) (3.0e+01) (7.8e+00) (2.5e+01) (6.4e+00) (2.5e+00) (2.0e-03) (6.5e+00) (1.4e-03)
+
+4.84e+01 5.61e+01 3.56e+01 1.38e+01 1.17e-01 3.09e+00 7.17e-02 4.86e+01 8.16e+00 3.13e+01 1.67e+00 9.76e-02 5.48e-02 9.74e-02 3.09e-02 f04
+(8.8e-04) (1.0e-03) (8.1e-04) (6.8e-04) (2.6e-04) (4.6e-04) (2.7e-05) (9.7e-04) (4.8e-04) (7.5e-04) (4.4e-04) (2.0e-04) (4.4e-06) (1.8e-04) (2.0e-06)
+
+1.97e-06 2.33e-06 2.03e-06 1.52e-06 9.08e-09 7.11e-07 0.00e+00 2.18e-06 8.58e-07 1.55e-06 3.90e-07 5.15e-09 0.00e+00 1.90e-09 0.00e+00 f05
+(3.0e-03) (4.3e-03) (4.4e-03) (4.2e-03) (1.1e-03) (1.3e-03) (7.2e-04) (3.4e-03) (2.5e-03) (4.2e-03) (1.2e-03) (1.1e-03) (5.2e-04) (1.1e-03) (2.7e-04)
+
+4.03e+01 4.19e+01 4.20e+01 4.20e+01 3.12e+01 3.58e+01 1.75e+01 4.12e+01 4.14e+01 4.20e+01 3.57e+01 3.11e+01 4.29e+00 2.72e+01 3.01e+00 f06
+(3.6e+00) (6.4e+00) (6.3e+00) (6.0e+00) (9.6e-02) (4.4e+00) (2.3e-05) (5.8e+00) (5.8e+00) (6.0e+00) (1.3e+00) (5.8e-02) (2.0e-05) (1.5e-02) (1.3e-05)
+
+4.47e+01 4.73e+01 4.88e+01 4.20e+01 3.08e+01 3.56e+01 2.87e+01 4.60e+01 3.56e+01 4.87e+01 3.56e+01 3.04e+01 1.65e+01 2.92e+01 1.54e+01 f07
+(9.1e+00) (9.1e+00) (9.0e+00) (9.0e+00) (5.7e+00) (7.5e+00) (3.5e+00) (9.1e+00) (8.7e+00) (9.0e+00) (7.2e+00) (5.6e+00) (3.2e+00) (5.5e+00) (2.8e+00)
+
+2.10e+01 2.10e+01 2.10e+01 2.10e+01 2.08e+01 2.10e+01 2.08e+01 2.10e+01 2.10e+01 2.10e+01 2.10e+01 2.08e+01 2.08e+01 2.08e+01 2.08e+01 f08
+(4.5e-02) (4.5e-02) (4.5e-02) (4.4e-02) (3.8e-02) (4.1e-02) (3.3e-02) (4.5e-02) (4.2e-02) (4.4e-02) (4.1e-02) (3.8e-02) (3.0e-02) (3.5e-02) (3.0e-02)
+
+4.80e+01 4.88e+01 4.60e+01 3.83e+01 2.78e+01 3.60e+01 2.50e+01 4.83e+01 3.76e+01 3.85e+01 3.37e+01 2.20e+01 2.33e+01 1.86e+01 9.35e+00 f09
+(2.5e+00) (3.2e+00) (2.4e+00) (2.1e+00) (2.1e+00) (2.2e+00) (1.8e+00) (2.7e+00) (2.3e+00) (2.3e+00) (2.2e+00) (2.1e+00) (1.3e+00) (1.5e+00) (1.2e+00)
+
+1.74e-02 1.94e-02 4.20e-03 5.50e-04 1.46e-03 7.68e-04 5.68e-10 1.75e-02 1.50e-03 2.90e-03 5.12e-04 1.00e-03 3.75e-10 5.11e-07 3.18e-10 f10
+(6.4e-03) (1.0e-02) (4.0e-03) (3.0e-03) (2.0e-04) (9.0e-04) (3.5e-05) (8.5e-03) (1.1e-03) (3.2e-03) (8.3e-04) (2.0e-04) (2.6e-05) (5.4e-05) (2.2e-05)
+
+5.41e+00 1.21e+01 7.47e+00 5.65e+00 3.58e+00 5.93e+00 1.38e+00 5.71e+00 6.85e+00 6.70e+00 5.26e+00 3.53e+00 1.32e+00 3.30e+00 7.75e-01 f11
+(4.5e-01) (1.1e+00) (2.7e-01) (1.5e-01) (2.2e-02) (2.5e-01) (4.0e-03) (5.5e-01) (2.8e-01) (2.6e-01) (1.4e-01) (2.0e-02) (2.8e-03) (1.4e-02) (2.5e-01)
+
+8.57e+01 8.54e+01 6.84e+01 6.50e+01 3.02e+01 6.30e+01 1.95e+01 8.61e+01 6.32e+01 6.56e+01 4.30e+01 2.94e+01 1.51e+01 2.72e+01 1.15e+01 f12
+(1.3e+01) (2.0e+01) (1.0e+01) (9.0e+00) (6.3e+00) (7.8e+00) (1.7e+00) (1.4e+01) (8.0e+00) (9.0e+00) (7.3e+00) (6.2e+00) (1.7e+00) (5.8e+00) (1.3e+00)
+
+1.47e+02 1.65e+02 1.33e+02 1.07e+02 8.04e+01 1.00e+02 6.40e+01 1.58e+02 1.04e+02 1.25e+02 9.84e+01 7.55e+01 5.56e+01 7.42e+01 4.00e+01 f13
+(2.0e+01) (2.4e+01) (1.8e+01) (1.8e+01) (8.0e+00) (1.2e+01) (3.8e+00) (2.3e+01) (1.5e+01) (1.8e+01) (1.0e+01) (5.0e+00) (3.1e+00) (5.0e+00) (3.0e+00)
+
+4.48e+02 5.96e+02 3.18e+02 1.10e+02 2.03e+01 3.66e+01 1.36e+01 5.41e+02 4.23e+01 1.60e+02 2.22e+02 2.03e+01 1.30e+01 1.96e+01 6.88e+00 f14
+(1.6e+02) (2.0e+02) (1.0e+02) (5.8e+01) (9.3e+00) (1.5e+01) (7.4e+00) (1.8e+02) (2.0e+01) (8.0e+01) (1.4e+01) (9.0e+00) (5.4e+00) (8.0e+00) (3.3e+00)
+
+6.30e+03 6.35e+03 5.30e+03 4.35e+03 3.26e+03 4.31e+03 1.20e+03 6.30e+03 5.18e+03 5.10e+03 3.04e+03 2.37e+03 1.14e+03 1.65e+03 7.40e+02 f15
+(4.6e+02) (5.0e+02) (4.5e+02) (4.0e+02) (4.0e+02) (4.1e+02) (2.7e+02) (5.0e+02) (4.3e+02) (4.4e+02) (4.0e+02) (3.4e+02) (2.7e+02) (2.8e+02) (2.7e+02)
+
+1.61e+00 1.67e+00 1.48e+00 1.45e+00 8.25e-01 1.38e+00 6.60e-01 1.66e+00 1.43e+00 1.47e+00 9.90e-01 8.05e-01 2.20e-01 7.90e-01 9.12e-02 f16
+(2.0e-01) (2.0e-01) (2.0e-01) (1.8e-01) (4.2e-02) (1.2e-01) (3.8e-02) (2.0e-01) (1.5e-01) (1.8e-01) (6.7e-02) (4.1e-02) (2.4e-02) (4.1e-02) (2.3e-02)
+
+5.60e+01 5.67e+01 5.50e+01 5.27e+01 5.06e+01 5.11e+01 4.70e+01 5.61e+01 5.12e+01 5.43e+01 5.08e+01 5.06e+01 4.50e+01 5.06e+01 4.20e+01 f17
+(1.6e+00) (1.6e+00) (1.3e+00) (7.8e-01) (3.0e-02) (1.4e-01) (7.4e-03) (1.6e+00) (2.0e-01) (9.2e-01) (5.4e-02) (3.0e-02) (6.3e-03) (2.1e-02) (1.2e-03)
+
+1.40e+02 1.50e+02 1.31e+02 1.30e+02 1.23e+02 1.26e+02 8.97e+01 1.50e+02 1.27e+02 1.30e+02 1.25e+02 1.23e+02 6.26e+01 1.20e+02 6.26e+01 f18
+(3.0e+01) (3.3e+01) (2.5e+01) (2.1e+01) (1.3e+01) (2.0e+01) (9.5e+00) (3.0e+01) (2.0e+01) (2.3e+01) (1.7e+01) (1.2e+01) (8.4e+00) (1.1e+02) (8.0e+00)
+
+3.62e+00 3.86e+00 3.47e+00 3.41e+00 2.96e+00 3.35e+00 2.34e+00 3.85e+00 3.38e+00 3.46e+00 3.32e+00 2.60e+00 2.24e+00 2.21e+00 2.20e+00 f19
+(5.6e-01) (6.3e-01) (4.8e-01) (4.6e-01) (3.3e-01) (4.3e-01) (3.0e-01) (6.2e-01) (4.5e-01) (4.7e-01) (4.0e-01) (3.0e-01) (3.0e-01) (2.7e-01) (2.6e-01)
+
+1.92e+01 1.97e+01 1.92e+01 1.91e+01 1.90e+01 1.91e+01 1.58e+01 1.94e+01 1.91e+01 1.91e+01 1.91e+01 1.88e+01 1.37e+01 1.87e+01 1.35e+01 f20
+(6.2e-01) (6.6e-01) (6.1e-01) (5.6e-01) (4.6e-01) (5.3e-01) (3.8e-01) (6.5e-01) (5.4e-01) (5.8e-01) (5.0e-01) (4.6e-01) (3.7e-01) (4.1e-01) (3.7e-01)
+
+3.27e+02 3.77e+02 2.88e+02 2.55e+02 2.40e+02 2.46e+02 2.37e+02 3.68e+02 2.50e+02 2.71e+02 2.45e+02 2.40e+02 2.34e+02 2.37e+02 2.31e+02 f21
+(2.4e+02) (2.5e+02) (2.2e+02) (2.0e+02) (1.0e+02) (1.8e+02) (1.1e+01) (2.5e+02) (1.8e+02) (2.1e+02) (1.4e+02) (6.2e+01) (8.1e+00) (5.8e+01) (5.3e+00)
+
+2.92e+02 3.88e+02 2.44e+02 1.08e+02 4.13e+02 1.05e+02 3.44e+01 3.80e+02 1.22e+02 2.27e+02 8.95e+01 2.65e+01 3.11e+01 2.40e+01 2.97e+01 f22
+(2.5e+02) (2.7e+02) (1.0e+02) (5.0e+01) (2.4e+01) (3.5e+01) (1.3e+01) (2.6e+02) (4.6e+01) (9.2e+01) (3.0e+01) (2.3e+01) (1.2e+01) (2.1e+01) (9.2e+00)
+
+7.43e+03 7.93e+03 5.82e+03 5.01e+03 2.37e+03 3.07e+03 9.55e+02 7.64e+03 3.15e+03 5.37e+03 2.88e+03 1.42e+03 8.41e+02 1.07e+03 7.05e+02 f23
+(6.2e+02) (6.6e+02) (5.8e+02) (5.3e+02) (4.5e+02) (5.1e+02) (3.2e+02) (6.2e+02) (5.2e+02) (5.5e+02) (5.0e+02) (4.2e+02) (3.1e+02) (3.8e+02) (3.1e+02)
+
+2.74e+02 2.96e+02 2.87e+02 2.62e+02 2.25e+02 2.38e+02 2.20e+02 2.80e+02 2.40e+02 2.67e+02 2.36e+02 2.25e+02 2.14e+02 2.24e+02 2.12e+02 f24
+(1.1e+01) (1.3e+01) (1.2e+01) (1.0e+01) (7.7e+00) (9.8e+00) (3.8e+00) (1.2e+01) (1.0e+01) (1.1e+01) (9.0e+00) (6.3e+00) (3.4e+00) (6.0e+00) (2.7e+00)
+
+Journal Pre-proof
+
+TABLE IV-B: COMPARISON OF INDIVIDUAL AND COMBINATION OF PROPOSED EXTENSIONS EMBEDDED IN NDE WITH RESPECT TO FEV METRIC VALUES FOR 50 INDEPENDENT RUNS IN PRESENCE OF RANDOM NOISE (OF AMPLITUDE WITHIN  30% OF TRUE FITNESS VALUES) IN FITNESS LANDSCAPE FOR f25 TO f28
+
+Func. DE-EEF
+
+DE-AM
+
+DEASSLA
+
+DE-EEFAM
+
+DEEEFASSLA
+
+DE-AMASSLA
+
+DE-EEFAM-
+ASSLA
+
+DE-NS
+
+DEN-ESFE-DE-AM-NS
+
+DEASSLA-
+NS
+
+DE-EFEAM-NS
+
+DE-EFEASSLA-
+NS
+
+DE-AMASSLA-
+NS
+
+NDE
+
+3.30e+02 3.34e+02 3.11e+02 2.94e+02 3.08e+02 3.03e+02 2..65e+02 3.31e+02 3.13e+02 3.00e+02 2.94e+02 3.06e+02 2.44e+02 3.01e+02 2.18e+02 f25
+(1.2\1e+01)(1.1e+01) (1.0e+01) (9.3e+00) (9.0e+00) (9.2e+00) (4.4e+00) (1.1e+01) (1.0e+01) (9.4e+00) (9.0e+00) (7.4e+00) (4.3e+00) (6.3e+00) (3.8e+00)
+
+2.43e+02 2.47e+02 2.40e+02 2.27e+02 2.00e+02 2.05e+02 1.94e+02 2.47e+02 2.13e+02 2.35e+02 2.03e+02 2.00e+02 1.80e+02 2.00e+02 1.77e+02 f26
+(5.0e+01) (6.0e+01) (4.2e+01) (3.5e+01) (2.0e+01) (2.1e+01) (1.7e+00) (5.6e+01) (2.4e+01) (3.6e+01) (2.1e+01) (1.2e+01) (1.6e+00) (9.1e+00) (1.5e+00)
+
+1.00e+03 1.01e+03 9.80e+02 9.18e+02 7.35e+02 9.30e+02 3.97e+02 1.00e+03 9.66e+02 9.52e+02 8.67e+02 6.60e+02 3.57e+02 6.56e+02 3.40e+02 f27
+(1.2e+02) (1.3e+02) (1.3e+02) (1.2e+02) (1.0e+02) (1.2e+02) (3.7e+01) (1.3e+02) (1.2e+02) (1.3e+02) (1.1e+02) (7.7e+01) (3.5e+01) (7.2e+01) (3.4e+01)
+
+4.48e+02 4.55e+02 4.38e+02 4.31e+02 4.15e+02 4.30e+02 3.64e+02 4.53e+02 4.30e+02 4.34e+02 4.30e+02 4.07e+02 3.60e+02 4.01e+02 3.38e+02 f28
+(3.0e+02) (4.0e+02) (2.5e+02) (3.1e+01) (3.8e-04) (4.0e-04) (3.0e-04) (3.7e+02) (4.3e-04) (1.4e+02) (3.7e-04) (3.7e-04) (2.7e-04) (3.6e-04) (1.0e-04)
+
+3. Comparative Analysis of NDE
+In this section, first we have undertaken a comparative analysis of performance of NDE and its contenders considered in the comparative framework. Next we have examined the degree of robustness of all competitor algorithms against noise and problem dimension and their speed of convergence of NDE.
+In Table-V, the relative performance of the contender algorithms is investigated with respect to the median and the IQR (within parenthesis) of the FEV metric values after 50 independent runs while minimizing BF1 functions in the presence of zero mean Gaussian noise (variance = 0.45). The best metric value in each instance has been set in bold.
+Wilcoxon rank sum test [16] is undertaken with a significance level of 0.05 to judge the statistical level of significance of the difference of the 50 pairs of FEV metric sample values (obtained after each of the 50 runs) of any two competitive algorithms. The value in the third bracket in Table-V represents the p-value obtained through the rank sum test between the best algorithm (resulting the minimum median FEV) and each of the remaining algorithms for the noisy versions of BF1. Here NA covers the not applicable cases of comparing the best algorithm with itself. A p-value less than 0.05 (statistical level of significance) corresponding to the comparative analysis of performance of the best algorithms and one of its contenders establishes that their performances differ significantly.
+Table-V reveals that almost equal performance accuracies are achieved by most of the contender algorithms for f01─f07. However, the remaining complex functions expose significant difference in the performance of the competitors. 22 cases out of 28 noisy versions of BF1 are noted in Table-V where NDE outperforms its contenders. Moreover, 21 instances of these 22 cases reveal statistically significant superiority of NDE over its contenders. For f03, the dominance of IPOP-UH-CMA-ES and MUDE by NDE are not statistically significant. The quality performance of IPOP-UH-CMA-ES (which attains the second best rank) over NDE is evident for f09 and f22. Statistically equivalent results are yielded by NDE and IPOP-UH-CMA-ES for benchmarks f01, f02, f05, and f08. However, it is worth mentioning that out of these four cases, the lowest IQR is achieved by NDE for three instances, including f02, f05, and f08.
+The statistical significance of performance of all contenders is investigated by undertaking the Friedman, the Iman-Davenport, the Friedman Aligned and the Quade non-parametric statistical tests [16] on the median values of FEV metric obtained by the contender algorithms (over 50 independent runs) in the presence of Rayleigh, exponential and Gamma noise of respective variances of 0.17, 0.77 and 0.34 in the BF1 landscapes. Table-VI summarizes the rankings obtained by the above procedures.
+
+Journal Pre-proof
+
+TABLE V-A: COMPARISON OF ALGORITHMS FOR NSOOPS WITH RESPECT TO FEV FOR GAUSSIAN NOISE (OF σ2=0.45) IN FITNESS LANDSCAPE FOR BF1: f01 TO f23
+
+Functions NDE IPOP-UH-CMA-ES MUDE
+
+0.00e+00
+
+0.00e+00
+
+1.63e-08
+
+f01 (0.00e+00) (0.00e+00) (7.01e-09)
+
+NA
+
+NA
+
+[4.21e-05]
+
+0.00e+00
+
+0.00e+00
+
+2.85e-05
+
+f02 (0.00e+00) (2.43e-04) (2.73e-01)
+
+NA
+
+[3.40e-02] [5.28e-02]
+
+7.92e-04
+
+3.85e-03
+
+6.13e-03
+
+f03 (2.08e-04) (3.64e-03) (1.65e+01)
+
+NA
+
+[2.60e-01] [3.21e-01]
+
+0.00e+00
+
+7.40e-05
+
+1.30e-04
+
+f04 (9.11e-09) (3.36e-05) (3.56e-04)
+
+NA
+
+[3.32e-03] [2.96e-03]
+
+0.00e+00
+
+0.00e+00
+
+2.00e-08
+
+f05 (2.73e-04) (1.12e-05) (1.25e-03)
+
+NA
+
+[6.26e-05] [3.10e-05]
+
+4.94e-01
+
+2.54e+01
+
+3.01e+01
+
+f06 (0.00e+00) (2.53e-15) (1.00e-01)
+
+NA
+
+[2.18e-04] [4.47e-05]
+
+1.40e+00
+
+2.88e+01
+
+3.57e+01
+
+f07 (1.70e+00) (5.57e+00) (5.91e+00)
+
+NA
+
+[4.24e-03] [3.01e-05]
+
+2.08e+01
+
+2.08e+01
+
+2.10e+01
+
+f08 (2.83e-02) (3.55e- 02) (4.10e-02)
+
+NA
+
+[4.28e-02] [4.10e-02]
+
+1.78e+01
+
+3.18e+00
+
+4.11e+01
+
+f09 (1.94e+00) (1.23e+00) (2.50e+00)
+
+[6.31e-02]
+
+NA
+
+[6.10e-02]
+
+0.00e+00
+
+6.33e-07
+
+1.55e-03
+
+f10 (0.00e+00) (4.43e-05) (1.60e-03)
+
+NA
+
+[5.28e-04] [4.10e-07]
+
+2.76e-01
+
+2.74e+00
+
+5.03e+00
+
+f11 (0.00e+00) (4.20e-03) (4.91e-02)
+
+NA
+
+[6.31e-03] [3.92e-05]
+
+4.08e+00
+
+2.56e+01
+
+3.15e+01
+
+f12 (1.34e+00) (2.20e+00) (7.18e+00)
+
+NA
+
+[3.52e-04] [3.37e-04]
+
+1.51e+01
+
+7.34e+01
+
+8.48e+01
+
+f13 (2.10e+00) (4.62e+00) (9.48e+00)
+
+NA
+
+[2.00e-05] [3.34e-06]
+
+3.63e-02
+
+1.76e+01
+
+2.10e+01
+
+f14 (1.98e-02) (8.01e+00) (9.62e+00)
+
+NA
+
+[5.43e-03] [2.11e-07]
+
+6.62e+02
+
+1.35e+03
+
+5.57e+03
+
+f15 (2.82e+02) (2.88e+02) (4.45e+02)
+
+NA
+
+[8.82e-03] [4.12e-04]
+
+5.46e-02
+
+7.80e-01
+
+8.27e-01
+
+f16 (2.44e-02) (4.21e-02) (4.38e-02)
+
+NA
+
+[4.80e-03] [5.21e-04]
+
+3.95e+01
+
+5.06e+01
+
+5.06e+01
+
+f17 (4.53e-04) (1.12e-02) (3.47e-02)
+
+NA
+
+[1.42e-06] [1.97e-07]
+
+5.98e+01
+
+1.08e+02
+
+1.24e+02
+
+f18 (8.00e+00) (1.17e+01) (1.46e+01)
+
+NA
+
+[3.06e-06] [2.92e-06]
+
+2.42e+00
+
+1.95e+00
+
+3.30e+00
+
+f19 (3.07e-01) (2.68e-01) (4.03e-01)
+
+NA
+
+[5.01e-04] [2.67e-04]
+
+1.30e+01
+
+1.86e+01
+
+1.91e+01
+
+f20 (3.81e-01) (3.92e-01) (5.02e-01)
+
+NA
+
+[4.15e-05] [2.40e-05]
+
+1.98e+02
+
+2.37e+02
+
+2.40e+02
+
+f21 (3.77e+00) (2.02e+01) (1.51e+02)
+
+NA
+
+[6.90e-04] [1.52e-04]
+
+3.90e+01
+
+2.01e+01
+
+4.28e+01
+
+f22 (8.53e+00) (1.76e+01) (2.80e+01)
+
+[3.10e-03]
+
+NA
+
+[1.50e-03]
+
+6.50e+02
+
+9.75e+02
+
+2.42e+03
+
+f23 (3.25e+02) (3.30e+02) (5.03e+02)
+
+NA
+
+[4.34e-07] [3.01e-08]
+
+LAPSO 5.63e-08 (7.10e-09) [3.91e-05] 4.94e-05 (5.34e+01) [4.01e-03] 8.63e-03 (1.05e+02) [6.50e-02] 1.03e-03 (5.54e-04) [2.57e-03] 9.50e-07 (2.88e-03) [5.32e-07] 4.05e+01 (6.00e+00) [2.40e-06] 3.56e+01 (8.86e+00) [4.13e-05] 2.10e+01 (4.36e-02) [3.04e-02] 3.37e+01 (2.25e+00) [6.17e-02] 8.70e-05 (7.72e-04) [4.68e-06] 8.16e+00 (3.40e-01) [2.20e-07] 6.45e+01 (8.42e+00) [3.08e-05] 1.06e+02 (1.90e+01) [2.16e-06] 5.41e+01 (3.26e+01) [1.56e-10] 1.97e+03 (4.03e+02) [7.12e-03] 1.45e+00 (1.93e-01) [4.95e-04] 5.26e+01 (5.43e-01) [5.26e-08] 1.27e+02 (2.23e+01) [3.00e-07] 3.40e+00 (4.70e-01) [2.97e-06] 1.91e+01 (5.60e-01) [3.86e-06] 2.52e+02 (2.12e+02) [5.71e-05] 1.81e+02 (4.91e+01) [1.40e-04] 4.43e+03 (5.38e+02) [3.50e-09]
+
+NTGA 1.60e-07 (1.14e-08) [2.31e-05] 7.82e-04 (1.22e+02) [4.74e-04] 4.21e-03 (1.95e+02) [4.50e-02] 4.36e-03 (8.67e-04) [3.25e-04] 2.50e-06 (4.67e-03) [4.08e-07] 4.08e+01 (6.56e+00) [5.84e-07] 4.95e+01 (9.20e+00) [3.68e-08] 2.10e+01 (4.67e-02) [5.43e-03] 4.73e+01 (2.58e+00) [5.75e-02] 6.27e-03 (4.38e-03) [3.96e-09] 3.45e+00 (2.17e-02) [3.70e-04] 8.54e+01 (1.24e+01) [2.76e-07] 1.46e+02 (2.00e+01) [3.28e-07] 3.84e+02 (1.20e+02) [4.87e-11] 6.26e+03 (4.71e+02) [6.62e-05] 1.60e+00 (2.00e-01) [4.83e-04] 5.60e+01 (1.60e+00) [1.15e-08] 1.33e+02 (2.88e+01) [2.42e-08] 3.47e+00 (5.02e-01) [1.70e-12] 1.92e+01 (6.34e-01) [2.90e-06] 3.02e+02 (2.41e+02) [4.87e-06] 2.88e+02 (2.43e+02) [3.04e-07] 7.15e+03 (6.10e+02) [1.47e-10]
+
+IAAS 1.90e-07 (1.36e-08) [4.46e-06] 1.07e-03 (1.38e+02) [5.50e-06] 5.93e-02 (2.38e+02) [4.45e-02] 6.21e-03 (1.04e-03) [2.97e-04] 1.31e-06 (3.10e-03) [4.82e-07] 3.78e+01 (2.72e+00) [3.67e-06] 3.90e+01 (9.18e+00) [1.55e-06] 2.10e+01 (4.57e-02) [5.34e-03] 5.04e+01 (3.52e+00) [5.04e-02] 2.28e-02 (1.32e-02) [2.37e-09] 1.27e+01 (1.64e+00) [4.37e-08] 8.94e+01 (2.15e+01) [3.36e-09] 1.66e+02 (3.03e+01) [2.85e-07] 6.36e+02 (2.22e+02) [2.37e-11] 6.37e+03 (5.45e+02) [6.75e-06] 1.68e+00 (2.05e-01) [5.06e-05] 5.72e+01 (1.77e+00) [5.27e-15] 1.51e+02 (3.58e+01) [2.97e-09] 3.88e+00 (6.97e-01) [1.54e-15] 1.95e+01 (6.86e-01) [2.08e-06] 4.12e+02 (2.74e+02) [1.20e-09] 4.06e+02 (2.92e+02) [2.98e-07] 8.01e+03 (6.83e+02) [3.71e-14]
+
+PSOOHT 3.50e-07 (5.98e-08) [2.58e-06] 1.36e-03 (2.57e+03) [5.10e-06] 8.16e-02 (2.60e+02) [6.93e-03] 7.23e-03 (2.38e-01) [2.83e-05] 4.10e-05 (5.45e-03) [3.82e-07] 4.23e+01 (7.56e+00) [6.02e-09] 5.31e+01 (1.07e+01) [3.13e-09] 2.10e+01 (6.10e-02) [5.13e-03] 4.97e+01 (2.90e+00) [5.20e-02] 1.46e-02 (6.16e-03) [3.12e-09] 1.55e+01 (2.28e+00) [3.90e-08] 1.04e+02 (2.35e+01) [2.96e-09] 1.92e+02 (3.30e+01) [2.60e-07] 7.75e+02 (2.97e+02) [3.57e-12] 7.05e+03 (5.54e+02) [4.86e-06] 1.80e+00 (2.74e-01) [5.01e-05] 6.90e+01 (2.67e+00) [1.20e-18] 1.62e+02 (3.72e+01) [2.58e-09] 3.93e+00 (7.42e-01) [2.80e-16] 2.04e+01 (7.88e-01) [1.94e-06] 5.54e+02 (3.23e+02) [4.30e-11] 9.16e+02 (3.80e+02) [2.47e-10] 8.45e+03 (8.08e+02) [4.12e-16]
+
+BBPSO-CJ 4.07e-07 (6.17e-08) [4.13e-07] 8.61e-03 (2.18e+04) [5.41e-07] 1.70e-01 (2.92e+02) [6.00e-03] 1.37e-02 (2.64e+00) [2.61e-05] 7.50e-05 (5.75e-03) [6.12e-08] 4.28e+01 (9.37e+00) [3.84e-10] 7.94e+01 (1.53e+01) [1.82e-12] 2.10e+01 (6.21e-02) [5.70e-04] 5.18e+01 (4.02e+00) [5.37e-03] 3.48e-02 (1.83e-02) [3.86e-11] 2.08e+01 (3.04e+00) [2.80e-08] 1.66e+02 (3.30e+01) [2.92e-15] 2.25e+02 (3.40e+01) [2.87e-09] 8.36e+02 (4.67e+02) [3.17e-13] 7.43e+03 (6.71e+02) [8.34e-10] 2.13e+00 (3.15e-01) [5.17e-09] 7.57e+01 (5.10e+00) [5.33e-19] 2.06e+02 (5.01e+01) [2.58e-09] 4.86e+00 (9.14e-01) [4.90e-17] 2.07e+01 (8.64e-01) [4.37e-07] 6.63e+02 (3.52e+02) [5.24e-15] 5.85e+02 (3.50e+02) [1.96e-08] 8.98e+03 (9.40e+02) [1.48e-16]
+
+ODE 4.83e-07 (6.81e-07) [2.48e-07] 2.62e-02 (1.33e+05) [4.23e-07] 1.15e-01 (3.43e+02) [7.03e-04] 2.45e-02 (5.27e+01) [2.32e-06] 1.00e-04 (6.53e-03) [5.77e-08] 4.32e+01 (1.41e+01) [5.26e-11] 5.66e+01 (1.32e+01) [2.77e-11] 2.11e+01 (1.38e-01) [4.88e-04] 5.66e+01 (4.45e+00) [4.74e-03] 5.31e-02 (3.10e-02) [4.08e-15] 2.61e+01 (6.15e+00) [1.30e-08] 1.53e+02 (2.83e+01) [2.78e-09] 3.01e+02 (7.84e+01) [3.34e-13] 1.38e+03 (6.11e+02) [3.03e-15] 8.25e+03 (6.80e+02) [5.14e-16] 2.35e+00 (4.45e-01) [5.04e-10] 8.16e+01 (8.87e+00) [3.38e-20] 1.80e+02 (3.84e+01) [2.50e-10] 5.14e+00 (9.62e-01) [2.15e-18] 2.25e+01 (1.20e+00) [2.77e-07] 8.44e+02 (4.33e+02) [1.66e-16] 1.98e+03 (4.66e+02) [1.70e-12] 9.35e+03 (9.88e+02) [3.83e-18]
+
+DE-RSF-SS 7.06e-07 (7.88e-06) [5.58e-08] 3.53e-02 (1.54e+05) [3.74e-08] 3.91e-01 (4.20e+02) [3.65e-04] 3.42e-02 (1.54e+02) [3.17e-07] 1.21e-04 (8.40e-03) [4.03e-08] 4.34e+01 (3.65e+01) [8.14e-11] 1.00e+02 (1.94e+01) [1.14e-13] 2.11e+01 (2.37e-01) [6.58e-05] 5.75e+01 (4.81e+00) [4.65e-03] 7.01e-02 (3.84e-02) [3.80e-15] 3.97e+01 (1.11e+01) [2.84e-10] 1.74e+02 (4.21e+01) [3.50e-17] 2.60e+02 (5.48e+01) [2.10e-12] 1.00e+03 (5.52e+02) [4.47e-15] 8.57e+03 (9.18e+02) [8.08e-17] 2.55e+00 (6.40e-01) [4.90e-10] 9.35e+01 (1.11e+01) [2.40e-20] 2.26e+02 (6.08e+01) [2.95e-10] 5.27e+00 (1.27e+00) [4.73e-19] 2.20e+01 (9.62e-01) [2.51e-07] 7.76e+02 (3.93e+02) [2.28e-16] 2.46e+03 (5.77e+02) [1.45e-12] 9.76e+03 (1.43e+03) [3.66e-18]
+
+MFEGA 8.98e-06 (7.95e-06) [4.63e-08] 4.96e-02 (2.52e+05) [5.60e-08] 4.85e+01 (7.16e+02) [7.12e-04] 4.16e-02 (3.85e+02) [3.30e-07] 1.28e-04 (8.57e-03) [2.85e-08] 4.33e+01 (2.22e+01) [3.64e-11] 4.18e+02 (1.55e+01) [1.02e-13] 2.11e+01 (1.42e+01) [6.80e-05] 5.98]e+01 (9.52e+00) [4.51e-03] 1.26e-01 (6.50e-02) [1.60e-18] 4.83e+01 (1.45e+01) [1.17e-10] 2.15e+02 (4.62e+01) [2.63e-17] 3.90e+02 (8.30e+01) [3.45e-16] 1.70e+03 (7.18e+02) [1.22e-20] 9.07e+03 (2.50e+02) [1.20e-19] 2.77e+00 (8.25e-01) [5.26e-13] 1.02e+02 (3.38e+01) [1.10e-20] 3.93e+02 (8.10e+01) [2.30e-10] 5.71e+00 (1.93e+00) [1.20e-20] 2.43e+01 (5.75e+00) [1.28e-07] 8.52e+02 (5.25e+02) [1.01e-20] 2.68e+03 (6.36e+02) [1.33e-12] 9.81e+03 (2.38e+03) [1.46e-18]
+
+Journal Pre-proof
+
+TABLE V-B: COMPARISON OF ALGORITHMS FOR NSOOPS WITH RESPECT TO FEV FOR GAUSSIAN NOISE (OF σ2=0.45) IN FITNESS LANDSCAPE FOR BF1: f24 TO f28
+
+Functions NDE IPOP-UH-CMA-ES MUDE
+
+2.03e+02
+
+2.24e+02
+
+2.33e+02
+
+f24 (1.46e+00) (5.13e+00) (8.44e+00)
+
+NA
+
+[7.90e-03] [1.87e-03]
+
+2.01e+02
+
+2.75e+02
+
+3.15e+02
+
+f25 (3.77e+00) (5.44e+00) (1.08e+01)
+
+NA
+
+[6.81e-05] [6.70e-06]
+
+1.67e+02
+
+2.00e+02
+
+2.00e+00
+
+f26 (3.78e-01) (3.92e+00) (2.01e+01)
+
+NA
+
+[7.41e-03] [4.25e-05]
+
+3.11e+02
+
+6.40e+02
+
+7.70e+02
+
+f27 (3.11e+01) (4.78e+01) (1.16e+02)
+
+NA
+
+[6.04e-04] [5.84e-06]
+
+3.30e+02
+
+4.00e+02
+
+4.28e+02
+
+f28 (2.56e-05) (3.95e-04) (3.74e-01)
+
+NA
+
+[7.16e-05] [2.62e-05]
+
+LAPSO 2.40e+02 (1.04e+01) [4.32e-05] 2.92e+02 (8.80e+00) [4.92e-05] 2.24e+02 (2.71e+01) [4.68e-06] 1.00e+03 (1.44e+02) [5.06e-08] 4.31e+02 (4.57e+01) [6.92e-07]
+
+NTGA 2.97e+02 (1.43e+01) [2.64e-05] 3.23e+02 (1.20e+01) [4.23e-11] 2.43e+02 (5.02e+01) [3.80e-07] 9.17e+02 (1.36e+02) [1.66e-07] 4.40e+02 (2.91e+02) [3.22e-09]
+
+IAAS 2.71e+02 (1.23e+01) [7.37e-07] 3.36e+02 (1.33e+01) [5.13e-12] 2.52e+02 (6.18e+01) [1.60e-08] 1.06e+03 (1.47e+02) [4.07e-09] 4.58e+02 (4.20e+02) [3.23e-13]
+
+PSOOHT 3.07e+02 (2.00e+01) [3.32e-10] 3.58e+02 (1.68e+01) [8.51e-13] 2.90e+02 (9.72e+01) [2.94e-10] 1.20e+03 (1.80e+02) [5.61e-10] 4.57e+02 (4.16e+02) [4.72e-10]
+
+BBPSO-CJ 3.07e+02 (1.62e+01) [6.93e-11] 3.63e+02 (1.88e+01) [6.68e-13] 2.74e+02 (9.05e+01) [4.64e-10] 1.44e+03 (2.00e+02) [1.72e-10] 6.97e+02 (4.43e+02) [5.55e-14]
+
+ODE 3.10e+02 (2.05e+01) [2.91e-12] 3.64e+02 (1.25e+02) [4.90e-14] 2.90e+02 (1.07e+02) [5.10e-11] 1.55e+03 (2.82e+02) [2.64e-13] 8.48e+02 (1.12e+03) [7.50e-18]
+
+DE-RSF-SS 3.30e+02 (2.22e+01) [7.07e-13] 3.65e+02 (2.50e+02) [7.96e-17] 3.61e+02 (1.36e+02) [6.97e-13] 2.11e+03 (6.23e+02) [1.48e-13] [9.36e+02 (1.22e+03) [3.93e-18]
+
+MFEGA 3.85e+02 (4.68e+01) [1.17e-15] 3.73e+02 (2.63e+02) [9.35e-17] 3.23e+02 (1.12e+02) [1.11e-14] 1.63e+03 (4.02e+02) [1.24e-16] 1.12e+03 (1.36e+03) [7.75e-18]
+
+TABLE VI: RANKS ACHIEVED BY STATISTICAL TESTS WITH SIGNIFICANCE LEVEL OF 0. 05
+
+Statistical Tests
+
+Friedman Iman-Davenport Friedman Aligned
+
+Quade
+
+Type of Noise in Fitness Landscape
+
+Rayleigh (σ2=0.17)
+
+Rayleigh (σ2=0.17) Exponential (σ2=0.77) Gamma (σ2=0.34)
+
+Algorithms
+
+NDE IPOP-UH-CMA-ES
+MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ
+ODE DE-RSF-SS
+MFEGA
+
+1.21251 1.89109 2.85537 3.89109 4.92680 6.33394 6.81966 7.99823 8.81251 10.5697 10.6891
+
+1.21251 1.89109 2.85537 3.89109 4.92680 6.33394 6.81966 7.99823 8.81251 10.5697 10.6891
+
+61.6768 65.3554 71.4982 96.0339 119.2128 171.3908 187.7128 223.0698 227.6408 234.8558 240.2478
+
+1.1115 1.9391 2.8603 3.9391 4.8800 5.9588 6.9218 7.9834 8.9470 10.6278 10.8312
+
+Degrees of Freedom
+
+10
+
+10, 270
+
+10
+
+10, 270
+
+Statistics
+
+269.106
+
+867.107
+
+25.2538
+
+73.6952
+
+p-value
+
+1.37e-10
+
+2.85e-199
+
+4.81e-03
+
+2.10e-74
+
+It is evident from Table-VI that p-values in all three cases are less than the significance level 0.05
+
+indicating significant differences in the metric values obtained by the competitor algorithms. The results
+
+reported in Table-V also designate NDE as the best algorithm. So eight post-hoc analysis tests are
+
+employed [16], including the Bonferroni, the Holm, the Hochberg, the Hommel, the Holland, the Rom,
+
+the Finner and the Li tests, over the results of Table-V with NDE as the control algorithm. Fig. 6
+
+pictorially presents the outcome of the Bonferroni-Dunn test undertaken with the Friedman ranks as
+
+reported in Table-VI. The aim of the Bonferroni-Dunn test is to quantitatively evaluate the statistical
+
+significance level of superiority of the control algorithm NDE over each of the remaining algorithms. For
+
+the Bonferroni-Dunn test in the present context, a critical difference is computed which appears as
+
+1.6811. If the difference of Friedman ranks of any two algorithms exceeds the critical difference measure,
+
+their performances are considered to be significantly different. It can be noted from Fig. 6 that all the
+
+contenders are overshadowed by NDE in a statistically significant fashion except for IPOP-UH-CMA-ES
+
+and MUDE with level of significance 0.05.
+
+Journal Pre-proof
+
+Friedman Ranking
+
+12
+
+NDE
+
+10
+
+IPOP-UH-CMA-ES
+
+MUDE
+
+LAPSO
+
+8
+
+NTGA
+
+IAAS
+
+6
+
+PSOOHT
+
+BBPSO-CJ
+
+ODE
+
+4
+
+DE-RSF-SS
+
+MFEGA
+
+2
+
+0
+
+Fig. 6 Bonferroni-Dunn test with NDE as control algorithm
+
+Table-VII reports the adjusted p-values for the Friedman test obtained with these eight statistical methods for multiple comparisons. The null hypothesis here considers that the performance of an algorithm is equally good to the performance of the control algorithm, i.e., NDE. The performance of NDE and its contender is inferred to be significantly different if the null hypothesis is rejected on obtaining an adjusted p-value below 0.05. The comment on accepting (A) or rejecting (R) the null hypothesis is presented in the parenthesis.
+TABLE VII: ADJUSTED P-VALUES FOR FRIEDMAN TEST WITH NDE AS CONTROL ALGORITHM FOR RAYLEIGH NOISE (OF σ2=0.07) IN BF1 FITNESS LANDSCAPE
+
+Algorithms MFEGA DE-RSF-SS
+ODE BBPSO-CJ PSOOHT
+IAAS NTGA LAPSO MUDE IPOP-UH-CMA-ES
+
+z 10.797 9.9921 8.4610 7.6552 6.3256 5.4392 4.1901 3.0217 1.8532 0.7654
+
+Unadjusted p 3.515e-27 1.647e-23 2.646e-17 1.927e-14 2.520e-10 5.347e-08 2.785e-05 2.511e-03 6.381e-02 4.438e-01
+
+Bonferroni 3.515e-26 (R) 1.647e-22 (R) 2.646e-16 (R) 1.927e-13 (R) 2.520e-09 (R) 5.347e-07 (R) 2.785e-04 (R) 2.511e-02 (R) 6.381e-01 (A) 1.000e+00 (A)
+
+Holm
+
+Hochberg Hommel
+
+Holland
+
+Rom
+
+Finner
+
+Li
+
+3.515e-26 (R) 3.515e-26 (R) 3.515e-26 (R) 0.000000 (R) 3.342e-26 (R) 0.000000 (R) 6.323e-27 (R)
+
+1.482e-22 (R) 1.482e-22 (R) 1.482e-22 (R) 0.000000 (R) 1.410e-22 (R) 0.000000 (R) 2.964e-23 (R)
+
+2.117e-16 (R) 2.117e-16 (R) 2.117e-16 (R) 0.000000 (R) 2.012e-16 (R) 0.000000 (R) 4.760e-17 (R)
+
+1.348e-13 (R) 1.348e-13 (R) 1.348e-13 (R) 1.351e-13 (R) 1.282e-13 (R) 4.828e-14 (R) 3.466e-14 (R)
+
+1.511e-09 (R) 1.511e-09 (R) 1.511e-09 (R) 1.511e-09 (R) 1.437e-09 (R) 5.040e-10 (R) 4.532e-10 (R)
+
+2.673e-07 (R) 2.673e-07 (R) 2.673e-07 (R) 2.673e-07 (R) 2.542e-07 (R) 8.913e-08 (R) 9.618e-08 (R)
+
+1.113e-04 (R) 1.113e-04 (R) 1.113e-04 (R) 1.113e-04 (R) 1.061e-04 (R) 3.980e-05 (R) 5.010e-05 (R)
+
+7.536e-03 (R) 7.536e-03 (R) 7.536e-03 (R) 7.517e-03 (R) 7.536e-03 (R) 3.138e-03 (R) 4.497e-03 (R)
+
+1.275e-01 (A) 1.275e-01 (A) 1.275e-01 (A) 1.234e-01 (A) 1.275e-01 (A) 7.065e-02(A) 1.028e-01 (A)
+
+4.438e-01 (A) 4.438e-01 (A) 4.438e-01 (A) 4.438e-01 (A) 4.438e-01 (A) 4.438e-01 (A) 4.438e-01 (A)
+
+Median FEV
+
+101 Noise: Poisson ProblemDimension: 50
+10-1
+10-3
+10-5
+
+NDE IPOP-UH-CMA-ES MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ ODE DE-RSF-SS MFEGA
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+Noise Variance 
+
+(a)
+
+Journal Pre-proof
+
+Median FEV
+
+100 Noise: Gaussian ProblemDimension: 30
+10-1
+10-2
+
+NDE IPOP-UH-CMA-ES MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ ODE DE-RSF-SS MFEGA
+
+10-3
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+1
+
+Noise Variance 
+
+(b) Fig. 7 Plot of median FEV metric value with the noise variance for (a) f03 and (b) f10 of BF1 set
+
+7 x102 Noise: Gamma (variance=0.49)
+6
+5
+4
+3
+2
+
+NDE IPOP-UH-CMA-ES MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ ODE DE-RSF-SS MFEGA
+
+Median FEV
+
+1
+
+10
+
+20
+
+30
+
+40
+
+Dimension 
+
+(a)
+9x102
+Noise: Cauchy (median=0 and scaling parameter=0.52)
+8
+
+7
+
+6
+
+5
+
+4
+
+3
+
+50
+NDE IPOP-UH-CMA-ES MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ ODE DE-RSF-SS MFEGA
+
+Median FEV
+
+2
+
+10
+
+20
+
+30
+
+40
+
+50
+
+Dimension 
+
+(b) Fig. 8 Plot of median FEV metric values with problem dimension for (a) f17 and (b) f24 of BF1 set
+
+The next experiments are concerned with robustness analysis of NDE and its competitors with respect to noise-variance and problem dimension. Fig. 7 shows the evolution of the median FEV metric value with the variance of noise samples drawn from Poisson and Gaussian distribution respectively. Fig. 7 reveals deterioration of the performance of each algorithm (in achieving the lower FEV metric values)
+
+Journal Pre-proof
+
+with increase in level of infiltration of noise in the fitness landscape. However, NDE appears to be the most robust algorithm against the prevalent presence of noise, even in the complex fitness landscape.
+The plot of the same metric values against problem dimension (within [10, 50]) is presented in Fig. 8 for Gamma and Cauchy noise contaminating the objective surface respectively. It is evident from Fig. 8 that for specific settings of noise, an increase in problem dimension also increases FEV reflecting the gradual loss of effectiveness of all the contender algorithms to precisely locate the global optimum in a complex terrain. However, Fig. 8 substantiates that NDE still remains the conqueror among all by attaining the least FEV metric values. The next experiment deals with comparative analysis of convergence speed of all contender algorithm in terms of the FEV metric over FEs. The results are pictorially presented in Fig. 9 for different settings of search space dimensions and noise distribution in the fitness landscape. It reveals that NDE outperforms all the contender algorithms after 104×D FEs.
+104 Noise: Exponential (variance=0.28) ProblemDimension: 50
+
+Median FEV
+
+100 10-4
+
+NDE IPOP-UH-CMA-ES MUDE LAPSO NTGA IAAS PSOOHT BBPSO-CJ ODE DE-RSF-SS
+--- MFEGA
+
+10-8
+
+3
+
+6
+
+9
+
+12 15 18 21 24 27 30
+
+Function Evaluations 
+
+x104
+
+(a)
+
+101 Noise: Random (within 30%of true fitness) ProblemDimension: 30
+
+100 10-1 10-2 10-3
+
+NDE
+
+IPOP-UH-CMA-ES
+
+MUDE
+
+LAPSO
+
+NTGA
+
+IAAS
+
+PSOOHT
+
+BBPSO-CJ
+
+ODE
+
+3
+
+6
+
+9 12 15 18 21 24 27 30
+
+DE-RSF-SS
+
+Function Evaluations 
+
+--- MFEGA
+
+Median FEV
+
+10-4
+
+5
+
+10 15 20 25 30 35 40 45 50
+
+Function Evaluations 
+
+x104
+
+(b)
+
+Fig. 9 Plot of average FEV metric values with FEs for (a) f04 and (b) f07 of BF1 set
+
+Journal Pre-proof
+
+4. Comparative Analysis of Parameter Adaptive DE Variants The latter part of the experiment attempts to improve the performance of the most popular variants
+of DE, including adaptive distributed DE (ADDE) [72], DE with individual dependent mechanism (IDE) [69], success history based parameter adaptation for DE (SHADE) [68], adaptive DE with optional external archive (JADE) [74], DE with self-adapting control parameters (jDE) [12], selfadaptive DE (SaDE) [46], and fuzzy adaptive DE (FADE) [31], by incorporating the proposed noise handling strategies in the algorithms. Fig. 10 provides a comparative estimate of the relative performance of their noisy counterparts, called JANDE, jNDE, SANDE and FANDE, with respect to the empirical cumulative distribution function (ECDF) of the expected run-time (ERT) for all BF2 benchmarks. The ECDF of the ERT is constructed as a bootstrap distribution of ERT (the number of FEs divided by the problem dimension D) for 100 function-target pairs in the range [10−8, 102] for each BF2 optimization problem. Since the ECDF graphs reveal the proportion of solved problems, instead of the fitness function values obtained by the algorithms, the ECDF graphs for all 30 functions of the BF2 framework are meaningfully aggregated into one graph for a fixed problem dimension D. It is evident from Fig. 10 that ADNDE outperforms its competitors with respect to the ECDF of ERT.
+
+1
+
+Proportion of Function-Target Pairs
+
+0.6
+
+0.4 0.2
+0 0.9
+
+1
+
+2
+
+3
+
+log (Function
+10
+
+Evaluations/Dimension)
+
+(a)
+
+ADNDE INDE SHANDE JANDE jNDE SANDE FANDE
+4
+
+Proportion of Function-Target Pairs
+
+0.72
+
+0.54
+
+ADNDE
+
+0.36
+
+INDE
+
+SHANDE
+
+JANDE
+
+0.18
+
+jNDE
+
+SANDE
+
+FANDE
+
+0
+
+1
+
+2
+
+3
+
+4
+
+log10(Function Evaluations/Dimension)
+
+(b)
+
+Fig. 10 Comparative analysis of improved self-adaptive DE variants for noisy optimization based on ECDF of their bootstrapped distribution of the number of objective function evaluations divided by dimension for 100 function-targets in
+10[−8..2] for all functions of BF2 framework in (a) 10-D and (b) 20-D
+
+V. CONCLUSION
+The paper introduced a novel approach to handle uncertainty in selecting quality solutions in differential evolution (DE) algorithm in the presence of noise in the objective surface. This is realized
+
+Journal Pre-proof
+by incorporating stochastic learning automata (SLA) and the niching based selection strategy in the traditional DE. The sample size used for periodic fitness evaluation of a solution is adapted based on the fitness landscape in its local neighborhood using the reinforcement learning policy of the SLA. The strategy assigns a large sample size to solutions in a largely noise-affected area for accuracy in fitness estimate while significantly reducing the computational complexity associated with the unnecessary reevaluation of less noisy solutions. The niching strategy ensures population quality and diversity as well, which in turn helps to avoid the deceptive effect of noise during selection.
+The paper additionally addresses two other significant issues of noisy optimization, including estimation of the effective fitness of a trial solution and enhancing the search dynamics of DE in the presence of noise in the fitness landscape. The fitness estimate here is computed by taking weighted average of all fitness samples of the given solution. The weight assigned to a fitness sample varies inversely with its difference from the median fitness of the all remaining samples. It thus reduces the significance of noisy rare fitness samples towards evaluation of effective fitness of the given solution. Lastly, the traditional DE/current-to-best/1 mutation strategy is ameliorated with an aim of selecting the concerned members (participating in the difference term of the mutation dynamic) from relatively less noisy regions of the fitness landscape. It in turn prohibits the illusive effect of noise to misguide the search direction.
+First experiment is undertaken to compare the efficiency of the proposed individual extensions and their combinations to overcome the jeopardizing effect of noise with respect to function error value (FEV) metric. The comparative analysis indicates that the proposed noisy differential evolution (NDE) significantly supersedes other noisy DE variants. Two sets of benchmark functions are used to arrive at this conclusion. They include i) a test suit of 28 CEC’2013 benchmark functions, each contaminated with noise samples of seven stochastic distributions and ii) a test bed of 30 GECCO’2010 noisy benchmark functions.
+The proposed NDE algorithm is also compared with ten state-of-the-art contender algorithms with respect to the performance metrics and same set of noisy benchmark functions. Statistical significance of the results is inferred using four nonparametric statistical tests, and eight post hoc analyses. Experimental results reveal statistically significant superiority of NDE over its competitor algorithms. NDE also overshadows its contenders both in robustness (against noise and search space dimension) and convergence speed.
+There remains ample scope for future researches in this new domain of research. The first open problem is of great importance to enhance the performance of the noisy multi-objective optimization (MOO) algorithm using the proposed noise-handling strategies. The challenge lies in effective quantization of states and selection of reward function for reinforcement learning based sampling policy to solve noisy multi-modal MOO problems. The second open research may address the parallel evolution of multiple population of DE in the complex search space to avoid dismissal promising locations in the presence of noise. The future research may exploit the scope of integrating transfer leaning approaches into an EA to utilize past experience to significantly enhance performance and robustness for developing better noisy MOO algorithms. Finally, the noisy optimization algorithms should be devised to solve real-world engineering problems including robotics, material processing, control and guidance, and many others.
+REFERENCES
+[1] Ahrens J. H., and U. Dieter, “Generating gamma variates by a modified rejection technique,” Communications of the ACM, vol. 25, no. 1, 1982, pp. 47-54.
+[2] Aizawa A. N., and B. W. Wah, “Dynamic control of genetic algorithms in a noisy environment,” In Genetic Algorithms, pp. 48-55. [3] Aizawa A. N., and B. W. Wah, “Scheduling of genetic algorithms in a noisy environment,” Evolutionary Computation, vol. 2, no.2,
+1994, pp. 97-122. [4] Arnold D. V., and H. G. Beyer, “On the benefits of populations for noisy optimization,” Evolutionary Computation, vol. 11, no. 2,
+2003, pp. 111-127. [5] Awad N. H., M. Z. Ali, and P. N. Suganthan, “Ensemble of parameters in a sinusoidal differential evolution with niching-based
+population reduction,” Swarm and Evolutionary Computation, vol. 39, 2018, pp. 141-156. [6] B. L. Miller, and D. E. Goldberg, “Genetic algorithms, selection schemes, and the varying effects of noise,” Evolutionary
+Computation, vol. 4, no. 2, 1996, pp. 113-131. [7] Beielstein T., and S. Markon, “Threshold selection, hypothesis tests, and DOE methods,” in IEEE Congress on Evolutionary
+Computation, 2002, pp. 777-782.
+
+Journal Pre-proof
+[8] Bolte J., Linear congruential generators, Wolfram Demonstrations Project. [9] Box G. E. P., and M. E. Muller, “A note on the generation of random normal deviates,” The annals of mathematical statistics, vol. 29,
+1958, pp. 610-611. [10] Branke J., and C. Schmidt, “Selection in the presence of noise,” In Genetic and Evolutionary Computation—GECCO, Springer Berlin
+Heidelberg, 2003, pp. 766-777. [11] Branke J., and C. Schmidt, “Sequential sampling in noisy environments,” in Parallel Problem Solving from Nature, Springer Berlin
+Heidelberg, 2004, pp. 202-211. [12] Brest J., S. Greiner, B. Bošković, M. Mernik, and V. Zumer, “Self-adapting control parameters in differential evolution: a
+comparative study on numerical benchmark problems,” IEEE Transactions on Evolutionary Computation, vol. 10, no. 6, 2006, pp. 646-657. [13] Chakraborty U.K., Advances in differential evolution, Springer, Heidelberg, New York, 2008. [14] Das S., A. Konar, and U. K. Chakraborty, “Improved differential evolution algorithms for handling noisy optimization problems,” in IEEE Congress on Evolutionary Computation, vol. 2, 2005, pp. 1691-1698. [15] Das S., and P. N. Suganthan, “Differential evolution: a survey of the state-of-the-art,” IEEE Transactions on Evolutionary Computation, vol. 15, no. 1, 2011, pp. 4-31. [16] Derrac J., S. García, D. Molina, and F. Herrera, “A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms,” Swarm and Evolutionary Computation, vol. 1, no. 1, 2011, pp. 3-18. [17] Finck S., N. Hansen, R. Ros, and A. Auger, Real-Parameter Black-Box Optimization Benchmarking 2010: Presentation of the Noisy Functions, Working Paper 2009/21, compiled December 4, 2014. [18] Fitzpatrick J. M., and J. J. Grefenstette, “Genetic algorithms in noisy environments,” Machine learning, vol. 3, no. 2-3, 1988, pp. 101120. [19] Goldberg D. E., K. Deb, and J. H. Clark, “Genetic algorithms, noise, and the sizing of populations,” Complex Systems, vol. 6, 1992, pp. 333-362. [20] Hansen N., A. S. P. Niederberger, L. Guzzella, and P. Koumoutsakos, “A method for handling uncertainty in evolutionary optimization with an application to feedback control of combustion,” IEEE Transactions on Evolutionary Computation, vol. 13, no. 1, 2009, pp. 180-197. [21] Hansen N., and A. Auger, “Principled design of continuous stochastic search: From theory to practice,” in Theory and Principled Methods for the Design of Metaheuristics, Springer Berlin Heidelberg, 2014, pp. 145-180. [22] Hörmann W., J. Leydold, and G. Derflinger, “General principles in random variate generation,” in Automatic Nonuniform Random Variate Generation, Springer Berlin Heidelberg, 2004, pp. 13-41. [23] Jang H., R. Choe, and K. R. Ryu, “Deriving a robust policy for container stacking using a noise-tolerant genetic algorithm,” in ACM Research in Applied Computation Symposium, 2012, pp. 31-36. [24] Jin Y., and J. Branke, “Evolutionary optimization in uncertain environments-a survey,” IEEE Transactions on Evolutionary Computation, vol. 9, no. 3, 2005, pp. 303-317. [25] Kita H., and Y. Sano, “Genetic algorithms for optimization of uncertain functions and their applications,” In IEEE SICE 2003 Annual Conference, vol. 3, 2003, pp. 2744-2749. [26] Knuth D. E., Seminumerical Algorithms, The art of computer programming, vol. 2, 1981. [27] Lakshmivarahan S., and M. A. L. Thathachar, “Absolutely expedient learning algorithms for stochastic automata,” IEEE Transactions on Systems, Man, and Cybernetics-Part A: Systems and Humans, vol. 3, 1973, pp. 281-286. [28] Li X., “Niching without niching parameters: particle swarm optimization using a ring topology,” IEEE Transactions on Evolutionary Computation, vol. 14, no. 1, 2010, pp. 150-169. [29] Liang J. J., B. Y. Qu, P. N. Suganthan, and A. G. H. Díaz, Problem definitions and evaluation criteria for the CEC 2013 special session on real-parameter optimization, Computational Intelligence Laboratory, Zhengzhou University, Zhengzhou, China and Nanyang Technological University, Singapore, Technical Report 201212, 2013. [30] Liu B., X. Zhang, and H. Ma, “Hybrid differential evolution for noisy optimization,” in IEEE Congress on Evolutionary Computation, 2008, pp. 587-592. [31] Liu J., and J. Lampinen, “A fuzzy adaptive differential evolution algorithm,” Soft Computing, vol. 9, no. 6, 2005, pp. 448-462. [32] Mahfoud S. W., “Crowding and preselection revisited,” in Parallel Problem Solving from Nature, vol. 2, 1992, pp. 27-36. [33] Markon S., D. V. Arnold, T. Back, T. Beielstein, and H. G. Beyer, “Thresholding-a selection operator for noisy ES,” in IEEE Congress on Evolutionary Computation, vol. 1, 2001, pp. 465-472. [34] Marsaglia G., and W. W. Tsang, “The ziggurat method for generating random variables,” Journal of Statistical Software, vol. 5, no. 8, 2000, pp. 1-7. [35] Mendel E., R. A. Krohling, and M. Campos, “Swarm algorithms with chaotic jumps applied to noisy optimization problems,” Information Sciences, vol. 181, no. 20, 2011, pp. 4494-4514. [36] Mengshoel O. J., and D. E. Goldberg, “Probabilistic crowding: deterministic crowding with probabilistic replacement,” in Genetic and Evolutionary Computation, 1999, pp. 409-416. [37] Miller B. L., Noise, sampling, and efficient genetic algorithms, IlliGAL Report no. 97001, 1997. [38] Mininno E., and F. Neri, “A memetic differential evolution approach in noisy optimization,” Memetic Computing, vol. 2, no. 2, 2010, pp. 111-135. [39] Narendra K. S., and M. L. A. A. Thathachar, “Learning automata-a survey,” IEEE Transactions on Systems, Man and Cybernetics, vol. 4, 1974, pp. 323-334. [40] Pan H., L. Wang, and B. Liu, “Particle swarm optimization for function optimization in noisy environment,” Applied Mathematics and Computation, vol. 181, no. 2, 2006, pp. 908-919. [41] Park T., and K. R. Ryu, “Accumulative sampling for noisy evolutionary multi-objective optimization,” in ACM Genetic and Evolutionary Computation, 2011, pp. 793-800.
+
+Journal Pre-proof
+[42] Paz E. C., “Adaptive sampling for noisy problems,” in Genetic and Evolutionary Computation, Springer Berlin Heidelberg, 2004, pp. 947-958.
+[43] Peng L., S. Liu, R. Liu, and L. Wang, “Effective long short-term memory with differential evolution algorithm for electricity price prediction,” Energy, vol. 162, 2018, pp. 1301-1314.
+[44] Pietro A. D., L. While, and L. Barone, “Applying evolutionary algorithms to problems with noisy, time-consuming fitness functions,” in IEEE Congress on Evolutionary Computation, vol. 2, 2004, pp. 1254-1261.
+[45] Price K., R. M. Storn, and J. A. Lampinen, Differential evolution: a practical approach to global optimization, Springer Science & Business Media, 2006.
+[46] Qin A. K., and P. N. Suganthan, “Self-adaptive differential evolution algorithm for numerical optimization,” in IEEE Congress on Evolutionary Computation, vol. 2, 2005, pp. 1785-1791.
+[47] Rahnamayan S., H. R. Tizhoosh, and M. Salama, “Opposition-based differential evolution for optimization of noisy problems,” in IEEE Congress on Evolutionary Computation—, 2006, pp. 1865-1872.
+[48] Rakshit P., A. Konar, and A. K. Nagar, “Artificial Bee Colony induced multi-objective optimization in presence of noise,” in IEEE Congress on Evolutionary Computation, 2014, pp. 3176-3183.
+[49] Rakshit P., A. Konar, and Atulya K. Nagar, “Type-2 fuzzy induced non-dominated sorting bee colony for noisy optimization,” in IEEE Congress on Evolutionary Computation, 2015, pp. 3176-3183.
+[50] Rakshit P., A. Konar, and S. Das, “Noisy Evolutionary Optimization algorithms-A comprehensive survey,” Swarm and Evolutionary Computation, vol. 33, 2017, pp. 18-45.
+[51] Rakshit P., A. Konar, P. Bhowmik, I. Goswami, S. Das, L. C. Jain, and A. K. Nagar, “Realization of an adaptive memetic algorithm using differential evolution and Q-learning: a case study in multirobot path planning,” IEEE Transactions on Systems, Man, and Cybernetics: Systems, vol. 43, no. 4, 2013, pp. 814-831.
+[52] Rakshit P., A. Konar, S. Das, L. C. Jain, and A. K. Nagar, “Uncertainty management in differential evolution induced multiobjective optimization in presence of measurement noise,” IEEE Transactions on Systems, Man, and Cybernetics: Systems, vol. 44, no. 7, 2014, pp. 922-937.
+[53] Rakshit P., and A. Konar, “Differential evolution for noisy multiobjective optimization,” Artificial Intelligence, vol. 227, 2015, pp. 165-189.
+[54] Rakshit P., and A. Konar, “Extending multi-objective differential evolution for optimization in presence of noise,” Information Sciences, vol. 305, 2015, pp. 56-76.
+[55] Rakshit P., and A. Konar, “Non-dominated sorting bee colony optimization in the presence of noise,” Soft Computing, vol. 20, no. 3, 2016, pp 1139-1159.
+[56] Rakshit P., and A. Konar, Principles in Noisy Optimization: Applied to Multi-agent Coordination, Springer, 2018, ISBN 978-981-108641-0.
+[57] Rakshit P., and A. Konar, “Realization of learning induced self-adaptive sampling in noisy optimization,” Applied Soft Computing, vol. 69, 2018, pp. 288-315.
+[58] Rattray M., and J. Shapiro, “Noisy fitness evaluation in genetic algorithms and the dynamics of learning,” Foundations of genetic algorithms: 4th workshop: revised papers, ed. / Richard Belew, Michael Vose, Morgan Kaufmann, San Francisco, vol. 4, 1998. pp. 117-139.
+[59] Rudolph G., Günter, “A partial order approach to noisy fitness functions,” in IEEE Congress on Evolutionary Computation, vol. 1, 2001, pp. 318-325.
+[60] Samma H., C. P. Lim, and J. M. Saleh, “A new reinforcement learning-based memetic particle swarm optimizer,” Applied Soft Computing, vol. 43, 2016, pp. 276-297.
+[61] Sano Y., and H. Kita, “Optimization of noisy fitness functions by means of genetic algorithms using history of search with test of estimation,” in IEEE Congress on Evolutionary Computation, vol. 1, 2002, pp. 360-365.
+[62] Sano Y., H. Kita, I. Kamihira, and M. Yamaguchi, “Online optimization of an engine controller by means of a genetic algorithm using history of search,” in IEEE Industrial Electronics Society, vol. 4, 2000, pp. 2929-2934.
+[63] Siegmund F., A. H. C. Ng, and K. Deb, “A comparative study of dynamic resampling strategies for guided evolutionary multiobjective optimization,” in IEEE Congress on Evolutionary Computation, 2013, pp. 1826-1835.
+[64] Stagge P., “Averaging efficiently in the presence of noise,” in Parallel Problem Solving from Nature, Springer Berlin Heidelberg, 1998, pp.188-197.
+[65] Storn R., and K. Price, “Differential evolution–a simple and efficient heuristic for global optimization over continuous spaces,” Journal of Global Optimization, vol. 11, no. 4, 1997, pp. 341-359.
+[66] Stroud P. D., “Kalman-extended genetic algorithm for search in nonstationary environments with noisy fitness evaluations,” IEEE Transactions on Evolutionary Computation, vol. 5, no. 1, 2001, pp. 66-77.
+[67] Syberfeldt A., A. Ng, R. I. John, and P. Moore, “Evolutionary optimisation of noisy multi-objective problems using confidence-based dynamic resampling,” European Journal of Operational Research, vol. 204, no. 3, 2010, pp. 533-544.
+[68] Tanabe R., and A. Fukunaga, “Success-history based parameter adaptation for differential evolution,” in IEEE Congress on Evolutionary Computation, 2013, pp. 71-78.
+[69] Tang L., Y. Dong, and J. Liu, “Differential evolution with an individual-dependent mechanism,” IEEE Transactions on Evolutionary Computation, vol. 19, no. 4, 2014, pp. 560-574.
+[70] Wang L., H. Hu, XY. Ai, and H. Liu, “Effective electricity energy consumption forecasting using echo state network improved by differential evolution algorithm,” Energy, vol. 153, 2018, pp. 801-815.
+[71] Zeng YR., Y. Zeng, B. Choi, and L. Wang, “Multifactor-influenced energy consumption forecasting using enhanced backpropagation neural network,” Energy, vol. 127, 2017, pp. 381-396.
+[72] Zhan ZH., ZJ. Wang, H. Jin, and J. Zhang, “Adaptive distributed differential evolution,” IEEE Transactions on Cybernetics, 2019, pp. 1-15.
+
+Journal Pre-proof
+[73] Zhang J. Q., L. W. Xu, J. Ma, M. C. Zhou, “A learning automata-based particle swarm optimization algorithm for noisy environment,” in IEEE Congress on Evolutionary Computation, 2015, pp. 141-147.
+[74] Zhang J., and A. C. Sanderson, “JADE: adaptive differential evolution with optional external archive,” IEEE Transactions on Evolutionary Computation, vol. 13, no. 5, 2009, pp. 945-958.
+[75] Zhang Z., and T. Xin, “Immune algorithm with adaptive sampling in noisy environments and its application to stochastic optimization problems,” IEEE Computational Intelligence Magazine, vol. 2, no. 4, 2007, pp. 29-40.
+
+Journal Pre-proof
+Declaration of interests ☐√ The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. ☐The authors declare the following financial interests/personal relationships which may be considered as potential competing interests:
+

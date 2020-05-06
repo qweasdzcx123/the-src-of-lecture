@@ -1,0 +1,811 @@
+Electrical Power and Energy Systems 46 (2013) 115–122
+Contents lists available at SciVerse ScienceDirect
+Electrical Power and Energy Systems
+journal homepage: www.elsevier.com/locate/ijepes
+
+A multi-objective optimization problem for allocating parking lots in a distribution network
+M. Moradijoz, M. Parsa Moghaddam ⇑, M.R. Haghifam, E. Alishahi
+Faculty of Electrical and Computer Engineering, Tarbiat Modares University, Tehran, Iran
+
+article info
+Article history: Received 1 June 2012 Received in revised form 18 October 2012 Accepted 20 October 2012 Available online 22 November 2012
+Keywords: Electric vehicle Distribution system Parking lots allocation Vehicle to grid
+
+abstract
+This paper presents a multi-objective approach to determine optimal site and size of parking lots, which provide vehicle to grid (V2G) power in distribution system as new type of distributed generations (DGs). In this approach, the reliability of distribution system and power losses along with investment cost are considered in optimization problem. This optimization problem is solved using genetic algorithm (GA) method. Simulation study is carried out on a nine bus test system. The results of simulations show that the economic issue of parking lots installation depends on many factors such as availability of electric vehicles (EVs) as well as the electricity price. Also, it is shown that by taking enough incentive for EVs owners, optimal sitting and sizing of parking lots has economical beneﬁt for distribution system companies. Also, optimal allocation of parking lots can improve the distribution system voltage proﬁle.
+Ó 2012 Elsevier Ltd. All rights reserved.
+
+1. Introduction
+In recent years several problems including environmental issues, decrease in fuel quantity and volatility in its price and the need for decreasing dependency on fossil fuels caused the electric vehicles (EVs) get known as an effective resource in transportation and power system [1–5]. As addressed in [6], the backbone of smart grid emphasis on environmental protection, using variable generation (such as wind and solar), demand response, and distributed generation (DG) including EV technology, driving for better asset utilization, while maintaining reliable system operation, and the need for enhanced customer choice. Fig. 1 depicts these factors in relation to the new emerging smart grid paradigm, and illustrates the role of EV technology in the new era [7]. In [8,9], it is shown that vehicles are parked for about 93–96% time during a day. Therefore, they are available for other purposes such as serving as storage device to the grid. Based on this fact and the increasing need for economical storages in power system, EVs are suggested to be used as limited energy resources in power system [10]. Additionally, EVs can be utilized as controllable loads. In other words, they can be operated as a battery to save energy during offpeak period. Also, these can act as generation units during peak period or high electricity price intervals. Since EVs have limited power output, they can be used in distribution system as a DG resource. For using EV as a DG in distribution system, charging and
+⇑ Corresponding author. Address: Faculty of Electrical and Computer Engineering,
+Tarbiat Modares University, P.O. Box 14115-143, Tehran, Iran. Tel.: +98 21 82883369; fax: +98 21 8288432.
+E-mail address: parsa@modares.ac.ir (M. Parsa Moghaddam).
+0142-0615/$ - see front matter Ó 2012 Elsevier Ltd. All rights reserved. http://dx.doi.org/10.1016/j.ijepes.2012.10.041
+
+discharging of batteries should be controlled. Some models for vehicle to grid (V2G) power output are presented in [11–14].
+Distribution system planners try to supply economical and reliable electricity to their customers. These companies deploy different technologies such as DGs and capacitors. DG technologies have many economical and technical beneﬁts [15,16]. These beneﬁts cannot be maximized except when optimal sizes and sites of DG units are determined. Therefore, optimal allocation of DG is one of the most important issues, which have to be considered in distribution planning problem. An appropriate decision making can provide beneﬁts to distribution network, suppliers, and customers. Reliability index and loss reduction are two major objectives that have to be considered in sitting and sizing of DGs [17,18]. Using a type of DGs such as renewable DGs has an important role in smart environment.
+Optimum allocation of parking lots, as new type of DGs, should be accomplished as well as other type of DGs. High-penetrations of distribution-connected storage devices or plug-in vehicles have adverse impacts on the grid due to their charging loads, randomlylocated or unmanaged additions. Contrary, optimal allocation of parking lots can reduce the network loss such as other DGs, enhance reliability, improve voltage proﬁle, and consequently bring economical beneﬁts for distribution system company (DISCO). Many studies have been accomplished regarding associated problems with EVs and their impacts on power system. In many of the studies it is shown that the impact of EVs depends on charging schedule and electricity tariffs [19–21]. Ref. [22] presents a simulator tool in order to evaluate EVs impacts on power system. The proposed simulator in [22] allows estimation of the impacts of charging on each bus of the system.
+
+116
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+Renewable Resources
+
+Variable Generation
+
+The Environment
+
+System Reliability
+
+Demand Response
+Greenhouse Gasses
+
+Smart Grid
+
+Distributed Resources (EV)
+Capacity Limitation
+
+Operational Excellence
+
+Operational Efficiency
+
+Customer Satisfaction
+
+Supply Ecconomics
+
+Fig. 1. The role of EV in smart grid [11].
+
+parking lots (block 2). Due to the stochastic output of this resource, reliability is taken into consideration as an important issue. In this study, the energy not supplied (ENS) is proposed as a reliability index (block 3). On the other hand, the power loss as the other objective has to be paid attention (block 4). Another objective, which has important impacts on these resources allocation is the investment cost of parking lots, which is illustrated in block 5. Since optimal allocation of parking lots is a multi-objective optimization problem, a trade-off between these objectives is taken into account in this paper. GA is used for solving optimization problem as indicated in block 6.
+Number of EVs in each candidate bus, reliability beneﬁt, and loss beneﬁt are outputs of the simulation, as presented in blocks 7, 8, and 9, respectively.
+In order to allocate parking lots, some assumptions are taken into account as follows:
+
+Despite numerous studies about EVs, optimal allocation of parking lots has not been considered until now in the studies. Hence, this paper presents a multi-objective approach to determine optimal site and size of parking lots as DGs. Due to the multi-objective feature of allocation problem, Analytic Hierarchy Process (AHP) is employed in this paper to determine the optimal weighting coefﬁcient for each objective. AHP was proposed in 1970 and since then, it has been progressively become an algorithm with extensive uses in multi-objective comprehensive evaluations [23].
+One of the main differences between parking lot and other traditional DGs is that this resource does not have deterministic output. In this paper, a simpliﬁed model is used for power output of EV parking lots. In the modeling of parking lots, they act as storage devices and store electrical power in the batteries of vehicles at times with low electricity price and deliver power to distribution system at times with high electricity price. Also, parking lots act as charging stations of EVs for driving purposes. Because of stochastic nature of EV owners’ behavior, the parking lots output is stochastic. One approach for decreasing the uncertainty of EV owners’ behavior is implementing some incentive mechanisms. Enough incentive mechanism should be considered to promote EV drivers to participate in providing power to the network.
+In this study, the allocation optimization problem is solved using genetic algorithm (GA) method. Due to the stochastic nature of the outputs of these resources, reliability is taken into consideration as an important issue. On the other hand, the power loss as well as the investment cost are other objectives have to be paid enough attention. For this reason, a trade-off shall be made between these objectives.
+The rest of this paper is organized in the following order. Section 2 describes the proposed model of parking lots allocation framework. In Section 3, the parking lot power generation is discussed. Section 4 presents the problem formulation. In Section 5, the solving method is discussed. The case study and discussion on the results are driven in Section 6. Finally, the last section is devoted to conclusions.
+2. Framework of allocation problem
+The proposed framework of parking lots allocation is illustrated in Fig. 2, which is structured in 9 blocks. The data required for solving the optimization problem (e.g., data of load, EV data, and electricity price data) is indicated in block one. The output power of EVs depends on drivers’ behavior. Thus, the incentive mechanism as illustrated in block 1 can be considered for management of EVs power output and promote the owners of these resources.
+Generally, EVs do not have deterministic output therefore, in this paper the simpliﬁed model is used for power output of EVs
+
+1. In this study it is assumed that, DISCO is responsible for supplying customers demand, parking lots installation, and controlling charging and discharging of EVs batteries. DISCO tries to carry all of these responsibilities based on cost reduction and improving the quality and reliability of customer service.
+2. It should be noted that in calculating the proﬁt, it is assumed that the DISCO does not receive compensation from EV owners for battery charging necessary for driving purposes. Also, degradation cost of vehicles due to V2G is paid to EV owners by DISCO. These assumptions are taken to encourage EV owners to park their vehicles in parking lot in the days with high price peak electricity.
+3. All vehicles are charged and discharged with maximum charging rate. It should be noted that this assumption has been considered in several EV studies [20,21].
+4. In the modeling of parking lots, it is assumed that the initial state of charge (SOC) of EVs has three levels. The proposed model can be used for other SOC levels too. The initial SOC of vehicles can be ﬁtted with suitable distribution function and parking lots can be placed optimally, considering this function. Other assumption used in modeling of parking lots is that all batteries have the same size. Thus, the output power of parking lot is ﬂat in discharging state. This assumption has been taken in many EV studies such as [20–22].
+3. Parking lot power generation
+The EV battery storage has a low capacity. Thus, in this paper, wide use of aggregated EVs in parking lots is suggested to overcome the small storage capacity of an EV. EV parking lots are considered as new players whose roles are collecting the EVs in order to reach high storage capacity from small battery capacity of EVs, affecting the grid beneﬁcially.
+In a restructured power system, DISCO buys electricity from wholesale market to supply the consumers. Purchasing electricity in off-peak hours from the market with low prices, storing it in batteries of vehicles in parking lots, and delivering electricity to consumers in peak time are three major steps that enable DISCOs to save costs through preventing purchasing fraction of required peak power with high price. Usually, peak power is generated by power plants that can be switched on for shorter periods, such as gas turbines at the hours of day when high levels of power consumption are expected (for example, in hot summer afternoons) [24]. The peak power is typically needed only a few 100 h/year. This power is usually provided by generators with low capital cost however high operational cost. Providing peak power by parking lots may be an economic alternative source. For optimal participation of parking lots in providing peak power, they should be allocated optimally.
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+117
+
+1 Input Data
+- Electricity price
+- Load Model - EV data - incentives
+for EV owner
+
+SSiitttiinnggaannddSSiizziinnggooffDDGG 6 GA 2 Parking lot power output
+3 Reliability index (ENS)
+4 Load flow & Loss 5 Investment cost
+
+Outputs 7 Number of EVs in each bus 8 Reliability benefit 9 Loss benefit
+
+Fig. 2. Proposed framework of parking lots allocation.
+
+Table 1 Initial SOC of vehicles.
+Initial SOC Number of vehicles
+
+SOC1 n1
+
+SOC2 n2
+
+SOC3 n3
+
+Input power of parking lot
+
+t (1)
+
+t (2)
+
+t (3)
+
+Time
+
+Fig. 3. Input power of parking lot for charging EVs.
+
+The ﬁrst step in parking lots allocation is modeling the output power of these lots. To charge EVs, the output power of parking lot depends on initial SOC of vehicles batteries, as well as the number of available vehicles, and output power of each vehicle. In this paper, a simple charging and discharging scheduling of batteries are considered as described in the following.
+The required time for full charging of an EV as a function of initial SOC can be calculated as follows:
+
+tðiÞ
+
+¼
+
+ð1
+
+À
+
+SOCiÞ Pv
+
+Ã
+
+ESi
+
+ð1Þ
+
+where SOCi is the initial SOC of vehicle i, ESi is the battery capacity of EV i, and Pv is the power rate with which EV is charged.
+The output power of the parking lot can be represented as:
+
+Ppark ¼ Pv Ã n
+
+ð2Þ
+
+where n is the number of available vehicles in the parking lot. By assuming three levels of SOC for batteries, as shown in Ta-
+ble 1, the input power of parking lot will have 4 stages similar to Fig. 3.
+
+4. Problem formulation
+
+In this section, the revenue and the costs of parking lot application are modeled. Details of formulations expressed in the next subsections.
+4.1. Revenue and cost of V2G
+
+The revenue obtained from V2G power depends on the type of electricity market that the V2G power is sold to. For markets such as peak power market that pay only for energy, the revenue is the product of price and energy dispatched [25]. A portion of peak power can be supplied by V2G power and consequently less purchasing electric power from wholesale market by DISCO. Therefore, saving costs by supplying loads with V2G power instead of purchasing power from wholesale market can be formulated as follows:
+
+rðiÞ ¼ PrP Ã PparkðiÞ Ã tdispðiÞ
+
+ð3Þ
+
+where r(i) is the total revenue gained from ith parking lot, tdisp(i) is the total time that the V2G power is dispatched, and PrP is market price of electricity at peak times.
+
+118
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+On a yearly basis, the net revenue is calculated by summing up the revenue for only those hours in which the cost of energy from V2G is lower than the market rate [25].
+The cost of V2G power is made of three elements: purchased energy, wear, and capital costs [25]. The purchased energy and the wear cost for V2G are the additional costs needed for V2G however not for driving. Similarly, the capital cost is the cost of additional equipments needed for V2G however not for the main function of the vehicles, which is transportation. In addition to the cost of V2G power, the cost of purchased energy for driving purposes is also modeled in this section. Assuming a yearly basis, these costs can be formulated as follows:
+
+CFcapðiÞ ¼ cac Ã PCðiÞ
+
+ð4Þ
+
+l CFPu:driving ðiÞ ¼ X tn Proff Ã Pparkchði; kÞ Ã tðkÞ
+k¼1 conv
+
+ð5Þ
+
+CFpu:V2GðiÞ ¼ Prpe Ã PparkðiÞ Ã tdisp
+
+ð6Þ
+
+where CFcap(i) is the capital cost of parking lot i, cac is the annualized capital cost for each vehicle, PC(i) is the capacity of parking lot i, CFPu.driving(i) is the cost of purchased energy to charge vehicles for driving, Proff is the market price of electricity at off-peak times, Pparkch(i, k) is the needed power at parking lot for charging vehicles from SOC 0 to SOC 1, t(k) is the time duration at which the output power of parking lot in order to charge EVs is Pparkch(i, k), CFpu.V2G(i) is the cost of purchased energy to charge vehicles for V2G power, and Prpe is the purchased energy cost.
+Pparkch(i, k) is calculated by Eq. (2) in which n at each time interval, equals to the number of vehicle with SOC less than 1. The equation for calculating Prpe includes a purchased energy term and an equipment degradation term:
+
+Prpe
+
+¼
+
+Proff
+lconv
+
+þ
+
+cd
+
+ð7Þ
+
+where cd is the cost of equipment degradation due to the extra use
+for V2G, and lconv is the efﬁciency of the inverter. More details
+about calculating cd are given in [25].
+
+4.2. Reliability improvement
+
+As mentioned, in this paper a multi-objective optimization
+
+method is developed to determine the appropriate size and site
+
+of parking lots. One of the objectives is meeting the system reliabil-
+
+ity in an acceptable level. The energy not-supplied index (ENS),
+
+which is considered as the reliability index is calculated for this
+
+work. This index reﬂects the network total energy not supplied
+
+due to the faults during study period. Therefore, the system disrup-
+
+tion cost can be evaluated as represented in following equation:
+
+"
+
+XB
+
+CNSðjÞ ¼
+
+Cinj Ã cb Ã Lb Ã
+
+!#
+
+X Nres
+
+X Nrep
+
+Pres Ã tres þ
+
+Prep Ã trep þ CEquipj
+
+b¼1
+
+res¼1
+
+rep¼1
+
+ð8Þ
+
+where B is the number of branches in network, Cinj is the price of en-
+ergy not supplied in load level j, cb is the failure rate of line section
+b, Lb is the length of line section b, Nres is the number of nodes isolated during fault location, Nrep is the number of nodes isolated during fault repair, Pres is the loads not supplied during fault location, tres is duration of the fault location and switching time, Prep is the loads not supplied during fault repair, trep is duration of the fault repair, and CEquipj is the cost of energy not supplied based on failure in equipment except for branches.
+If the parking lot is sited in distribution system, it is used as alternative source to restore power for fraction of the loads that
+
+are failed and therefore the system reliability will be improved. The reliability enhancement beneﬁt for each year that DISCO can reach is expressed by following equation:
+
+DCNSðjÞ ¼ CNSðjÞ À CNSV2GðjÞ
+
+ð9Þ
+
+where CNS(j) is the cost of energy not supplied without V2G in load level, and CNSV2G(j) is the cost of energy not supplied with V2G.
+
+4.3. Loss reduction beneﬁt
+
+The output power of parking lots causes the power loss of distribution system to change. Therefore, the cost of system loss can be evaluated by:
+
+DClossðjÞ ¼ PriceðjÞ Ã ðlossðjÞ À lossV2GðjÞÞ
+
+ð10Þ
+
+XB lossðjÞ ¼ Rb Ã IbðjÞ2 Ã tðkÞ
+b¼1
+
+ð11Þ
+
+where Price(j) is the electricity price in load level j, loss(j) is the network loss in load level j without V2G, lossV2G(j) is the network loss in load level j with V2G, Rb is the resistance of branch b, and Ib(j) is the current of branch b at time interval j.
+
+4.4. Objective function
+
+Considering the revenue and cost, which have been described in previous sections, the objective function can be stated as follows:
+
+X NV 2G MAX F ¼ ðw1 Ã rðiÞ À ðw2 Ã CFcapðiÞ þ w3 Ã CFPu:drivingðiÞ
+i¼1
+XJ þ w4 Ã CFpu:V2GðiÞÞ þ ðw5 Ã DCNSðjÞ þ w6 Ã DClossðjÞÞ
+j¼1
+
+ð12Þ
+
+where NV2G is the number of parking lots, J is the number of load levels, and w1, . . ., w6 are weighting coefﬁcients.
+
+4.5. Calculating of weighting factors
+
+In this study, AHP is used to calculate the optimal weighting
+
+coefﬁcient for each index in Eq. (12) [23]. First, a matrix is formed
+
+with arrays, which are made by comparing the importance of each
+
+two indices. For example, the array in iNth row and jNth column is a
+
+number between 1 and 9 that indicates the importance of the iNth
+
+index compared to jNth index. This comparison matrix can be ex-
+
+pressed as follows:
+
+2
+
+3
+
+N11 . . . N1m
+
+N ¼ 64 Á Á Á Á Á Á Á Á Á 75
+
+ð13Þ
+
+Nm1 . . . Nmm
+
+where N(iN, iN) = 1 (importance of index iN compared to itself is 1), N(iN, jN) = 1/N(jN, iN) represent the importance of iNth index com-
+
+pared to jNth index. The next step is computing of weighting coefﬁcients. The
+
+weighting coefﬁcients are calculated as follows:
+
+v u u tm ﬃY ﬃﬃmﬃﬃﬃﬃﬃNﬃﬃﬃðﬃﬃiﬃNﬃﬃﬃ;ﬃﬃjﬃNﬃﬃﬃÞﬃ
+
+wiN ¼ Xm v u u tmjN¼ﬃY ﬃ1mﬃﬃﬃﬃﬃNﬃﬃﬃðﬃﬃiﬃNﬃﬃﬃ;ﬃﬃjﬃNﬃﬃﬃÞﬃ
+
+ð14Þ
+
+iN ¼1 j¼1
+
+where m is number of objectives. After calculating the weighting coefﬁcients, the consistency in-
+dex of matrix N is calculated as below:
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+119
+
+ICR
+
+¼
+
+ðcmax À mÞ
+ðm À 1Þ Ã IRI
+
+ð15Þ
+
+where cmax is maximum eigenvalue of matrix N.
+If ICR < 0.1 the consistency of each weighting coefﬁcient is acceptable. IRI is a random index, and its values are given in [23] for a different index number m.
+
+4.6. Constraints
+
+The objective function should be maximized subject to different constraints.
+
+DV
+
+k i
+
+¼
+
+jV
+
+k i
+
+j
+
+À
+
+jV
+
+kÀ1 i
+
+j
+
+ð22Þ
+
+5. Solving method
+The main goal of the proposed modeling is to determine proper locations for parking lots and their optimal size by maximizing objective function. In the following, GA and placement algorithm, which is used to solve multi-objective optimization problem are described.
+5.1. Problem optimization using GA
+
+4.6.1. Distribution line capacity limit The power ﬂow of lines should be less than maximum permit-
+ted power of lines because of line thermal capacity.
+
+Sði0;j0Þ 6 Sði0;j0Þmax
+
+ð16Þ
+
+where Si,j is the MVA in the line connecting bus i0 to bus j0, and S(i,j)max is the MVA capacity of the line between bus i0 to bus j0.
+
+4.6.2. Voltage drop limit The voltage of each bus should be in the range of minimum and
+maximum voltages.
+
+V min 6 V 6 V max
+
+ð17Þ
+
+where Vmin, Vmax are minimum and maximum allowable voltages at buses, respectively.
+
+4.6.3. Number of vehicles limit in each parking lot Capacity of each parking lot in speciﬁc area is limited by the num-
+ber of EVs in that area. This constraint can be expressed as follows:
+
+CP 6 CPmax
+
+ð18Þ
+
+where CPmax is the maximum capacity of parking lot, which can be installed.
+
+4.7. Load ﬂow
+
+To solve the optimal parking lot placement problem for a typical radial distribution network a simple power ﬂow method known as the backward–forward sweep power ﬂow is used for computing the power loss. This method is described brieﬂy as follows:
+
+4.7.1. Current injection calculation for each node
+
+inðkÞ ¼
+
+! SðnkÞ
+
+V
+
+ðkÞ n
+
+ð19Þ
+
+where in is the current injection at node n corresponding to constant power load, Sn is scheduled power injection at node n, and Vn is the voltage at node n.
+
+4.7.2. Backward sweep to sum up line section current
+
+The current in line section l is computed as below:
+
+X
+
+JlðkÞ ¼ ÀiðnkÞ þ
+
+JðmkÞ
+
+mM
+
+ð20Þ
+
+Line section l connects node s to node n, where n stands for
+
+receiving point of line section l, and s stands for sending point of
+
+line section l.
+
+4.7.3. Forward sweep to update nodal voltage
+
+The voltage at node j is computed as:
+
+V
+
+ðkÞ j
+
+¼
+
+V
+
+ðkÞ i
+
+À
+
+Zl
+
+Ã
+
+Jl
+
+ð21Þ
+
+In all of the equations, k is the loop counter.
+
+Iteration of these steps is kept on until the convergence criteria
+
+are
+
+satisﬁed
+
+(DV
+
+k i
+
+6
+
+e).
+
+GA is able to reach an optimum solution by ﬁnite number of evolution steps performed on a ﬁnite set of possible solutions.
+The objective function stated in Eq. (12), is maximized with GA. In this paper, the ﬁtness function is equal to the objective function because the chromosome with maximum objective function is the ﬁttest chromosome.
+Before using the GA to solve the optimization problem, representation of a chromosome must be deﬁned. In this paper, each chromosome is composed of several sub chromosomes. The number of sub chromosomes is equal to the number of candidate buses used for connecting the parking lot. Each sub chromosome represents a binary number that shows the capacity of parking lot. Therefore, the number of bits in the sub chromosomes depends on the maximum capacity, which parking lots can have. The major steps of the optimization algorithm are:
+1. Generation of initial population: In the ﬁrst iteration, chromosomes are initialized.
+2. Calculation ﬁtness function: For each chromosome the parking is modeled and the ﬁtness function is calculated.
+3. Generation of new population: Each chromosome is copied to the second generation for a number of times that is proportional to its fractional ﬁtness function in the reproduction phase and genetic operators are applied on the set of chromosomes.
+4. Termination criteria: Steps 2 and 3 are repeated and the algorithm stops when acceptable ﬁtness level has been reached for the population.
+Parameters of GA are as follows:
+ Population size (Nc): 5.  Mutation probability: 0.1.  Crossover probability: 1.
+6. Numerical study
+The test system for the numerical study is a 9 bus distribution system as shown in Fig. 4. The data of this test system and loads are given in [17,26]. The distribution test system includes high voltage distribution substation 132–33 kV, which feeds eight load points.
+For placement of parking lot in the study distribution system following criteria are taken into account:
+1. Batteries of vehicles are charged with a constant power of 15 kW.
+2. 2. Loads are time variant. In this paper, the load condition is considered in three levels (light, medium, and peak load) [17].
+3. In the simulation, the parking lot is modeled as a bus (Q = 0). In charging state, Q is positive and during discharging, P is negative.
+
+120
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+1
+
+3
+
+2
+
+5 7
+9
+
+4 6
+8
+
+0 HV/MV Substation
+
+Load Point
+
+Distribution Line
+
+Fig. 4. Studied test system [8].
+
+Table 2 Required information for parking lot placement.
+
+Initial SOC Number of vehicles (%)
+Cd (USD$/ kW h)
+0.225
+
+0.3 25%
+Cac (USD$/year for each vehicle)
+304
+
+0.45 25%
+
+lconv
+0.85
+
+Pricep (USD$/ kW h) 0.05
+
+0.7 50%
+Price (USD$/ kW h)
+0.5
+
+Table 3 Simulation results of scenario 1 (availability = 100%).
+
+Bus number Optimum number of EVs
+
+2
+
+3
+
+6
+
+375
+
+375
+
+225
+
+Beneﬁt of loss reduction (USD$) Beneﬁt of reliability improvement (USD$) Beneﬁt of providing peak power (USD$) Total beneﬁt (USD$)
+
+38,705 31,356 411,640 481,700
+
+Table 4 Simulation results of scenario 1 (availability = 80%).
+
+Bus number Optimum number of EVs
+
+2
+
+3
+
+6
+
+375
+
+375
+
+225
+
+Beneﬁt of loss reduction (USD$) Beneﬁt of reliability improvement (USD$) Beneﬁt of providing peak power (USD$) Total beneﬁt (USD$)
+
+33,113 31,828 259,820 324,760
+
+4. Buses 2, 3, and 6 are candidates for connecting the parking lot.
+5. Initial SOC of vehicles is based on data given in Table 2. 6. Under traditional approximations used by utilities, there
+might be 200 peak hours in a year during which an incremental kW h of electricity would be worth 50 USD$/kW h [25]. Therefore, the maximum hours that vehicles deliver power to the network is assumed to be 200 h in a year.
+Degradation and annualized investment cost and efﬁciency of the inverter, which are used in this study are given in Table 2 [25]. The larger the batteries are, the more economical installation of parking lots will be and vice versa. Therefore, it is assumed that DISCO makes contracts with vehicles of high battery capacities. The battery’s capacity is assumed to be 50 kW h.
+Considering the value of the objective function and the problem constraints, the optimum location for parking lot is determined using GA. Two scenarios are considered in terms of analyzing simulation results. In the ﬁrst scenario, all weighting coefﬁcients are identical and in the second scenario, they are different from each other.
+6.1. Scenario 1
+In this scenario, all arrays of matrix N are 1. Thus, the vector of weighting coefﬁcients is as follows: W ¼ ½0:1667 0:1667 0:1667 0:1667 0:1667 0:16670
+The results of this scenario are shown in Table 3. As can be observed from the results, the total annual beneﬁt is 481,700 USD$. It is assumed that the availability of vehicles is 100 percent. In other words, all EV owners respect the contract. If the availability of vehicles be 80%, the annual beneﬁt decreases to 324,760 USD$. As it can be seen from Table 4, the beneﬁt of providing peak power is decreased in comparison with Table 3. Reduction in the beneﬁt from the loss and reliability view points is not as much as beneﬁt of providing peak power. This was predictable because the investment cost is modeled in beneﬁt of providing peak power and it is constant for various EVs’ availability. On the other hand, the revenue from providing V2G power decreases with a decrease in the availability of EVs. The total beneﬁt as a function of EVs’ availability is shown in Fig. 5. As it is observed from Fig. 5, when the availability of vehicles is decreased to 0.35, the total beneﬁt becomes negative. It is thus necessary to assume enough incentives for EV owners in order to encourage them to park their vehicles in parking lots.
+The voltage proﬁle of load points at peak times, which parking lots deliver power to the distribution system is shown in Fig. 6. As can be observed from Fig. 6, there are improvements in voltage proﬁle of some buses in the presence of V2G power.
+As mentioned, it is assumed that high price of electricity is synchronized with the peak power of the distribution system. If it is
+
+total benefit ($)
+
+5
+5 x 10
+
+4
+
+3
+
+2
+
+1
+
+0
+
+-1
+
+-2
+
+-3
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+EVs availability
+
+Fig. 5. Total beneﬁt as a function of EVs availability.
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+121
+
+Voltage profile
+
+1
+
+0.98 0.96
+
+with V2G without V2G
+
+0.94
+
+0.92
+
+0.9
+
+0.88
+
+0.86
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+Load Point
+
+Fig. 6. Voltage proﬁle in peak load (scenario 1).
+
+Table 5 Results of simulation scenario 1 (change in electricity price).
+
+Bus number Optimum number of EVs
+
+2
+
+3
+
+6
+
+375 375
+
+225
+
+Beneﬁt of loss reduction (USD$) Beneﬁt of reliability improvement (USD$) Beneﬁt of providing high price power (USD$) Total beneﬁt (USD$)
+
+À565,930 À101,150 395,080 À272,000
+
+assumed that the high price of electricity occurs in off- peak time, the results would differ as shown in Table 5. As it can be seen from the results of Table 5, the beneﬁt becomes negative in this situation and accordingly the voltage proﬁle is deteriorated as shown in Fig. 7. To prevent this situation, it is necessary to forecast the electricity price exactly for decision making on parking lot installation.
+If it is assumed that the battery capacity of all EVs is 15 kW h, the optimum number of EVs in the entire candidate buses become zero. This result was predictable because the investment cost is the same for all type of vehicles.
+6.2. Scenario 2
+
+The weighting coefﬁcient vector related to matrix N is calculated using Eq. (13) with the result as below.
+W ¼ ½0:0625 0:1875 0:0625 0: 0:1875 0:4375
+It is assumed that the availability of vehicles in this scenario is 100%. Also, high price of electricity is synchronized with the peak power of the distribution system.
+As it can be seen from the weighting coefﬁcient vector, the energy not supplied index and the capital cost index are more important indices in this scenario. The results of simulation indicates that with increasing the importance of the capital cost index, the parking lots capacities decrease and consequently the beneﬁt of providing peak power and the total annual beneﬁt decrease. With comparing Table 3 and Table 6 it can be seen that the beneﬁt of reliability improvement increases in this scenario. Thus, parking lots allocation can be carried out for various purposes in different areas.
+7. Conclusion
+
+In this scenario, the matrix N in Eq. (12) is as follows:
+
+This paper addressed a multi-objective approach for allocation of parking lots as an attractive option in distribution system for supplying loads. An optimization model is successfully implemented to determine the optimal capacity and size of parking lot for serving demands in peak hours. The proposed optimization model aims to maximizing the total beneﬁt.
+Based on the data and the market prices used in the paper to examine the model, the results conﬁrmed that parking lots installation can have economical proﬁt for DISCO and improves the voltage proﬁle as well. GA was used to optimally allocate the parking lot in the distribution system.
+As simulation results demonstrate, any change in the battery capacity of vehicles in parking lots and weighting coefﬁcients of
+
+Voltage profile
+
+1
+
+0.98 0.96
+
+with V2G without V2G
+
+0.94
+
+0.92
+
+0.9
+
+0.88
+
+0.86
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+Load Point
+
+Fig. 7. Voltage proﬁle in peak load scenario 1 (change in electricity price).
+
+122
+
+M. Moradijoz et al. / Electrical Power and Energy Systems 46 (2013) 115–122
+
+Table 6 Results of simulation scenario 2 (availability = 100%).
+
+Bus number Optimum number of EVs
+
+2
+
+3
+
+6
+
+25
+
+50
+
+150
+
+Beneﬁt of loss reduction (USD$) Beneﬁt of reliability improvement (USD$) Beneﬁt of providing high price power (USD$) Total beneﬁt (USD$)
+
+9764.2 33,350 61,564 104,680
+
+various indices lead to variation in the results. In order to reach more precious results, it is necessary to determine the size of batteries and efﬁciency of inverters, exactly.
+A simple charging and discharging scheduling of batteries have been considered in this paper for placement of parking lots. The proposed method can be used for other V2G problems.
+References
+[1] Yu X. Impacts assessment of PHEV charge proﬁles on generation expansion using national energy modeling system. In: IEEE power and energy society general meeting; 2008.
+[2] Ghanbarzadeh T, Teimourzadeh Baboli P, Rostami M, Parsa Moghaddam M, Sheikh-El-Eslami MK, Wind farm power management by high penetration of PHEV. In: IEEE power and energy society general meeting; 2011.
+[3] Musio M, Lombardi P, Damiano A, Vehicles to grid (V2G) concept applied to a virtual power plant structure. In: XIX International conference on electrical machines (ICEM); 2010.
+[4] Kadurek P, Ioakimidis C, Ferrao P. Electric vehicles and their impact to the electric grid in isolated systems. In: International conference on power engineering, energy and electrical drives (POWERENG); 2009.
+[5] Kempton W, Udo V, Huber K, Komara K, Letendre S, Baker S, et al. A test of vehicle-to-grid (V2G) for energy storage and frequency regulation in the PJM system. PJM Interconnect and Green Mountain College, University of Delaware, Pepco Holding, Inc.; 2008.
+[6] Gellings CW. The smart grid: enabling energy efﬁciency and demand response. Fairmont Press; 2009.
+[7] Alishahi E, Parsa Moghaddam M, Sheikh-El-Eslami MK. Wind power scheduling considering the impacts of electrical vehicles and FIT incentive mechanism. In: International conference on petroleum and sustainable development Singapore; 2011.
+[8] Kempton W. Vehicle to grid power. FERC; 2007.
+
+[9] Markel T, Bennion K. Field testing plug-in hybrid electric vehicles with charge control technology in the Xcel energy territory. Technical Report National Renewable Energy Laboratory (NREL); 2009.
+[10] Peterson B, Whitacre JF. The economics of using plug-in hybrid electric vehicle battery packs for grid Storage. J Power Sources 2010;195:2377–84.
+[11] Han S, Sezaki K. Development of an optimal vehicle-to-grid aggregator for frequency regulation. IEEE Trans Smart Grid 2010:65–72.
+[12] Saber AY, Venayagamoorthy GK. Optimization of vehicle-to-grid scheduling in constrained parking lots. In: IEEE power and energy society general meeting; 2009.
+[13] Hutson C, Venayagamoorthy GK, Corzine KA. Intelligent scheduling of hybrid and electric vehicle storage capacity in a parking lot for proﬁt maximization in grid power transactions. In: IEEE Energy 2030 conference; 2008.
+[14] Sortomme E, El-Sharkawi MA. Optimal scheduling of vehicle-to-grid energy and ancillary services. IEEE Trans Smart Grid 2011;3(1):351–9.
+[15] Moradi M, Abedeni M. A combination of genetic algorithm and particle swarm optimization for optimal DG location and sizing in distribution systems. Int J Electr Power Energy Syst 2012;34(1):66–74.
+[16] Aman M, Jasmon J, Mokhlis H, Bakar A. Optimal placement and sizing of a DG based on a new power stability index and line losses. Int J Electr Power Energy Syst 2012;43(1):1296–304.
+[17] Khalesi N, Rezaei N, Haghifam MR. DG allocation with application of dynamic programming for loss reduction and reliability improvement. Int J Electr Power Energy Syst 2011;33:288–95.
+[18] Hong Y, Ho SY. Determination of network conﬁguration considering multiobjective in distribution systems using genetic algorithms. IEEE Trans Power Syst 2005;20:1062–9.
+[19] Sousa T. Intelligent energy resource management considering vehicle-to-grid: a simulated annealing approach. IEEE Trans Smart Grid 2012;3:535–42.
+[20] Sioshansi R. Modeling the impacts of electricity tariffs on PHEVs. Oper Res 2012;60(2):1–11.
+[21] Clement K, Haesen E, Driesen J. The impact of charging plug-in hybrid electric vehicles on a residential distribution grid. IEEE Trans Pow Syst 2010;25(1):371–80.
+[22] Soares J, Canizes B, Lobo C, Vale Z. Electric vehicle scenario simulator tool for smart grid operators. Energies 2012;5:1881–99.
+[23] Jeonghwan J, Rothrock L, Mcdermott PL, Barnes M. Using the analytic hierarchy process to examine judgment consistency in a complex multiattribute task. IEEE Trans Syst Man Cybern A Syst Humans 2010;40:1105–15.
+[24] Kempton W, Tomic J, Letendre S, Brooks A, Lipman T. Vehicleto- grid power: battery, hybrid and fuel cell vehicles as resources for distributed electric power in California. Davis, CA: Institute of Transportation Studies Report # IUCD-ITS-RR 01-03, 77+xiv pages; 2001, PDF also available at: <http:// www.udel.edu/V2G>.
+[25] Kempton W, Tomic J. Vehicle-to-grid power fundamentals: calculating capacity and net revenue. J Power Sources 2005;144:268–79.
+[26] Falaghi H, Singh C, Haghifam M-R, Ramezani M. DG integrated multistage distribution system expansion planning. Int J Electr Power Energy Syst 2011;33:1489–97.
+

@@ -1,0 +1,217 @@
+arXiv:1301.3666v2 [cs.CV] 20 Mar 2013
+
+Zero-Shot Learning Through Cross-Modal Transfer
+Richard Socher, Milind Ganjoo, Hamsa Sridhar, Osbert Bastani, Christopher D. Manning, Andrew Y. Ng Computer Science Department, Stanford University, Stanford, CA 94305, USA
+richard@socher.org, {mganjoo, hsridhar, obastani, manning, ang}@stanford.edu
+Abstract
+This work introduces a model that can recognize objects in images even if no training data is available for the objects. The only necessary knowledge about the unseen categories comes from unsupervised large text corpora. In our zero-shot framework distributional information in language can be seen as spanning a semantic basis for understanding what objects look like. Most previous zero-shot learning models can only differentiate between unseen classes. In contrast, our model can both obtain state of the art performance on classes that have thousands of training images and obtain reasonable performance on unseen classes. This is achieved by ﬁrst using outlier detection in the semantic space and then two separate recognition models. Furthermore, our model does not require any manually deﬁned semantic features for either words or images.
+1 Introduction
+The ability to classify instances of an unseen visual class, called zero-shot learning, is useful in many situations. There are many species, products or activities without labeled data and new visual categories, such as the latest gadgets or car models are introduced frequently. In this work, we show how to make use of the vast amount of knowledge about the visual world available in natural language to classify unseen objects. We attempt to model people’s ability to identify unseen objects even if the only knowledge about that object came from reading about it. For instance, after reading the description of a two-wheeled self-balancing electric vehicle, controlled by a stick, with which you can move around while standing on top of it, many would be able to identify a Segway, possibly after being brieﬂy perplexed because the new object looks different to any previously observed object class.
+We introduce a zero-shot model that can predict both seen and unseen classes. For instance, without ever seeing a cat image, it can determine whether an image shows a cat or a known category from the training set such as a dog or a horse. The model is based on two main ideas.
+First, images are mapped into a semantic space of words that is learned by a neural network model [15]. Word vectors capture distributional similarities from a large, unsupervised text corpus. By learning an image mapping into this space, the word vectors get implicitly grounded by the visual modality, allowing us to give prototypical instances for various words.
+Second, because classiﬁers prefer to assign test images into classes for which they have seen training examples, the model incorporates an outlier detection probability which determines whether a new image is on the manifold of known categories. If the image is of a known category, a standard classiﬁer can be used. Otherwise, images are assigned to a class based on the likelihood of being an unseen category. The probability of being an outlier or a known category is integrated into our probabilistic model. The model is illustrated in Fig 1.
+Unlike previous work on zero-shot learning which can only predict intermediate features or differentiate between various zero-shot classes [26], our joint model can achieve both state of the art accuracy on known classes as well as reasonable performance on unseen classes. Furthermore, com-
+1
+
+Manifold of known classes
+truck
+
+auto
+
+horse
+
+New test image from unknown class
+
+dog
+
+cat
+
+Figure 1: Overview of our multi-modal zero-shot model. We ﬁrst map each new testing image into a lower dimensional semantic space. Then, we use outlier detection to determine whether it is on the manifold of seen images. If the image is not on the manifold, we determine its class with the help of unsupervised semantic word vectors. In this example, the unseen classes are truck and cat.
+pared to related work in knowledge transfer [19, 27] we do not require manually deﬁned semantic or visual attributes for the zero-shot classes. Our language feature representations are learned from unsupervised and unaligned corpora.
+We ﬁrst brieﬂy describe a selection of related work, followed by the model description and experiments on CIFAR10.
+2 Related Work
+We brieﬂy outline connections and differences to ﬁve related lines of research. Due to space constraints, we cannot do justice to the complete literature.
+Zero-Shot Learning. The work most similar to ours is that by Palatucci et al. [26]. They map fMRI scans of people thinking about certain words into a space of manually designed features and then classify using these features. They are able to predict semantic features even for words for which they have not seen scans and experiment with differentiating between several zero-shot classes. However, the do not classify new test instances into both seen and unseen classes. We extend their approach to allow for this setup using outlier detection.
+Larochelle et al. [21] describe the unseen zero-shot classes by a “canonical” example or use ground truth human labeling of attributes.
+One-Shot Learning One-shot learning [17, 18] seeks to learn a visual object class by using very few training examples. This is usually achieved by either sharing of feature representations [2], model parameters [12] or via similar context [14]. A recent related work on one-shot learning is that of Salakhutdinov et al. [28]. Similar to their work, our model is based on using deep learning techniques to learn low-level image features followed by a probabilistic model to transfer knowledge. However, our work is able to classify object categories without any training data due to the cross-
+2
+
+modal knowledge transfer from natural language and at the same time obtain high performance on classes with many training examples.
+Knowledge and Visual Attribute Transfer. Lambert et al. and Farhadi et al. [19, 10] were two of the ﬁrst to use well-designed visual attributes of unseen classes to classify them. This is different to our setting since we only have distributional features of words learned from unsupervised, nonparallel corpora and can classify between categories that have thousands or zero training images. Qi et al. [27] learn when to transfer knowledge from one category to another for each instance.
+Domain Adaptation. Domain adaptation is useful in situations in which there is a lot of training data in one domain but little to none in another. For instance, in sentiment analysis one could train a classiﬁer for movie reviews and then adapt from that domain to book reviews [4, 13]. While related, this line of work is different since there is data for each class but the features may differ between domains.
+Multimodal Embeddings. Multimodal embeddings relate information from multiple sources such as sound and video [24] or images and text. Socher et al. [30] project words and image regions into a common space using kernelized canonical correlation analysis to obtain state of the art performance in annotation and segmentation. Similar to our work, they use unsupervised large text corpora to learn semantic word representations. Their model does require a small amount of training data however for each class. Among other recent work is that by Srivastava and Salakhutdinov [31] who developed multimodal Deep Boltzmann Machines. Similar to their work, we use techniques from the broad ﬁeld of deep learning to represent images and words.
+Some work has been done on multimodal distributional methods [11, 22]. Most recently, Bruni et al. [5] worked on perceptually grounding word meaning and showed that joint models are better able to predict the color of concrete objects.
+3 Word and Image Representations
+We begin the description of the full framework with the feature representations of words and images. Distributional approaches are very common for capturing semantic similarity between words. In these approaches, words are represented as vectors of distributional characteristics – most often their co-occurrences with words in context [25, 9, 1, 32]. These representations have proven very effective in natural language processing tasks such as sense disambiguation [29], thesaurus extraction [23, 8] and cognitive modeling [20].
+We initialize all word vectors with pre-trained 50-dimensional word vectors from the unsupervised model of Huang et al. [15]. Using free Wikipedia text, their model learns word vectors by predicting how likely it is for each word to occur in its context. Their model uses both local context in the window around each word and global document context. Similar to other local co-occurrence based vector space models, the resulting word vectors capture distributional syntactic and semantic information. For further details and evaluations of these embeddings, see [3, 7].
+We use the unsupervised method of Coates et al. [6] to extract F image features from raw pixels in an unsupervised fashion. Each image is henceforth represented by a vector x ∈ RF .
+4 Projecting Images into Semantic Word Spaces
+In order to learn semantic relationships and class membership of images we project the image feature vectors into the 50-dimensional word space. During training and testing, we consider a set of classes Y . Some of the classes y in this set will have available training data, others will be zero-shot classes without any training data. We deﬁne the former as the seen classes Ys and the latter as the unseen classes Yu. Let W = Ws ∪ Wu be the set of word vectors capturing distributional information for both seen and unseen visual classes, respectively.
+All training images x(i) ∈ Xy of a seen class y ∈ Ys are mapped to the word vector wy corresponding to the class name. To train this mapping, we minimize the following objective function with
+3
+
+cat automobile truck frog ship airplane horse bird dog deer
+
+automobile
+
+truck
+
+ship
+
+frog bird
+
+cat dog
+
+airplane
+
+deer horse
+
+Figure 2: T-SNE visualization of the semantic word space. Word vector locations are highlighted and mapped image locations are shown both for images for which this mapping has been trained and unseen images. The unseen classes are cat and truck.
+
+respect to the matrix θ ∈ R50×F :
+
+J(θ) =
+
+wy − θx(i) 2.
+
+(1)
+
+y∈Ys x(i)∈Xy
+
+By projecting images into the word vector space, we implicitly extend the word semantics with a visual grounding, allowing us to query the space, for instance for prototypical visual instances of a word or the average color of concrete nouns.
+Fig. 2 shows a visualization of the 50-dimensional semantic space with word vectors and images of both seen and unseen classes. The unseen classes are cat and truck. The mapping from 50 to 2 dimensions was done with t-SNE [33]. We can observe that most classes are tightly clustered around their corresponding word vector while the zero-shot classes (cat and truck for this mapping) do not have close-by vectors. However, the images of the two zero-shot classes are close to semantically similar classes. For instance, the cat testing images are mapped most closely to dog, and horse and are all very far away from car or ship. This motivated the idea for ﬁrst ﬁnding outliers and then classifying them to the zero-shot word vectors.
+Now that we have covered the representations for words and images as well as the image to word space mapping we can describe the probabilistic model for joint zero-shot learning and standard image classiﬁcation.
+
+5 Zero-Shot Learning Model
+In this section we ﬁrst give an overview of our model and then describe each of its components. In general, we want to predict p(y|x), the conditional probability for both seen and unseen classes y ∈ Ys ∪ Yu given an image x. Because standard classiﬁers will never predict a class that has no training examples, we introduce a binary visibility random variable which indicates whether an
+
+4
+
+image is in a seen or unseen class V ∈ {s, u}. Let Xs be the set of all feature vectors for training images of seen classes.
+
+We predict the class y for a new input image x via:
+
+p(y|x, Xs, W, θ) =
+
+P (y|V, x, Xs, W, θ)P (V |x, Xs, W, θ).
+
+(2)
+
+V ∈{s,u}
+
+Next, we will describe each factor in Eq. 2.
+
+The term P (V = u|x, Xs, W, θ) is the probability of an image being in an unseen class. It can be computed by thresholding an outlier detection score. This score is computed on the manifold of
+training images that were mapped to the semantic word space. We use a threshold on the marginal of
+each point under a mixture of Gaussians. The mapped points of seen classes are used to obtain this marginal: P (x|Xs, Ws, θ) = y∈Ys P (x|y)P (y) = y∈Ys N (θx|wy, Σy)P (y). The Gaussian of each class is parameterized by the corresponding semantic word vector wy for its mean and a covariance matrix Σy that is estimated from all the mapped training points with that label. We restrict the Gaussians to be isometric to prevent overﬁtting.
+
+For a new image x, the outlier detector then becomes the indicator function that is 1 if the marginal probability is below a certain threshold T :
+
+P (V = u|x, Xs, W, θ) := 1{P (x|Xs, Ws, θ) < T }
+
+(3)
+
+We provide an experimental analysis for various thresholds T below.
+
+In the case where V = s, i.e. the point is considered to be of a known class, we can use any classiﬁer for obtaining P (y|V = s, x, Xs). We use a softmax classiﬁer on the original F -dimensional features. For the zero-shot case where V = u we assume an isometric Gaussian distribution around each of the zero-shot semantic word vectors.
+
+An alternative would be to use the method of Kriegel et al. [16] to obtain an outlier probability for each testing point and then use the weighted combination of classiﬁers for both seen and unseen classes.
+
+6 Experiments
+We run most of our experiments on the CIFAR10 dataset. The dataset has 10 classes, each with 5000 32 × 32 × 3 RGB images. We use the unsupervised feature extraction method of Coates and Ng [6] to obtain a 12,800-dimensional feature vector for each image. In the following experiments, we omit the training images of 2 classes for the zero-shot analysis.
+6.1 Zero-Shot Classes Only
+In this section we compare classiﬁcation between only two zero-shot classes. We observe that if there is no seen class that is remotely similar to the zero-shot classes, the performance is close to random. In other words, if the two zero-shot classes are the most similar classes and the seen classes do not properly span the subspace of the zero-shot classes then performance is poor. For instance, when cat and dog are taken out from training, the resulting zero-shot classiﬁcation does not work well because none of the other 8 categories is similar enough to learn a good feature mapping. On the other hand, if cat and truck are taken out, then the cat vectors can be mapped to the word space thanks to transfer from dogs and trucks can be mapped thanks to car, so the performance is very high.
+Fig. 3 shows the performance at various cutoffs for the outlier detection. The cutoff is deﬁned on the negative log-likelihood of the marginal of each point in the outlier detection. We can observe that when classifying images of unseen classes into only zero-shot classes (right side of the ﬁgure), we can differentiate images with an accuracy of above 80%.
+6.2 Zero-Shot and Seen Classes
+In Fig. 3 we can observe that depending on the threshold that splits images into seen or unseen classes at test time we can obtain accuracies of trained classes of approximately 80%. At 70%
+
+5
+
+1
+
+0.9
+
+0.8
+
+Classification accuracy
+
+0.7
+
+0.6
+
+automobile−frog
+
+deer−truck
+
+0.5
+
+frog−truck
+
+horse−ship
+
+0.4
+
+horse−truck
+
+0.3
+
+0.2
+
+0.1
+
+0
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+60
+
+70
+
+80
+
+Negative log p(x)
+
+Figure 3: Visualization of the accuracy of the seen classes (lines from the top left to bottom right) and pairs of zero-shot classes (lines from bottom left to top right) at different thresholds of the negative log-likelihood of each mapped test image vector.
+
+accuracy, unseen classes can be classiﬁed with accuracies of between 30% to 15%. Random chance is 10%.
+7 Conclusion
+We introduced a novel model for joint standard and zero-shot classiﬁcation based on deep learned word and image representations. The two key ideas are that (i) using semantic word vector representations can help to transfer knowledge between categories even when these representations are learned in an unsupervised way and (ii) that our Bayesian framework that ﬁrst differentiates outliers from points on the projected semantic manifold can help to combine both zero-shot and seen classiﬁcation into one framework. If the task was only to differentiate between various zero-shot classes we could obtain accuracies of up to 90% with a fully unsupervised model.
+References
+[1] M. Baroni and A. Lenci. Distributional memory: A general framework for corpus-based semantics. Computational Linguistics, 36(4):673–721, 2010.
+[2] E. Bart and S. Ullman. Cross-generalization: learning novel classes from a single example by feature replacement. In CVPR, 2005.
+[3] Y. Bengio, R. Ducharme, P. Vincent, and C. Janvin. A neural probabilistic language model. J. Mach. Learn. Res., 3, March 2003.
+[4] J. Blitzer, M. Dredze, and F. Pereira. Biographies, Bollywood, Boom-boxes and Blenders: Domain Adaptation for Sentiment Classiﬁcation. In ACL, 2007.
+[5] E. Bruni, G. Boleda, M. Baroni, and N. Tran. Distributional semantics in technicolor. In ACL, 2012.
+6
+
+[6] A. Coates and A. Ng. The Importance of Encoding Versus Training with Sparse Coding and Vector Quantization . In ICML, 2011.
+[7] R. Collobert and J. Weston. A uniﬁed architecture for natural language processing: deep neural networks with multitask learning. In ICML, 2008.
+[8] J. Curran. From Distributional to Semantic Similarity. PhD thesis, University of Edinburgh, 2004. [9] K. Erk and S. Pado´. A structured vector space model for word meaning in context. In EMNLP, 2008. [10] A. Farhadi, I. Endres, D. Hoiem, and D. Forsyth. Describing objects by their attributes. In CVPR, 2009. [11] Y. Feng and M. Lapata. Visual information in semantic representation. In HLT-NAACL, 2010. [12] M. Fink. Object classiﬁcation from a single example utilizing class relevance pseudo-metrics. In NIPS,
+2004. [13] X. Glorot, A. Bordes, and Y. Bengio. Domain adaptation for Large-Scale sentiment classiﬁcation: A deep
+learning approach. In ICML, 2011. [14] D. Hoiem, A.A. Efros, and M. Herbert. Geometric context from a single image. In ICCV, 2005. [15] E. H. Huang, R. Socher, C. D. Manning, and A. Y. Ng. Improving Word Representations via Global
+Context and Multiple Word Prototypes. In ACL, 2012. [16] H. Kriegel, P. Kro¨ger, E. Schubert, and A. Zimek. LoOP: local Outlier Probabilities. In Proceedings of
+the 18th ACM conference on Information and knowledge management, CIKM ’09, 2009. [17] R.; Perona L. Fei-Fei; Fergus. One-shot learning of object categories. TPAMI, 28, 2006. [18] B. M. Lake, J. Gross R. Salakhutdinov, and J. B. Tenenbaum. One shot learning of simple visual concepts.
+2011. [19] C. H. Lampert, H. Nickisch, and S. Harmeling. Learning to Detect Unseen Object Classes by Between-
+Class Attribute Transfer. In CVPR, 2009. [20] T. K. Landauer and S. T. Dumais. A solution to Plato’s problem: the Latent Semantic Analysis theory of
+acquisition, induction and representation of knowledge. Psychological Review, 104(2):211–240, 1997. [21] H. Larochelle, D. Erhan, and Y. Bengio. Zero-data learning of new tasks. In AAAI, 2008. [22] C.W. Leong and R. Mihalcea. Going beyond text: A hybrid image-text approach for measuring word
+relatedness. In IJCNLP, 2011. [23] D. Lin. Automatic retrieval and clustering of similar words. In Proceedings of COLING-ACL, pages
+768–774, 1998. [24] J. Ngiam, A. Khosla, M. Kim, J. Nam, H. Lee, and A.Y. Ng. Multimodal deep learning. In ICML, 2011. [25] S. Pado and M. Lapata. Dependency-based construction of semantic space models. Computational Lin-
+guistics, 33(2):161–199, 2007. [26] M. Palatucci, D. Pomerleau, G. Hinton, and T. Mitchell. Zero-shot learning with semantic output codes.
+In NIPS, 2009. [27] Guo-Jun Qi, C. Aggarwal, Y. Rui, Q. Tian, S. Chang, and T. Huang. Towards cross-category knowledge
+propagation for learning visual concepts. In CVPR, 2011. [28] A. Torralba R. Salakhutdinov, J. Tenenbaum. Learning to learn with compound hierarchical-deep models.
+In NIPS, 2012. [29] H. Schu¨tze. Automatic word sense discrimination. Computational Linguistics, 24:97–124, 1998. [30] R. Socher and L. Fei-Fei. Connecting modalities: Semi-supervised segmentation and annotation of images
+using unaligned text corpora. In CVPR, 2010. [31] N. Srivastava and R. Salakhutdinov. Multimodal learning with deep boltzmann machines. In NIPS, 2012. [32] P. D. Turney and P. Pantel. From frequency to meaning: Vector space models of semantics. Journal of
+Artiﬁcial Intelligence Research, 37:141–188, 2010. [33] L. van der Maaten and G. Hinton. Visualizing data using t-SNE. Journal of Machine Learning Research,
+2008.
+7
+

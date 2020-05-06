@@ -1,0 +1,16 @@
+Title:          Research on a Surface Defect Detection Algorithm Based on MobileNet-SSD
+Subject:        This paper aims to achieve real-time and accurate detection of surface defects by using a deep learning method. For this purpose, the Single Shot MultiBox Detector (SSD) network was adopted as the meta structure and combined with the base convolution neural network (CNN) MobileNet into the MobileNet-SSD. Then, a detection method for surface defects was proposed based on the MobileNet-SSD. Specifically, the structure of the SSD was optimized without sacrificing its accuracy, and the network structure and parameters were adjusted to streamline the detection model. The proposed method was applied to the detection of typical defects like breaches, dents, burrs and abrasions on the sealing surface of a container in the filling line. The results show that our method can automatically detect surface defects more accurately and rapidly than lightweight network methods and traditional machine learning methods. The research results shed new light on defect detection in actual industrial scenarios.
+Keywords:       surface defects; meta structure; convolution neural network; MobileNet-SSD
+Author:         Yiting Li, Haisong Huang, Qingsheng Xie, Liguo Yao and Qipeng Chen
+Creator:        LaTeX with hyperref package
+Producer:       pdfTeX-1.40.18
+CreationDate:   Mon Sep 17 17:08:12 2018
+ModDate:        Mon Sep 17 17:08:12 2018
+Tagged:         no
+Form:           none
+Pages:          17
+Encrypted:      no
+Page size:      595.276 x 841.89 pts (A4) (rotated 0 degrees)
+File size:      5456377 bytes
+Optimized:      no
+PDF version:    1.5

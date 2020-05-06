@@ -1,0 +1,315 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <title>Sci-Hub | Novel Prediction Strategies for Dynamic 
+Multi-objective Optimization. IEEE Transactions on Evolutionary 
+Computation, 1–1 | 10.1109/tevc.2019.2922834</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="osd.js"></script><script src="cookie.js"></script><script src="show_ads_impl_fy2019.js" id="google_shimpl"></script><script src="jquery-3.js"></script>
+    <link rel="preload" href="integrator.js" as="script"><script type="text/javascript" src="integrator.js"></script><style type="text/css">/*
+ * contextMenu.js v 1.4.0
+ * Author: Sudhanshu Yadav
+ * s-yadav.github.com
+ * Copyright (c) 2013 Sudhanshu Yadav.
+ * Dual licensed under the MIT and GPL licenses
+**/
+
+.iw-contextMenu {
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.10) !important;
+    border: 1px solid #c8c7cc !important;
+    border-radius: 11px !important;
+    display: none;
+    z-index: 1000000132;
+    max-width: 300px !important;
+    width: auto !important;
+}
+
+.dark-mode .iw-contextMenu,
+.TnITTtw-dark-mode.iw-contextMenu,
+.TnITTtw-dark-mode .iw-contextMenu {
+    border-color: #747473 !important;
+}
+
+.iw-cm-menu {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    overflow: visible !important;
+}
+
+.dark-mode .iw-cm-menu,
+.TnITTtw-dark-mode.iw-cm-menu,
+.TnITTtw-dark-mode .iw-cm-menu {
+    background: #525251 !important;
+    color: #FFF !important;
+}
+
+.iw-curMenu {
+}
+
+.iw-cm-menu li {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, Ubuntu, sans-serif !important;
+    list-style: none !important;
+    padding: 10px !important;
+    padding-right: 20px !important;
+    border-bottom: 1px solid #c8c7cc !important;
+    font-weight: 400 !important;
+    cursor: pointer !important;
+    position: relative !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+    line-height: inherit !important;
+    border-radius: 0 !important;
+    display: block !important;
+}
+
+.dark-mode .iw-cm-menu li, .TnITTtw-dark-mode .iw-cm-menu li {
+    border-bottom-color: #747473 !important;
+}
+
+.iw-cm-menu li:first-child {
+    border-top-left-radius: 11px !important;
+    border-top-right-radius: 11px !important;
+}
+
+.iw-cm-menu li:last-child {
+    border-bottom-left-radius: 11px !important;
+    border-bottom-right-radius: 11px !important;
+    border-bottom: none !important;
+}
+
+.iw-mOverlay {
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0px !important;
+    left: 0px !important;
+    background: #FFF !important;
+    opacity: .5 !important;
+}
+
+.iw-contextMenu li.iw-mDisable {
+    opacity: 0.3 !important;
+    cursor: default !important;
+}
+
+.iw-mSelected {
+    background-color: #F6F6F6 !important;
+}
+
+.dark-mode .iw-mSelected, .TnITTtw-dark-mode .iw-mSelected {
+    background-color: #676766 !important;
+}
+
+.iw-cm-arrow-right {
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 5px solid transparent !important;
+    border-bottom: 5px solid transparent !important;
+    border-left: 5px solid #000 !important;
+    position: absolute !important;
+    right: 5px !important;
+    top: 50% !important;
+    margin-top: -5px !important;
+}
+
+.dark-mode .iw-cm-arrow-right, .TnITTtw-dark-mode .iw-cm-arrow-right {
+    border-left-color: #FFF !important;
+}
+
+.iw-mSelected > .iw-cm-arrow-right {
+}
+
+/*context menu css end */</style><style type="text/css">@-webkit-keyframes load4 {
+    0%,
+    100% {
+        box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+    }
+    12.5% {
+        box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+    }
+    25% {
+        box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+    }
+    37.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+    50% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+    62.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+    }
+    75% {
+        box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+    }
+    87.5% {
+        box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+    }
+}
+
+@keyframes load4 {
+    0%,
+    100% {
+        box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+    }
+    12.5% {
+        box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+    }
+    25% {
+        box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+    }
+    37.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+    50% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+    62.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+    }
+    75% {
+        box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+    }
+    87.5% {
+        box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+    }
+}</style><style type="text/css">/* This is not a zero-length file! */</style></head>
+    <body>
+    <script type="text/javascript">
+        function clip(element)
+        {
+          var $temp = $("<input>");
+          $("body").append($temp);
+          $temp.val($(element).text()).select();
+          document.execCommand("copy");
+          $temp.remove();
+        }
+        
+        $(document).ready(function() {
+            
+            var doi = '10.1109/tevc.2019.2922834';
+            
+            if (doi.substr(0, 7) == '10.0000')
+            {
+                document.getElementById('reload').style.display = 'none';
+                
+                if (doi.indexOf('generic') > -1)
+                    document.getElementById('link').style.display = 'none';
+            }
+            
+            else if( $('#citation').text() == ' ')
+                $("#citation").load('//sci-hub.tw/cite/10.1109/tevc.2019.2922834');
+            
+        });
+    </script>
+    <style type="text/css">
+        
+        html, body {height: 100%; width:100%; margin: 0; overflow:hidden}
+        div {font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif}
+
+        #menu {width: 370px; height: 100%; position: fixed; z-index: 1;  top: 0;  left: 0; background-color: white;  overflow-x: hidden}
+
+        #header {cursor:pointer}
+	#logo {background:url('//sci-hub.tw/misc/img/ravenround.gif') no-repeat;width: 165px;height:157px;margin-left:18px}
+	#sci {background:#bbb;color:white;margin: 50px 0 0 10px; padding:5px 20px 5px 25px;font-size:38px}
+	#sci:hover {background:#B22222}
+	#motto {color:#999; margin: 18px 0 0 24px;font-size: 18px}
+
+	#buttons {margin-top: 55px; width: 100%; font-size: 22px}
+	#buttons a {color:#999; text-decoration:none}
+	#buttons a:hover {color:#999}
+	#buttons ul {margin: 0; padding: 0; margin-left: 12px}
+	#buttons ul li {display: inline; margin-left: 6px; padding: 12px}
+	#buttons ul li:hover {border: solid 1px #999; border-radius: 8px}
+
+	#citation {margin: 48px 25px 0 25px; font-size: 16px; cursor: pointer}
+        #citation:active {color:#aaa}
+	#citation a {color:#666;text-decoration:none}
+	#citation a:hover {text-decoration:underline}
+
+	#description {margin: 25px 0 0 0; text-align: center; font-size: 16px; width: 100%; padding: 12px 24px 12px 0}
+	#description a {color: green; text-decoration: none}
+
+	#link {margin: 12px 0 0 25px; font-size: 16px; color:#aaa}
+	#link a {color: #aaa; text-decoration: underline}
+        
+	#versions {margin: 18px 0 0 25px; font-size: 12px; color:#aaa}
+	#versions a {color: black; text-decoration: none}
+	#versions a:hover {text-decoration: underline}
+        
+	#social {margin: 25px; text-align: center; font-size: 16px; color:#aaa}
+	#social a {color: #333; text-decoration:none}
+	#social a:hover {color: #B22222}
+
+	#creator {margin: 25px; text-align: center; font-size: 16px; color: #aaa}
+	#creator a {color: #333; text-decoration:none}
+	#creator a:hover {color: #B22222}
+
+        #article {margin-left: 390px; height:100%}
+        iframe {width:100%;height:100%}
+
+	td {vertical-align:top}
+        
+        
+    </style>
+    
+    <div id="menu">
+	<table onclick="window.open('//sci-hub.tw/')"><tbody><tr>
+        <td><div id="logo"></div></td>
+	<td>
+            <div id="sci"><nobr>sci-hub</nobr></div>
+            <div id="motto">to open science</div>
+        </td>
+	</tr></tbody></table>
+
+	<div id="buttons">
+
+            <ul>
+	    <li id="reload"><a target="_blank" href="https://sci-hub.tw/reload/10.1109/tevc.2019.2922834">⇣ Google Scholar</a></li>
+	        <li><a href="#" onclick="location.href='//dacemirror.sci-hub.tw/journal-article/106634d79fcbf4fea58e239a1cf60b85/zhang2019.pdf?rand=5e86a47613c18?download=true'">⇣ save</a></li>
+            </ul>
+
+	</div>
+
+	<script>var allurl=window.location.href;window.history.pushState({}, 0, "https://" + window.location.host);</script>
+<script async="" src="adsbygoogle.js"></script>
+<!-- 自适应 -->
+<ins class="adsbygoogle" style="display: block; height: 280px;" data-ad-client="ca-pub-5161725087824909" data-ad-slot="5674932478" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"><ins id="aswift_0_expand" style="display:inline-table;border:none;height:280px;margin:0;padding:0;position:relative;visibility:visible;width:355px;background-color:transparent;"><ins id="aswift_0_anchor" style="display:block;border:none;height:280px;margin:0;padding:0;position:relative;visibility:visible;width:355px;background-color:transparent;"><iframe marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_0" name="aswift_0" style="left: 0px; position: absolute; top: 0px; border: 0px; width: 355px; height: 280px; overflow: visible;" width="355" height="280" frameborder="0"></iframe></ins></ins></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<script>setTimeout(function() {  window.history.pushState({}, 0, allurl);  }, 2000);</script>
+<div id="citation" onclick="clip(this)">Zhang, Q., Yang, S., Jiang, S., Wang, R., &amp; Li, X. (2019). <i>Novel Prediction Strategies for Dynamic Multi-objective Optimization. IEEE Transactions on Evolutionary Computation, 1–1.</i> doi:10.1109/tevc.2019.2922834&nbsp;</div>
+
+        <div id="link">
+            url to share this paper:<br>
+            <a href="https://sci-hub.tw/10.1109/tevc.2019.2922834"><nobr>sci-hub.tw/10.1109/tevc.2019.2922834</nobr></a>
+        </div>
+        
+        <div id="versions">
+                    </div>
+        
+	<div id="description" onclick="window.open('//sci-hub.tw/support')">
+        Sci-Hub is a project<br>to make knowledge free.<br><a target="_blank" href="https://sci-hub.shop/support">support →</a>
+	</div>
+
+        <div id="social">
+            updates on <a target="_blank" href="https://gfsoso.99lb.net/sci-hub.html">twitter</a>
+        </div>
+
+        <div id="creator">
+            created by <a target="_blank" href="https://engineuring.wordpress.com/">Alexandra Elbakyan</a>
+        </div>
+
+    </div>
+
+    <div id="article">
+        <iframe src="//dacemirror.sci-hub.tw/journal-article/106634d79fcbf4fea58e239a1cf60b85/zhang2019.pdf?rand=5e86a47613c18#view=FitH" id="pdf"></iframe>
+    </div>
+    
+ <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w. = new Ya.Metrika({ , clickmap:true, trackLinks:true, accurateTrackBounce:true, ut:"noindex" }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = ""; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="" style="position:absolute; left:-9999px;" alt=""></div></noscript> 
+    <div style="display:none"><script src="z_stat.js" language="JavaScript"></script><script src="core.js" charset="utf-8" type="text/javascript"></script><a href="https://www.cnzz.com/stat/website.php?web_id=1274523594" target="_blank" title="站长统计">站长统计</a></div>
+
+<ins class="adsbygoogle adsbygoogle-noablate" data-adsbygoogle-status="done" style="display: none !important;"><ins id="aswift_1_expand" style="display:inline-table;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;"><ins id="aswift_1_anchor" style="display:block;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;"><iframe marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0px;width:0px;height:0px;" frameborder="0"></iframe></ins></ins></ins><iframe id="google_osd_static_frame_1924439754155" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe><iframe id="google_esf" name="google_esf" src="https://googleads.g.doubleclick.net/pagead/html/r20200401/r20190131/zrt_lookup.html#" data-ad-client="ca-pub-5161725087824909" style="display: none;"></iframe></body></html>

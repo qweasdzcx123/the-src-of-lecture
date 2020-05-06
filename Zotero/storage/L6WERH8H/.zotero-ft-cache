@@ -1,0 +1,1943 @@
+Journal Pre-proof
+
+An algebraic framework for swarm and evolutionary algorithms in combinatorial optimization
+Valentino Santucci, Marco Baioletti, Alfredo Milani
+
+PII: DOI: Reference:
+
+S2210-6502(19)30109-9 https://doi.org/10.1016/j.swevo.2020.100673 SWEVO 100673
+
+To appear in: Swarm and Evolutionary Computation BASE DATA
+
+Received Date: 7 February 2019 Revised Date: 24 February 2020 Accepted Date: 2 March 2020
+
+Please cite this article as: V. Santucci, M. Baioletti, A. Milani, An algebraic framework for swarm and evolutionary algorithms in combinatorial optimization, Swarm and Evolutionary Computation BASE DATA (2020), doi: https://doi.org/10.1016/j.swevo.2020.100673.
+This is a PDF file of an article that has undergone enhancements after acceptance, such as the addition of a cover page and metadata, and formatting for readability, but it is not yet the definitive version of record. This version will undergo additional copyediting, typesetting and review before it is published in its final form, but we are providing this version to give early visibility of the article. Please note that, during the production process, errors may be discovered which could affect the content, and all legal disclaimers that apply to the journal pertain.
+© 2020 Published by Elsevier B.V.
+
+An Algebraic Framework for Swarm and Evolutionary Algorithms in Combinatorial Optimization
+Valentino Santuccia,∗, Marco Baiolettib, Alfredo Milanib
+a Department of Humanities and Social Sciences, University for Foreigners of Perugia, Italy b Department of Mathematics and Computer Science, University of Perugia, Italy
+
+Abstract
+A popular trend in evolutionary computation is to adapt numerical algorithms to combinatorial optimization problems. For instance, this is the case of a variety of Particle Swarm Optimization and Diﬀerential Evolution implementations for both binary and permutation-based optimization problems. In this paper, after highlighting the main drawbacks of the approaches in literature, we provide an algebraic framework which allows to derive fully discrete variants of a large class of numerical evolutionary algorithms to tackle many combinatorial problems. The strong mathematical foundations upon which the framework is built allow to redeﬁne numerical evolutionary operators in such a way that their original movements in the continuous space are simulated in the discrete space. Algebraic implementations of Diﬀerential Evolution and Particle Swarm Optimization are then proposed. Experiments have been held to compare the algebraic algorithms to the most popular schemes in literature and to the stateof-the-art results for the tackled problems. Experimental results clearly show that algebraic algorithms outperform the competitors and are competitive with the state-of-the-art results. Keywords: Algebraic Evolutionary Algorithms, Combinatorial search spaces, Algebraic Evolutionary Computation
+∗Corresponding author Email address: valentino.santucci@unistrapg.it (Valentino Santucci)
+
+Preprint submitted to Swarm and Evolutionary Computation
+
+March 6, 2020
+
+1. Introduction
+
+Swarm and evolutionary meta-heuristics are widely applied to solve complex
+
+optimization problems where traditional techniques are not able to produce good
+
+solutions in a reasonable amount of time. By a slight abuse of terminology, in
+
+5 this article the term Evolutionary Algorithms (EAs) is used to refer to meta-
+
+heuristics based on both evolutionary and swarm intelligence principles.
+
+Depending on the nature of the solution set, it is possible to distinguish
+
+between continuous and combinatorial optimization problems and, as a con-
+
+sequence, between numerical and combinatorial EAs. The former work with
+
+10 solutions represented as real vectors, while the latter tackle problems whose
+
+solutions are discrete objects like, for example, bit-strings or permutations.
+
+Though there exist EAs speciﬁcally designed to evolve discrete solutions, the
+
+wide availability of algorithms for continuous optimization has given rise to a
+
+plethora of numerical EAs adapted to solve combinatorial problems. Among
+
+15 them, see for instance the algorithms described in [1, 2, 3, 4, 5]. One possible
+
+motivation for this proliferation is that many nature-inspired algorithms have
+
+been historically deﬁned for numerical problems. Therefore, in order to solve
+
+a combinatorial problem with a natural principle, it is often easier to adapt an
+
+existing numerical algorithm than to design a new combinatorial EA.
+
+20
+
+One of the most used and general technique to adapt a numerical EA to
+
+combinatorial problem is to employ decoding procedures which transform nu-
+
+meric vectors into valid discrete solutions for the representation at hand. For
+
+instance, the random-key decoder [6] converts a vector in Rn to a permutation
+
+of n integers by sorting the vector indexes according to the corresponding vector
+
+25 values. Decoder-based schemes have been also proposed to transform numeric
+
+vectors into bit-strings [7, 2]. However, this approach has several issues:
+
+• often, the reported good results are only obtained by hybridizing the
+
+adapted EA with other techniques (local searches, heuristic functions,
+
+restart mechanisms, etc.) and, as far as we know, no study is provided to
+
+30
+
+understand if the adapted EA alone is eﬀective or not;
+
+2
+
+• due to obvious cardinality reasons, a single discrete solution can be encoded by a potentially inﬁnite number of numeric vectors, thus introducing large plateaus in the ﬁtness landscape navigated by the underlying algorithm;
+
+35
+
+• the intuition of how the EA searches and moves in the continuous space,
+
+for which it has been originally designed, is completely lost when the algo-
+
+rithm is integrated with a decoding procedure and its moves are observed
+
+in the combinatorial space.
+
+In a previous series of papers [8, 9, 10, 11, 12, 13], we have proposed discrete 40 evolutionary algorithms, based on algebraic properties of the permutation space,
+which have reached remarkable results on the permutation ﬂowshop scheduling and the linear ordering problem.
+The main contribution of this article is the extension of the approach to a general algebraic framework by which it is possible to derive algebraic variants of 45 many of the numerical EAs available in literature in order to tackle a large class of combinatorial optimization problems. Conversely from most of the decoderbased schemes, an algebraic algorithm directly evolves a population of discrete solutions by redeﬁning the evolutionary operators of the numerical EA from which it is derived in such a way that the original movements in the continuous 50 space are simulated in the discrete space.
+The proposed method requires that the solution set X forms a ﬁnitely generated group. This algebraic structure automatically gives rise to neighborhood relations on X, thus the search space can be seen as a graph of interconnected solutions. For binary and permutation problems, the induced search spaces are 55 exactly the same spaces widely considered in the ﬁelds of local searches and ﬁtness landscape analysis [14, Ch. 5]. In analogy to what happens in Rn, the algebraic structure also allows to dichotomously interpret discrete solutions both as points and as displacements (i.e., vectors) between points in the space. Hence, it is possible to introduce the operations of addition, subtraction, and 60 scalar multiplication on X with similar properties as the corresponding vector
+
+3
+
+operations of Rn. Therefore, these operations allow to consistently redeﬁne the
+
+move equations of most numerical EAs in combinatorial search spaces.
+
+To show the potential of the framework, in this paper we provide Algebraic
+
+EAs (AEAs) derived from diﬀerential evolution [15] and particle swarm opti-
+
+65 mization [16]. Abstract deﬁnitions, valid for any ﬁnitely generated group, are
+
+introduced for both AEAs together with their implementations for the search
+
+spaces of bit-strings and permutations. Note anyway that the framework is gen-
+
+eral enough to allow the discretization of other numerical algorithms such as, for
+
+instance, the ﬁreﬂy algorithm [17] or the bacterial foraging optimization [18].
+
+70
+
+Experiments have been held with the aim of comparing the eﬀectiveness of
+
+the proposed algorithms with respect to the numerical decoder-based EAs and
+
+the state-of-the-art results. NK landscapes [19] have been considered as binary
+
+benchmarks, while, for the permutation search space, the experiments have
+
+been held on standard instances of the permutation ﬂowshop scheduling [20]
+
+75 and linear ordering problem [21].
+
+In the ﬁrst set of experiments, both our algorithms and the competitors’ have
+
+been implemented in their standalone versions. A second set of experiments has
+
+been held in order to compare AEAs with the corresponding numerical decoder-
+
+based EAs by incorporating additional techniques such as heuristic functions,
+
+80 local search procedures, restart mechanisms, and self-adaptive strategies. Fur-
+
+thermore, the AEAs results have been compared with the best known solutions
+
+in literature.
+
+The rest of the paper is organized as follows. Section 2 describes the most
+
+used techniques for adapting continuous EAs to discrete problems, and Section
+
+85 3 provides a critical analysis of the decoder-based approach. Section 4 provides
+
+mathematical background concepts used in Section 5, where the algebraic struc-
+
+ture and the vector operations of combinatorial search spaces are introduced.
+
+The deﬁnitions of the algebraic EAs are then provided in Section 6. The exper-
+
+imental analysis is provided in Section 7. Finally, Section 8 concludes the paper
+
+90 by also providing future research directions.
+
+4
+
+2. Related work
+
+2.1. Diﬀerential Evolution and Particle Swarm Optimization
+Among the numerical evolutionary algorithms in literature, Diﬀerential Evolution and Particle Swarm Optimization are the most studied and eﬀective. Here 95 we brieﬂy describe them.
+The Diﬀerential Evolution (DE) algorithm has been originally introduced in [15]. Its key operator is the diﬀerential mutation that, in the most used variant rand/1, for every population individuals xi, generates a mutant yi according to the following formula
+
+yi ← xr0 + F · (xr1 − xr2 ),
+
+(1)
+
+where F ≥ 0 is the scale factor parameter of DE [22], and xr0 , xr1 , xr2 are three randomly chosen population individuals diﬀerent from each other and with respect to xi. Then, a crossover operator is applied to yi and xi to generate the trial solution zi that, if ﬁtter than xi, replaces it in the next generation 100 population.
+The Particle Swarm Optimization (PSO) algorithm has been originally introduced in [16]. PSO iteratively evolves a population of so-called particles. The i-th particle of the population is composed by the current position vector xi, the velocity vector vi, the personal best pi, and the neighborhood best gi. The communication among the particles is modeled by deﬁning a neighborhood Ni for every particle i. A variety of neighborhood topologies are possible. One of the most used is the ring topology, where the particles are statically arranged in a ring such that any particle has a neighbor to its left and one to its right. In PSO, at every generation, the velocity and the current position of every particle i are updated according to:
+
+vi ← [w · vi] + [(c1 · r1i) · (pi − xi)] + [(c2 · r2i) · (gi − xi)],
+
+(2)
+
+xi ← xi + vi,
+
+(3)
+
+5
+
+where r1i, r2i ∈ [0, 1] are randomly generated at every step, and w, c1, c2 ≥ 0 are the three PSO parameters called, respectively, inertial, cognitive and social coeﬃcient. Then, the new position xi updates the personal best pi if ﬁtter, while gi is replaced with the ﬁttest vector among the particles in Ni.
+105 2.2. Combinatorial variants of numerical EAs
+Although DE and PSO are deﬁned for continuous problems, in the literature there are innumerable attempts to use them in combinatorial optimization. Often, they diﬀer from each other in few details, thus we are here interested in taxonomizing the approaches used for the discretization of a numerical EA. 110 With this regard, two main classes of approaches can be distinguished.
+In the ﬁrst class, the evolutionary algorithms are based on the redeﬁnition of the numerical operators of addition, subtraction, and multiplication. In this way, they can directly use discrete objects with formulae similar to (1), (2), and (3). Most algorithms of this class use ad-hoc deﬁnitions of the operators, thus 115 preserving little more than the name of the numerical EAs from which they are derived. For example, the discrete operations used in [23, 24, 25, 26] have just a vague resemblance with the corresponding numerical versions.
+In other cases, a more principled method of deﬁning the operators is adopted. For instance, Set-based PSO [27] and DE [28] evolve a set representation of 120 the discrete solutions by employing set-theoretical operators. These schemes have been applied to the traveling salesman problem and the multidimensional knapsack problem. Their main diﬀerence with respect to our approach is that they require a new set-based representation of the solutions, while our proposal adopts the classical (binary and permutation) representations. Another impor125 tant diﬀerence is that [27, 28] require the concept of dimension (which is not required in our proposal) and may introduce constraints among the dimensions of a solution. For this reason, it is diﬃcult to encode, by using the set-based representation, the solutions of a generic permutation-based problem. Indeed, though in [27] a set-based representation for the traveling salesman problem 130 (TSP) is presented, this one relies on the fact that a TSP solution is a collection
+6
+
+of arcs (with constraints), thus it cannot be generalized to other permutation problems such as the ones tackled in the experimental part of this work.
+More general methods based on the operators’ redeﬁnition which are somehow in line with our algebraic EAs can be found in [29] and [30]. In these works, 135 the subtraction operation x − y is deﬁned in terms of a sequence of moves which transform y into x. As we will see later, our proposal belongs to this class and its main diﬀerence with [29, 30] is that, in our approach, solutions and moves between solutions use the same representation, thus allowing additions, subtractions and scalar multiplications without any restriction. Furthermore, our 140 approach is general enough to cover diﬀerent search spaces.
+The second class of approaches is based on decoder procedures. Discrete solutions of combinatorial problems are often represented using a proper subset X of the numeric vectors in Rn, i.e., X ⊂ Rn. For instance, bit-strings are 0/1 vectors, while a permutation can be represented as a vector of (all diﬀer145 ent) integers. However, these vectors are transformed by the move operators to vectors which almost always lie outside the feasible space X. To overcome this issue, continuous-to-discrete decoding schemes have been proposed to transform a numeric vector into a valid solution. Practically, decoder procedures can be devised for any representation and incorporated in any numerical algorithm. 150 For this reason, we focus on decoder-based schemes on the experimental comparison provided in Section 7. However, though widely used in literature (see for example [7, 2, 31, 5]), this approach has some drawbacks. The most important one is that the intuition of how the underlying numerical EA searches and moves in the continuous space for which it has been originally designed is 155 totally lost when the same algorithm is integrated with a decoding procedure and its search moves are observed in the combinatorial space. In the following, for the sake of comparison, we brieﬂy describe the most popular combinatorial algorithms based on numerical decoders.
+7
+
+2.3. Binary EAs based on Probabilistic Decoders
+
+160
+
+Binary variants of DE [32] and PSO [7], to which we refer to as BDE and
+
+BPSO, aim to optimize an objective function of the form f : Bn → R, where
+
+B = {0, 1}. They evolve a population of bit-strings by mainly using the move
+
+operators of their numerical counterparts. Then, as soon as an unfeasible vector
+
+is generated, it is transformed back to a valid binary solution by means of a
+
+165 probabilistic decoder. Formally, given the non-binary vector x ∈ Rn, each of
+
+its components xi is converted to 1 or 0 with probability S(xi) and 1 − S(xi), respectively. The sigmoid function S(t) = (1 + e−t)−1 is used to monotonically
+
+map any real number t to a probability value S(t) ∈ [0, 1].
+
+In BDE [32], only the diﬀerential mutation of equation (1) can generate a
+
+170 non-binary vector. Hence, the components of a mutant y ∈ Rn are converted to
+
+bit values according to the probability given by S
+
+2b(yi −0.5) 1+2F
+
+, where b > 0 is a
+
+further algorithmic parameter called bandwidth factor.
+
+BPSO [7] encodes particle positions as binary strings and velocities as nu-
+
+meric vectors. Hence, a velocity vector v ∈ Rn is updated as usual using equa-
+
+175 tion (2). Then, v is used to generate the update probabilities for its correspond-
+
+ing particle position x, i.e., the i-th bit of x is set to 1 or 0 with probability
+
+S(vi) and 1 − S(vi), respectively.
+
+Applications of BDE and BPSO have been proposed, for instance, in [33,
+
+34, 35, 36]. Finally, there have been proposals to use, in place of the sigmoid
+
+180 function, other mathematical functions which generate probabilities: a review
+
+of them can be found in [1].
+
+2.4. Angle Modulated EAs
+The angle modulation technique, ﬁrst introduced in [37], allows to transform a four-dimensional numeric vector to an n-length binary string, for any 185 dimensionality n.
+Formally, [37] introduces a decoder function AM : R4 → Bn which can be used by any numerical algorithm A to optimize an objective function of the
+
+8
+
+form f : Bn → R. The only modiﬁcation to A is to consider f (AM (x)) as the ﬁtness value of a generic individual x ∈ R4.
+Let x = (a, b, c, d) and its corresponding binary string be y = AM (x), then the i-th bit of y is computed as
+
+
+
+1 if g(i − 1) > 0
+
+y(i) =
+
+(4)
+
+0 otherwise,
+
+190 where g(t) = sin(2π · (t − a) · b · cos(2π · (t − a) · c)) + d is called generating function in [37]. Angle modulated variants of DE and PSO, i.e., AM-DE and AM-PSO, have been introduced in, respectively, [2] and [37], while further applications are proposed in [38, 39].
+
+195 2.5. Random-Key based EAs
+The Random-Key (RK) technique has been introduced in [6] to tackle permutation optimization problems.
+Formally, [6] introduces a decoding function RK : Rn → Sn (where Sn is the set of permutations of [n] = {1, . . . , n}) which can be used by any numerical 200 algorithm A to optimize an objective function of the form f : Sn → R. Also in this case, the only modiﬁcation to A is to consider f (RK(x)) as the ﬁtness value of a generic individual x ∈ Rn.
+RK transforms x to the permutation π such that the sequence xπ(1), . . . , xπ(n) is increasingly ordered. For example, if x = (0.46, 0.91, 0.33, 0.75, 0.51), the de205 coded permutation is π = RK(x) = 3, 1, 5, 4, 2 . Therefore, RK requires to sort the component indexes of x according to their corresponding values. This can be done in Θ(n log n) time.
+Also a simple variant of RK has been considered in literature, see for instance [40] and [5]. In this variant, a vector x is decoded to the permutation ρ such that 210 ρ(i) = ri, where ri is the rank of xi among the vector components x1, . . . , xn sorted in increasing order. It is easy to see that this decoding scheme can be obtained by inverting the result of RK, i.e., ρ = (RK(x))−1. Therefore,
+
+9
+
+we generalize random-key by considering the parametrized decoder RKk where
+
+k = ±1.
+
+215
+
+Random-key variants of DE and PSO, i.e., RK-DE and RK-PSO, have been
+
+used in many works. See for instance [31, 41, 3, 42, 43].
+
+3. Critical analysis of the decoder-based approaches
+
+The decoder-based approaches have two inherent drawbacks: a single dis-
+
+crete solution can be encoded by a potentially inﬁnite number of numeric vec-
+
+220 tors, and the distance relationships among the discrete objects can be completely
+
+upset after the embedding in the continuous space.
+
+The probabilistic decoders described in Section 2.3, though their non-deterministic
+
+nature can sometime help to exit search stagnation, introduce a large amount
+
+of spatial distortion. Indeed, given a ﬁxed numeric vector, performing multiple
+
+225 decoding steps can result in very diﬀerent bit-strings. As an extreme example,
+
+let consider a BPSO particle with a zero vector as velocity. Since S(0) = 0.5,
+
+there is equal probability to have a 0 or a 1 for every bit in the decoded bit-
+
+string. Hence, the zero vector can be decoded in any one of the 2n bit-strings
+
+with uniform probability, thus completely losing its original “identity”.
+
+230
+
+Regarding the angle modulated approach (see Section 2.4), no explicit proof
+
+that equation (4) allows to cover the whole space Bn for any n is provided in
+
+the literature. Moreover, by measuring the distances in the numeric and binary
+
+spaces by, respectively, the Euclidean and Hamming distance, we have that dis-
+
+tant numeric vectors may correspond to close bit-strings and vice versa. For in-
+
+235 stance, the Euclidean distance between the vectors x = (−6.94, 8.24, 0.68, 0.08)
+
+and y = (−6.89, 8.31, 0.72, 0.11) is around 0.1 (a relatively small number with re-
+
+spect to the vector values) but, when n = 50, AM (x) diﬀers from AM (y) for 23
+
+bits, i.e., almost half the total number of bits. On the other hand, the vectors
+
+(3.36, −6.6, −2.96, 1.1) and (34.56, 27.14, 10.74, 15.26) are very diﬀerent (their
+
+240 Euclidean distance is around 50), but they encode exactly the same bit-string
+
+(again, with n = 50).
+
+10
+
+Similar scenarios happen with the random-key approaches (see Section 2.5). Here we only consider RK−1, though the space distortion induced by RK+1 is even more pronounced. For example, the two vectors x = (0.46, 0.91, 0.33, 0.75, 0.51) 245 and y = (0.4, 0.9, 0.3, 0.7, 0.5) correspond to the same permutation, i.e., RK−1(x) = RK−1(y) = 3, 1, 5, 4, 2 . The vectors x and y have a small Euclidean distance, but the same problem can also happens for vector pairs whose distance is arbitrarily large. As an example, let consider the family of vectors y∆ = (0.4, 0.9 + ∆, 0.3, 0.7, 0.5) which encode the same permutation 3, 1, 5, 4, 2 250 for every choice of ∆ ≥ 0. At the same time, given an > 0, we can ﬁnd, for every possible permutation π ∈ Sn, a vector x ∈ Rn such that its Euclidean distance from the zero vector is and RK−1(x) = π.
+Finally, we have conducted an experiment in order to show the weak correlation between the distances on the continuous and on the permutation space. 255 We have considered the classical distance functions: Euclidean distance for the continuous space, and Kendall’s-τ distance for permutations (i.e., the number of pairwise disagreements between two permutations). Given σ > 0, 10 000 pairs of vectors xi, yi ∈ R10 have been generated such that d(xi, yi) = σ. The Kendall’s-τ distance between RK−1(x) and RK−1(y) has been computed as 260 well. Diﬀerent values of σ in the range [0.1, 3] have been considered. The graph in Figure 1 clearly shows that, though in average both distances have a similar behavior, the variability in terms of Kendall’s-τ distance explodes when the Euclidean distance σ increases. Therefore, a large number of nearby vectors correspond to far away permutations and vice versa.
+265 4. Algebraic Background
+In many combinatorial optimization problems, the set of discrete solutions X is naturally endowed with a composition operator, i.e., there exists a binary operator such that, given two solutions x, y ∈ X, then x y is again a solution. Often, X and satisfy the group properties [44]. As we will see later, this is the 270 case of the binary and permutation representations that are quite ubiquitous in
+11
+
+Figure 1: Boxplot chart showing the correlation between Euclidean distance and Kendall’s-τ distance.
+
+combinatorial problems: for example in the binary knapsack problem or in the permutation ﬂowshop scheduling problem.
+The algebraic structure of the seach spaces allows to characterize the geometry of the search space and to describe the search moves. Usually, the search 275 algorithms do not explicitly exploit the algebraic properties of the search spaces. Therefore, the aim of the paper is to show how groups can be used in evolutionary algorithms, while the rest of this section is devoted to introduce the mathematical concepts used later on.
+
+4.1. Groups
+
+280
+
+A group [44] is an algebraic structure (X, ) where X is a set and is a
+
+binary operation on X which fulﬁlls the following properties:
+
+• for all x, y, z ∈ X, x (y z) = (x y) z (associativity);
+
+• there exists a unique element e ∈ X such that, for all x ∈ X, x e =
+
+12
+
+e x = x (neutral or identity element);
+
+285
+
+• for every x ∈ X, there exists a unique element x−1 ∈ X such that x x−1 =
+
+x−1 x = e (inverse element).
+
+If is commutative, i.e., for all x, y ∈ X, x y = y x, then the group is called
+
+Abelian.
+
+A group (X, ) is ﬁnitely generated if there exists a ﬁnite subset H ⊆ X
+
+290 such that any x ∈ X can be written as a composition of elements in H, i.e.,
+
+x = h1 h2 · · · hl for some h1, h2, . . . , hl ∈ H. H and its elements are called,
+
+respectively, the generating set and the generators of X, while the sequence
+
+h1, h2, . . . , hl is a decomposition of x. Usually, though not strictly necessary, H is closed with respect to inversion, i.e., for all h ∈ H also h−1 ∈ H.
+
+295
+
+Generally, every x ∈ X has many decompositions with possibly diﬀerent
+
+lengths. Hence, a useful concept is that of minimal decomposition. A decom-
+
+position h1, h2, . . . , hl of a given x ∈ X is minimal if, for any other decompo-
+
+sition h1, h2, . . . , hm of x, we have l ≤ m. Even minimal decompositions are not unique in general, but it is possible to deﬁne the weight |x| as the length of
+
+300 the minimal decompositions of x.
+
+Minimal decompositions allow also to deﬁne a partial order on X. Given
+
+x, y ∈ X, we write x y if, for each minimal decomposition sx of x, there exists
+
+a minimal decomposition sy of y such that sx is a preﬁx of sy.
+
+Furthermore, if X is ﬁnite, there exists at least one maximal weight element.
+
+305 For the sake of presentation, here we focus on groups with a unique maximal
+
+weight element ω such that x ω for all x ∈ X.
+
+4.2. Cayley Graphs
+Every group (X, ), ﬁnitely generated by H, geometrically corresponds to the Cayley graph C(X, , H), i.e., the labeled digraph whose vertexes are the 310 elements of X and there is an arc from x to y labeled by h ∈ H if and only if y = x h. The graph C(X, , H) is:
+
+13
+
+• strongly connected, i.e., for all x, y ∈ X there is a directed path from x to y and from y to x;
+
+• regular, i.e., every vertex has the same number of incoming and outgoing
+
+315
+
+arcs;
+
+• vertex-transitive, i.e., every vertex has the same set of (incoming and outgoing) arc labels.
+
+These properties guarantee that, for any possible sequence of generators s and for any element x ∈ X, C(X, , H) has exactly one path which starts from the 320 vertex x and whose arcs are labeled according to s. In the Cayley graph, for all x ∈ X, each directed path from the group identity e to x corresponds to a decomposition of x: if the arc labels occurring in the path are h1, h2, . . . , hl , then x = h1 h2 · · · hl. As a consequence, shortest paths from e to x correspond to minimal decompositions of x. Hence, if e −h→1 x1 −h→2 x2 −h→3 · · · −h→l xl is a 325 shortest path in C(X, , H), then, for any integer i ∈ [1, l], h1, . . . , hi is a minimal decomposition of xi, and |xi| = i. Moreover, given x, y ∈ X, x y if and only if there exists at least one shortest path from e to y passing by x.
+More generally, for all x, y ∈ X, any path from x to y in C(X, , H) has an algebraic interpretation. If the arc labels in the path are h1, h2, . . . , hl , then 330 x (h1 h2 · · · hl) = y. Hence, h1, h2, . . . , hl is a decomposition of x−1 y. In particular, shortest paths correspond to minimal decompositions. Starting from this observation, it is possible to deﬁne a distance d on the group X generated by H. For all x, y ∈ X, d(x, y) is the length of a shortest path from x to y in C(X, , H) or, equivalently, d(x, y) = |x−1 y|. If H is closed with respect 335 to inversion, the neighborhoods of C(X, , H) are symmetric and d is a metric distance. Finally, the diameter D of a Cayley graph is equal to the maximal weight, i.e., D = |ω|.
+
+4.3. Bit-String Group The set Bn = {0, 1}n of the n-length bit-strings forms a group with respect to
+340 the bitwise XOR, denoted by . The identity is the “all 0s string” 0. Moreover,
+
+14
+
+is commutative and x−1 = x, for all x ∈ Bn. The most natural and elementary generating set of Bn is the subset of the
+n bit-strings with exactly one 1-bit, i.e., the set U = {ui ∈ Bn : ui(i) = 1 and ui(j) = 0 for j = i}, where ui(k) is the k-th bit of the string ui. It is 345 important to note that x ui corresponds to ﬂipping the i-th bit of x.
+The maximal weight element of Bn with respect to U is the “all 1s string” 1. Hence, the Cayley graph diameter is n.
+Furthermore, the group weight is the Hamming weight, the group distance is the Hamming distance, and the Cayley graph is the binary hypercube.
+
+350 4.4. Permutation Group
+
+The set Sn of the permutations of [n] = {1, 2, . . . , n} forms a group, called the
+
+symmetric group, with respect to the composition operator ◦. Given π, ρ ∈ Sn,
+
+π ◦ ρ is deﬁned as the permutation (π ◦ ρ)(i) = π(ρ(i)) for all the indices i ∈ [n].
+
+Sn is not Abelian and its identity is the permutation e such that e(i) = i for all
+
+355 i ∈ [n].
+
+Diﬀerent generating sets are possible in Sn (see [9, 45, 46]). One of the
+
+most elementary is the subset of the n − 1 simple transpositions, i.e., the set
+
+ST = {σi ∈ Sn : 1 ≤ i < n}, where σi is deﬁned as: σi(i) = i + 1, σi(i + 1) = i,
+
+and σi(j) = j for j ∈ [n] \ {i, i + 1}. Since the inverse of a simple transposition
+
+360 is itself, ST is closed with respect to inversion. The maximal weight element of
+
+Sn, with respect to ST , is the permutation r such that r(i) = n + 1 − i for all
+
+i ∈ [n]. Its weight, thus the Cayley graph diameter, is
+
+n 2
+
+.
+
+For all π ∈ Sn, the composition π ◦ σi corresponds to swap the adjacent
+
+items at positions i and i + 1 in π. The weight |π| is equivalent to the number of
+
+365 inversions in π, i.e., the pairs of indexes i, j ∈ [n] such that i < j and π(i) > π(j).
+
+Finally, the distance d(π, ρ) between π, ρ ∈ Sn is known as bubble-sort distance
+
+and counts the minimum number of adjacent swaps required to transform π in
+
+ρ (or vice versa) [45].
+
+15
+
+5. Algebra of Combinatorial Search Spaces
+
+370
+
+In all the combinatorial optimization problems, the search space is usually
+
+described by the set X of discrete solutions and the set O of operators, such that
+
+any o ∈ O can be applied to any solution x ∈ X to obtain a (neighbor) solution
+
+o(x) ∈ X. Therefore, the neighborhood of any x ∈ X is N (x) = {y ∈ X :
+
+∃o ∈ O s.t. y = o(x)}. Usually, O contains the most elementary variations of
+
+375 the solution representation adopted, e.g., bit-ﬂips for binary strings or adjacent
+
+swaps for permutations.
+
+It is important to note that, in many cases, the search space (X, O) has an
+
+algebraic structure: it can be represented by a ﬁnitely generated group. This
+
+happens when there exist:
+
+380 1. a binary operation satisfying the group properties on X, 2. a ﬁnite subset H ⊆ X that generates the group (X, ), and 3. a one-to-one correspondence which associates to every o ∈ O a generator h ∈ H such that o(x) = x h.
+
+This algebraic structure gives rise to a Cayley graph that geometrically repre-
+
+385 sents the search space and the same neighborhood relations induced by O. For
+
+instance, the previously described Bn and Sn are search spaces representable
+
+by ﬁnitely generated groups. Moreover, though not studied in this paper, also
+
+other search spaces satisfy the properties (1–3) like, for instance, the space of
+
+integer vectors.
+
+390
+
+In the rest of this section we show how, in a combinatorial search space
+
+represented by a group (X, ) ﬁnitely generated by H, it is possible to naturally
+
+introduce the operations of addition ⊕, subtraction , and scalar multiplication
+
+in a meaningful way and with similar properties as the analogous operations of
+
+the Euclidean vector space. This, in turn, will allow to consistently redeﬁne the
+
+395 move equations of numerical EAs (like diﬀerential evolution or particle swarm
+
+optimization) for combinatorial search spaces.
+
+The key observation is the dichotomous interpretation of an element of X.
+
+From Section 4, any element x ∈ X can be decomposed and seen as a sequence
+
+16
+
+of generators, hence x corresponds to a sequence of arc labels in several paths of 400 C(X, , H). This observation is crucial, because the elements of X can be seen
+both as points, i.e., vertices in the Cayley graph, and as vectors1, i.e., sequences of generators in shortest paths of the Cayley graph.
+
+5.1. Abstract Addition and Subtraction
+The addition z = x ⊕ y is deﬁned as the application of the vector y ∈ X to the point x ∈ X. The result z is computed by choosing a decomposition h1, h2, . . . , hl of y and by ﬁnding the end point of the path which starts from x and whose arc labels are h1, h2, . . . , hl , i.e., z = x (h1 h2 · · · hl). By noting that h1 h2 · · · hl = y, the addition ⊕ is independent from the generating set and is deﬁned as
+
+x ⊕ y := x y.
+
+(5)
+
+Continuing the analogy with the Euclidean space, the diﬀerence between two points is a vector. Given x, y ∈ X, the diﬀerence y x produces the sequence of labels h1, h2, . . . , hl in a path from x to y. Since h1 h2 · · · hl = x−1 y, we can replace the sequence of labels with its product, thus making the diﬀerence independent from the generating set. Therefore, is uniquely deﬁned as
+
+y x := x−1 y.
+
+(6)
+
+Both ⊕ and , like their numerical counterparts, are consistent with each 405 other: x ⊕ (y x) = y for all x, y ∈ X.
+
+5.2. Abstract Scalar Multiplication Again, as in the Euclidean space, it is possible to multiply a vector by a
+non-negative scalar in order to stretch its length. Given a ≥ 0 and x ∈ X, we denote their multiplication with a x and we
+410 ﬁrst identify the conditions that a x has to verify in order to simulate, as much as possible, the scalar multiplication of vector spaces:
+
+1Here, with “vector” we intend “free vector”, i.e., a vector without point of application.
+17
+
+(C1) |a x| = a · |x| ;
+
+(C2) if a ∈ [0, 1], a x x;
+
+(C3) if a ≥ 1, x a x.
+
+415 Clearly, the scalar multiplication of Rn satisﬁes a slight variant of (C1) where the
+
+Euclidean norm replaces the group weight and the ceiling is omitted. Besides,
+
+similarly to scaled vectors in Rn, (C2) and (C3) intuitively encode the idea that
+
+a x is the element x scaled down or up, respectively.
+
+It is important to note that, ﬁxed a and x, there may be more than one
+
+420 element of X satisfying (C1–C3). This is a clear consequence of the non-
+
+uniqueness of minimal decompositions. Therefore, diﬀerent strategies can be
+
+devised to compute F x. Nevertheless, since our aim is to apply the operation
+
+in evolutionary algorithms, we denote with a x a randomly selected element
+
+satisfying (C1–C3).
+
+425
+
+Note also that the diameter D induces an upper bound on the possible
+
+values
+
+for
+
+the
+
+scalar
+
+a.
+
+For
+
+any
+
+x
+
+∈
+
+X,
+
+let
+
+ax
+
+=
+
+D |x|
+
+,
+
+if
+
+a
+
+>
+
+ax,
+
+(C1)
+
+would
+
+imply
+
+|a x| > D, which is impossible. Therefore, we deﬁne
+
+a x := ax x, when a > ax.
+
+(7)
+
+For the sake of clarity, we separately deﬁne the operation a x for the two
+
+cases a ∈ [0, 1] and a > 1.
+
+430
+
+Both cases employ an abstract procedure which returns a randomly selected
+
+minimal decomposition of the element in input.
+
+When a ∈ [0, 1], let l = |x| and consider a random shortest path from e to x such as e −h→1 · · · −h→k xk · · · −h→l xl, where xl = x. For the Cayley graph
+
+properties, (C1) and (C2) are satisﬁed by setting a x = xk, with k = a · l .
+
+435 Moreover, when a = 1, a x = x and this satisﬁes both (C2) and (C3).
+
+When a > 1, let l = |x| and consider a random shortest path from e to ω passing by x such as e −h→1 · · · −h→l xl −h−l−+→1 · · · −h→k xk −h−k−+→1 · · · −h−D → ω, where
+
+xl = x. For the Cayley graph properties, (C1) and (C3) are satisﬁed by setting
+
+a x = xk, with k = a · l .
+
+18
+
+440
+
+Anyway, it is possible to make the computation more eﬃcient by exploiting
+
+that a x = (h1 · · · hl) (hl+1 · · · hk) = x (hl+1 · · · hk), thus only the sub-path from x to ω, which forms a minimal decomposition of ω x = x−1 ω,
+
+needs to be known. Since |x| + |x−1 ω| = D, thus |x| = D − |x−1 ω|, then
+
+a x can be computed by taking a minimal decomposition of x−1 ω, truncating
+
+445 it after a · |x| − |x| generators, and right-composing the truncated sequence
+
+with x.
+
+These two abstract methods are valid for any ﬁnitely generated group. Their
+
+implementations mainly require a concrete randomized decomposition algorithm
+
+for the group at hand.
+
+450 5.3. Vector Operations for Bit-Strings
+The bit-string representation can be used in a very large number of problems such as, for example, NK landscape optimization, binary knapsack problems, number partitioning, any subset selection problem, etc. As described in Section 4.3, for the search space of bit-strings Bn, we consider the bitwise XOR operator 455 and the generating set U representing the bit-ﬂip moves.
+Thanks to properties of this group, ⊕ and coincide and are deﬁned as
+
+x ⊕ y = x y := x y.
+
+(8)
+
+These operations are both commutative, and the time complexity to compute them is Θ(n).
+The operation is implemented by considering that the search space diameter is n and the maximal weight bit-string is the “all 1s string” 1. The 460 randomized decomposition algorithm is RandBits, presented in Algorithm 1.
+RandBits produces a random minimal decomposition of x by returning a random permutation of the generators corresponding to the 1-bits of x. RandBits and can be computed in time Θ(n).
+For the sake of clarity, we provide an illustrative example. Let consider the 465 two bit-strings of n = 5 bits x = (10101) and y = (01100). We compute the
+diﬀerence z = x y = x y = (11001) which, as expected, has a 1-bit in the
+
+19
+
+Algorithm 1 Randomized decomposition algorithms for bit-strings
+
+1: function RandBits(x)
+
+2: s ←
+
+s is a sequence of generators
+
+3: for i ← 1 to n do
+
+4:
+
+if x(i) = 1 then
+
+x(i) is the i-th bit of x
+
+5:
+
+s ← Concatenate( ui , s)
+
+ui is a generator
+
+6: s ← Shuﬄe(s)
+
+Uniform random shuﬄe of s
+
+7: return s
+
+s is now a min. decomposition of x
+
+8: end function
+
+positions where x and y diﬀer. Adding z to y, as expected, we get back to x, i.e., y ⊕ z = y z = (10101) = x. Now, let a = 0.66 and let analyze the scalar multiplication a z. First, a (random) minimal decomposition of z is obtained 470 as follows: RandBits(z) = u5, u1, u2 , where the ui are the generator bit-strings with exactly one 1-bit (see Section 4.3). From the decomposition it is easy to see that |z| = 3, thus the computation of 0.66 z simply requires to compose the ﬁrst 0.66 · 3 = 2 generators of z, i.e., 0.66 z = u5 u1 = (00001) (10000) = (10001). The case a > 1 is slightly diﬀerent. Let analyze the computation of 475 1.33 z. First, we need the maximum-weight bit-string 1 = (11111) (see Section 4.3) and a (random) minimal decomposition of the diﬀerence 1 z = (00110), i.e., RandBits(1 z) = u4, u3 . Exploiting the equivalences D = n = 5 and |z| + |1 z| = D, we compute, as expected, |z| = 3. Therefore, 1.33 z simply requires to compose z with the ﬁrst 1.33 · 3 − 3 = 1 generator of 1 z, i.e., 480 1.33 z = z u4 = (11011).
+5.4. Vector Operations for Permutations
+The permutation representation can be used in many problems such as, for example, the linear ordering problem, the permutation ﬂowshop scheduling, the quadratic assignment problem, etc. As described in Section 4.4, for the permu485 tation space Sn, we consider the composition operator ◦ and the generating set ST representing the adjacent swap moves.
+
+20
+
+The operations ⊕ and are deﬁned as:
+
+x ⊕ y := x ◦ y,
+
+(9)
+
+y x := x−1 ◦ y.
+
+(10)
+
+Both are non-commutative and can be computed in time Θ(n).
+
+The operation is implemented by considering that the search space diam-
+
+eter is
+
+n 2
+
+and the maximal weight permutation is the reversed identity r. The
+
+490 randomized decomposition algorithm is RandBS, presented in Algorithm 2.
+
+RandBS iteratively sorts x in increasing order (hence obtaining e) by itera-
+
+tively choosing a random adjacent swap moves from the set of adjacent inversions
+
+A. Then, A is eﬃciently updated by considering that the adjacent swap σi can
+
+only aﬀect three adjacent inversions (i − 1, i), (i, i + 1), (i + 1, i + 2). As also
+
+495 highlighted in [8], RandBS and are computed in time Θ(n2).
+
+Algorithm 2 Randomized decomposition algorithms for permutations
+
+1: function RandBS(x)
+
+2: s ←
+
+s is a sequence of generators
+
+3: A ← {σi ∈ ST : i < i + 1 and x(i) > x(i + 1)}
+
+4: while A = Ø do
+
+A =Ø ⇐⇒ x = e
+
+5:
+
+σ ← select an element from A uniformly at random
+
+6:
+
+x←x◦σ
+
+σ is a generator
+
+7:
+
+s ← Concatenate( σ , s)
+
+8:
+
+A ← Update(A, σ)
+
+Θ(1) complexity
+
+9: return s 10: end function
+
+s is now a min. decomposition of x
+
+For the sake of clarity, we provide an illustrative example. Let consider the two permutations of n = 5 items x = 12534 and y = 41532 . In order to compute the diﬀerence x y, we need the inverse of y, i.e., y−1 = 25413 . Then, z = x y = y−1 ◦ x = 25341 . Adding z to the right of y, as expected, 500 we obtain again x, i.e., y ⊕ z = y ◦ z = 12534 = x. Now, let a = 0.33 and let analyze the computation of a z. First, a (random) minimal decomposition of z
+
+21
+
+is obtained as follows: RandBS (z) = σ1, σ2, σ4, σ3, σ4, σ2 , where the σi are the
+
+generators deﬁned as in Section 4.4. From the decomposition it is easy to see
+
+that |z| = 6, thus the computation of 0.33 z simply requires to compose the ﬁrst
+
+505 0.33·6 = 2 generators of z, i.e., 0.33 z = σ1◦σ2 = 21345 ◦ 13245 = 23145 .
+
+The case a > 1 is slightly diﬀerent. Let analyze the computation of 1.5 z.
+
+First, we need the maximum-weight permutation r = 54321 (see Section 4.4)
+
+and a (random) minimal decomposition of the diﬀerence r z = 24315 , i.e.,
+
+RandBS (r
+
+z) =
+
+σ1, σ2, σ3, σ2 . Exploiting the equivalences D =
+
+5 2
+
+= 10 and
+
+510 |z| + |r z| = D, we compute, as expected, |z| = 6. Therefore, 1.5 z simply
+
+requires to compose z with the ﬁrst 1.5 · 6 − 6 = 3 generators of r z, i.e.,
+
+1.5 z = z ◦ σ1 ◦ σ2 ◦ σ3 = 53421 .
+
+5.5. Algebraic Properties It is easy to prove that the operations ⊕, , satisfy the following properties:
+515 (i) ⊕ is associative; (ii) ⊕ is commutative, if is commutative; (iii) e is the neutral element for ⊕; (iv) x ⊕ x−1 = x−1 ⊕ x = e for each x ∈ X; (v) 1 x = x for each x ∈ X;
+520 (vi) a (b x) = (ab) x for each x ∈ X and a, b ≥ 0; (vii) 0 x = e for each x ∈ X; (viii) x ⊕ (y x) = y for each x, y ∈ X.
+The properties (i–viii) make X similar to a vector space over R. Besides property (ii), the two vector space’s properties that do not hold in general are 525 the distributivity laws of with respect to ⊕ and to +.
+
+6. Algebraic Evolutionary Algorithms
+In this section we describe an algebraic method to adapt an evolutionary algorithm A, originally designed for continuous optimization, to solve a combinatorial optimization problem P. The adaptation is possible under the following
+22
+
+530 two conditions: 1) the search space X of P is representable by a ﬁnitely gener-
+
+ated group, and 2) the evolutionary operators of A are linear combinations of
+
+population individuals.
+
+When both conditions are met, the original evolutionary operators, expressed
+
+with the usual numerical vector operations, can be rewritten using ⊕, , and
+
+535 . The adapted algorithms, called algebraic, directly navigate the combinato-
+
+rial search space by means of the operations deﬁned on the underlying group.
+
+Therefore, algebraic evolutionary algorithms (AEAs) simulate the search moves
+
+of their numerical counterparts in the combinatorial search space at hand.
+
+AEAs can be deﬁned for the most popular and eﬀective numerical evolution-
+
+540 ary algorithms in literature. Here, we consider the most used ones: Diﬀerential
+
+Evolution (DE) [15] and Particle Swarm Optimization (PSO) [16]. Anyway, the
+
+same technique can be applied also to other evolutionary algorithms like, for in-
+
+stance, Fireﬂy Algorithm [17], Bacterial Foraging Optimization Algorithm [18],
+
+and Artiﬁcial Bee Colony [47], and simple univariate Evolution Strategies [48].
+
+545
+
+In the following we introduce the abstract forms of the algebraic variants
+
+of DE and PSO, namely, ADE and APSO. By replacing the abstract ⊕, ,
+
+with their bit-string or permutation implementations, we have AEAs for, respec-
+
+tively, binary or permutation problems. The precedences among the algebraic
+
+operations are assumed to be as in their numerical counterparts.
+
+550 6.1. Algebraic Diﬀerential Evolution In the Algebraic DE (ADE), previously introduced in [8] for permutation
+problems, the diﬀerential mutation is deﬁned as
+
+yi ← xr0 ⊕ F (xr1 xr2 ),
+
+(11)
+
+which is the algebraic version of equation (1). The recombination between yi and xi is performed using one of the discrete crossover operators available in literature (both for bit-strings and permutations). Then, the same one-to-one selection of numerical DE decides which solution enters the next-generation 555 population.
+
+23
+
+Finally, it is worth to note that, though we are limiting our attention to rand/1, all the known diﬀerential mutation variants (rand/2, best/1, currentto-best/1, etc.) [49] can be replaced with their algebraic counterparts.
+6.2. Algebraic Particle Swarm Optimization In the Algebraic PSO (APSO), preliminary proposed in [10, 50] for permu-
+tation problems, the velocity and position update rules of the i-th particle are deﬁned as:
+vi ← [w vi] ⊕ [(c1 · r1i) (pi xi)] ⊕ [(c2 · r2i) (gi xi)], (12)
+
+xi ← xi ⊕ vi,
+
+(13)
+
+560 which are the algebraic versions of, respectively, equations (2) and (3). The personal and social best pi and gi are then updated as in the numerical PSO. Replacing the velocity vi in equation (13) with the right side of equation (12), we have that, diﬀerently from ADE, the solution xi is updated by adding three terms to it. Though xi can be reasonably interpreted as a point in the
+565 space, the three terms composing vi have natural interpretations as vectors. This generates an ambiguity when ⊕ is not commutative (for instance, in the permutations space). Hence, in these cases, the three terms of equation (12) are randomly arranged in one of the 3! = 6 possible orders.
+
+6.3. Search Characteristics of the AEAs
+
+570
+
+Thanks to the properties of the algebraic framework from which ADE and
+
+APSO are derived, their search moves are geometrically similar with respect to
+
+the movements performed by their numerical counterparts. Anyway, the discrete
+
+nature of the combinatorial spaces inevitably introduces some diﬀerences with
+
+the numerical algorithms.
+
+575
+
+The main one is the lack of continuity. Indeed, since discrete spaces are
+
+ﬁnite (or at most countable) an individual cannot get inﬁnitesimally closer to
+
+a given solution. Another way of looking at the same issue is that the discrete
+
+24
+
+spaces are graphs (Cayley graphs in our cases), hence the distance between
+
+two solutions is integer-valued. The practical consequence in AEAs, but also
+
+580 in other combinatorial algorithms, is that loss of population diversity is more
+
+drastic than in continuous space.
+
+Another diﬀerence with numerical algorithms is that when the underlying
+
+group is not Abelian, the ⊕ operation is not commutative. This issue has been
+
+considered in APSO for the permutations space (see Section 6.2).
+
+585
+
+Furthermore, in the case of bit-strings, both ⊕ and are actually the bit-
+
+wise XOR operator, hence x ⊕ x = x x = e for all x ∈ Bn. This implies
+
+that, when the population reaches consensus on a bit (i.e., when all individuals
+
+have their i-th bit set to the same value), it is impossible to ﬂip that bit in
+
+the future generations by using movement equations that only consider linear
+
+590 combinations of population individuals and multiplication by scalars not larger
+
+than 1. Anyway, note that this aspect is counter-balanced by the fact that
+
+the binary underlying group is Abelian. Indeed, when the composition is com-
+
+mutative, the number of possible minimal decompositions of a generic group
+
+element is intuitively large. Just look at RandBits of Algorithm 1 and observe
+
+595 that any possible permutation of the 1-bits of the input string corresponds to a
+
+minimal decomposition sequence. This implies that there are intuitively many
+
+ways of truncating a decomposition sequence, that in turn likely slows down the
+
+convergence to population consensus on a bit.
+
+7. Experimental Analysis
+
+600
+
+The proposed algebraic EAs (AEAs) have been experimentally analyzed on
+
+both binary and permutation problems. The benchmarks and the experimental
+
+setup adopted are described in, respectively, Sections 7.1 and 7.2. Algorithm
+
+parameters are tuned as reported in Section 7.3, while diﬀerent experimental
+
+scenarios have been considered. A ﬁrst set of experiments is described in Section
+
+605 7.4, where standalone versions of the AEAs are compared with the standalone
+
+decoder-based numerical EAs described in Sections 2.3, 2.4, and 2.5. Then,
+
+25
+
+Section 7.5 describes a second set of experiments designed to compare enhanced versions of both classes of algorithms. Lastly, in Section 7.6, the best AEAs results are compared to the state-of-the-art results in literature for the tackled 610 problems.
+
+7.1. Benchmarks
+
+Benchmark problems and instances have been selected for both the binary
+
+and permutation cases. Due to their generality, NK Landscapes (NKL) [19] have
+
+been considered as binary benchmarks, while, for permutation problems, the
+
+615 experiments have been held on the Permutation Flowshop Scheduling Problem
+
+(PFSP) with the total ﬂowtime as objective function [20] and on the Linear
+
+Ordering Problem (LOP) [21].
+
+An NKL instance of n bits and epistasis K is provided as n tabulated sub-
+
+functions fi : BK+1 → R, with i ∈ {1, . . . , n}, each one deﬁned on K + 1 bits of
+
+620 an n-length bit-string including its i-th bit. The objective is to maximize the
+
+sum of the sub-function values.
+
+A PFSP instance consists of n jobs, m machines, and a processing time
+
+pi,j for every job i ∈ {1, . . . , n} in every machine j ∈ {1, . . . , m}. Given a
+
+permutation of jobs π ∈ Sn, the completion time of job π(i) in machine j
+
+625 is recursively computed as cπ(i),j = pπ(i),j + max{cπ(i−1),j , cπ(i),j−1} by also
+
+considering the terminal cases ci,0 = c0,j = 0. The total ﬂowtime objective
+
+requires to minimize f (π) =
+
+n i=1
+
+cπ(i),m
+
+.
+
+A LOP instance is provided as an n × n matrix H and the objective is to
+
+ﬁnd a permutation π ∈ Sn which maximizes f (π) =
+
+n i=1
+
+n j=i+1
+
+Hπ(i),π(j).
+
+630
+
+Sixty instances for each one of the three problems have been selected from
+
+widely adopted benchmark suites as follows.
+
+• NKL instances come from the combinatorial black-box optimization contest organized at GECCO 20152, where they have been randomly generated using diﬀerent dimensionalities and epistasis values.
+
+2http://web.mst.edu/ tauritzd/CBBOC/GECCO2015.
+26
+
+635
+
+• PFSP instances are taken from the Taillard benchmark suite3 and, as
+
+explained in [51], they are the most diﬃcult instances (basing on few algo-
+
+rithms chosen by the author) among a randomly generated set of instances.
+
+• LOP instances are from the benchmark sets LOLIB, SGB and MB4:
+
+LOLIB is a real-world dataset of input-output tables used in economics,
+
+640
+
+while SGB and MB are randomly generated instances with diﬀerent di-
+
+mensionalities and levels of sparsity.
+
+Finally, note that the subset of 60 × 3 = 180 instances used in our work has been selected from these datasets by uniformly covering their inner characteristics. For the sake of space, the names of the selected instances are provided as 645 supplementary material on the web [52].
+
+7.2. Setup of the experiments
+ADE and APSO have, each one, two implementations: for the binary and permutation space, thus we have a total of four algebraic algorithms. Both in the standalone and enhanced comparison scenarios (see Sections 7.4 and 7.5), 650 ADE and APSO have been compared with the decoder-based numerical EAs described in Sections 2.3, 2.4 and 2.5. Therefore, six binary algorithms have been compared on the NKL instances, while four algorithms for permutation problems have been analyzed on PFSP and LOP instances. We use the same acronyms deﬁned in Section 2 and, for the sake of presentation, we report them 655 in Table 1.
+All the PSO-based schemes adopt the ring topology. With regards to the DE-based algorithms, the standard binomial crossover of classical DE is used without any modiﬁcation on the binary problems, while the OBX crossover [9] is adopted for the permutation problems. Indeed, OBX can be regarded as a simple 660 feasible variant of the binomial crossover for the permutation representation.
+
+3http://mistic.heig-vd.ch/taillard. 4http://www.optsicom.es/lolib.
+
+27
+
+Table 1: Acronyms of the algorithms compared in the experimentation
+
+Algorithms Search space Problems
+Acronyms
+
+Algorithms Descriptions
+
+Binary
+
+NKL
+
+ADE APSO BDE [32] BPSO [7] AM-DE [2] AM-PSO [37]
+
+Algebraic DE for the binary space Algebraic PSO for the binary space Binary DE (see Section 2.3) Binary PSO (see Section 2.3) Angle Modulated DE (see Section 2.4) Angle Modulated PSO (see Section 2.4)
+
+Permutation
+
+PFSP LOP
+
+ADE APSO RK-DE [31] RK-PSO [3]
+
+Algebraic DE for the permutation space Algebraic PSO for the permutation space Random-key DE (see Section 2.5) Random-key PSO (see Section 2.5)
+
+For every instance, all the algorithms have been executed 20 times using, as termination criteria, both a given budget of ﬁtness evaluations and of computational time. The ﬁnal ﬁtness values produced by the executions of every algorithm have been aggregated for each instance using the Average Relative Percentage Deviation (ARPD) measure, which is computed according to
+
+ARPDAInlsgt
+
+=
+
+1 20
+
+20
+
+i=1
+
+Alg(Ini)st − BestInst BestInst
+
+× 100,
+
+(14)
+
+where Alg(Ini)st is the ﬁnal ﬁtness value produced by the algorithm Alg in its i-th run on the instance Inst, while BestInst is the best result obtained on the given instance by any algorithm in any run of the considered experiment. The ARPDs
+
+have to be minimized both for maximization and minimization problems. Sta-
+
+665 tistical analyses have been conducted by means of the well known Wilcoxon signed-rank test [53].
+
+Finally, a state-of-the-art comparison has been carried out by comparing the
+
+best objective values obtained by the algebraic algorithms with the best known
+
+solutions so far of every benchmark instance (see Section 7.6).
+
+28
+
+670 7.3. Tuning of the parameters
+Due to the diﬀerent characteristics of the search spaces navigated by the algebraic and decoder-based algorithms, in order to perform a fair comparison, the parameters of the algorithms have been separately tuned using SMAC [54], i.e., a popular tool for automatic algorithm conﬁguration based on statistical and 675 machine learning techniques. To avoid the over-tuning phenomenon [55], SMAC calibrations have been run using a separate set of instances with respect to those used for algorithm comparisons. The list of the 30 selected calibration instances for each problem class is provided as supplementary material on the web [52]. Every SMAC calibration has been set to run for 72 hours of computational time, 680 while every algorithm execution terminates after 100n2 ﬁtness evaluations have been performed. The ranges of the parameters in input to SMAC are as follows: N ∈ {20, 60, 100}; F, CR ∈ [0, 1] for DE schemes; w ∈ [0, 1] and c1, c2 ∈ [0, 2] for PSO schemes; b ∈ [20, 100] for BDE; k ∈ {−1, 1} for the random-key schemes. The tuned parameter settings resulting from the SMAC executions are provided 685 in Table 2.
+As expected, the diﬀerent morphologies of the search landscapes are reﬂected on the noticeable diﬀerences among the calibrated parameter values.
+7.4. Standalone Algorithms Comparison
+The aim of this section is to verify if our proposals are competitive with 690 respect to the decoder-based variants of DE and PSO. Therefore, in this set of
+experiments all the algorithms have been implemented in their basic versions as depicted by Sections 2 and 6.
+The algorithms comparison has been performed by using the calibrated settings of Table 2 and considering two termination criteria: 100n2 ﬁtness eval695 uations (as in calibration), and 50n2 milliseconds of computational time. The second criterion is motivated by the inherently diﬀerent computational complexities of the algebraic and decoder-based algorithms.
+The results of the executions are presented in aggregated form in Tables 3, 4, and 5, respectively, for NKL, PFSP, and LOP instances. For each algorithm
+29
+
+Table 2: Calibred settings obtained with SMAC
+
+Problem Algorithm Parameter Settings
+
+NKL
+
+ADE BDE [32] AM-DE [2] APSO BPSO [7] AM-PSO [37]
+
+N = 100, F = 0.22, CR = 0.22 N = 100, F = 0.78, CR = 0.65, b = 98.77 N = 60, F = 0.12, CR = 0.32 N = 100, w = 0.04, c1 = 0.58, c2 = 1.7 N = 20, w = 0.79, c1 = 1.64, c2 = 1.33 N = 20, w = 0.73, c1 = 1.77, c2 = 1.44
+
+PFSP
+
+ADE RK-DE [31] APSO RK-PSO [3]
+
+N = 100, F = 0.13, CR = 0.65 N = 100, F = 0.4, CR = 0.95, k = 1 N = 20, w = 4 · 10−5, c1 = 1.4, c2 = 1.05 N = 100, w = 0.8, c1 = 1.78, c2 = 1.76, k = −1
+
+LOP
+
+ADE RK-DE [31] APSO RK-PSO [3]
+
+N = 100, F = 0.05, CR = 0.42 N = 60, F = 0.9, CR = 0.95, k = 1 N = 60, w = 0.003, c1 = 1.74, c2 = 1.09 N = 100, w = 0.8, c1 = 1.73, c2 = 1.64, k = −1
+
+700 and for both termination criteria, any of such tables provides four performance measures: 1) the overall ARPD, 2) the non-parametric average rank (of the algorithm’s ARPDs), 3) the intra-class success rate deﬁned as the number of instances where the algorithm obtained the best ARPD compared to the sameclass competitors5, and 4) the p-value of the Wilcoxon test with respect to the
+705 best performing competitor in the same algorithmic class. The results clearly show that the algebraic algorithms outperform the decoder-
+based approaches with very high statistical evidence in every problem and considering both termination criteria. In general, the algebraic DE is the best scheme in every problem. Indeed, ADE obtained 1 as average rank both for 710 PFSP and LOP experiments, meaning that ADE has obtained the best ARPD
+5This is not the standard deﬁnition of success rate, i.e., the frequency with which the best known solution has been obtained in n trials. Note anyway that, since our intra-class success rate consider the ARPD values, it takes implicitly into account also the multiple trials performed by the algorithm.
+
+30
+
+Table 3: Experimental results of standalone algorithms on NKL
+
+Termination Performance
+
+Criterion
+
+Measure
+
+ADE BDE [32] AM-DE [2] APSO BPSO [7] AM-PSO [37]
+
+Evaluations Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.29 1.25 60/60 best
+
+12.32 4.59 0/60
+< 10−10
+
+12.83 5.88 0/60
+< 10−10
+
+0.79 1.84 56/60 best
+
+6.85 2.91 4/60 < 10−10
+
+12.31 4.53 0/60
+< 10−10
+
+Time Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.25 1.39 60/60 best
+
+12.40 4.58 0/60
+< 10−10
+
+12.90 5.88 0/60
+< 10−10
+
+0.43 1.62 60/60 best
+
+6.93 2.99 0/60 < 10−10
+
+12.39 4.54 0/60
+< 10−10
+
+Table 4: Experimental results of standalone algorithms on PFSP
+
+Termination Performance
+
+Criterion
+
+Measure
+
+ADE RK-DE [31] APSO RK-PSO [3]
+
+Evaluations Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.62 1.00 60/60 best
+
+13.72 4.00 0/60
+< 10−10
+
+5.78 2.10 54/60 best
+
+6.58 2.90 6/60 < 10−8
+
+Time Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.38 1.00 60/60 best
+
+11.72 4.00 0/60
+< 10−10
+
+4.59 2.31 42/60 best
+
+4.83 2.69 18/60 0.006
+
+Table 5: Experimental results of standalone algorithms on LOP
+
+Termination Performance
+
+Condition
+
+Measure
+
+ADE RK-DE [31] APSO RK-PSO [3]
+
+Evaluations Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.14 1.00 60/60 best
+
+19.40 4.00 0/60
+< 10−10
+
+3.52 2.17 50/60 best
+
+4.11 2.83 10/60 < 10−9
+
+Time Budget
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.08 1.00 60/60 best
+
+16.93 4.00 0/60
+< 10−10
+
+2.95 2.28 42/60 best
+
+3.12 2.72 18/60 < 10−3
+
+31
+
+on every single PFSP and LOP instance. Moreover, in the binary NKL instances, though ADE is anyway the best algorithm in average, APSO reached quite comparable results.
+In order to analyze the convergence behaviors, Figure 2 presents the con715 vergence graphs obtained by the median execution of every algorithm in three
+benchmark instances, one per problem. The data provided are typical data which have been observed also in other executions and benchmark instances. The graphs show behavior of the objective value – of the best solution in the population – with respect to to the number of evaluations performed so far. 720 Since the PFSP is the only minimization problem, for the sake of homogeneity, we present the opposite objective values.
+
+(a) NKL (p2/00000.txt) (b) PFSP (tai_100_5_0) (c) LOP (IO/N-usa79)
+Figure 2: Convergence graphs in three selected instances of the algorithms ADE, APSO, BDE [32], BPSO [7], AM-DE [2], AM-PSO [37], RK-DE [31], RK-PSO [3].
+
+The most interesting observation which follows from these graphs is that, in general, most of the decoder-based schemes seem to converge earlier than algebraic algorithms. One only exception looks to be RK-PSO, in particular 725 in the LOP benchmark. This premature convergence looks to be a plausible explanation of the diﬀerent performances among the schemes.
+Finally, we refer the interested reader to the supplementary material [52] for the full details of the experimental results.
+
+7.5. Enhanced Algorithms Comparison
+
+730
+
+In order to provide a more complete analysis, additional experiments have
+
+been held with the aim of comparing enhanced versions of the AEAs and
+
+32
+
+decoder-based schemes. The algorithms from both classes have been equipped with four additional components commonly employed in literature to improve the performance of an evolutionary algorithm: a heuristic initialization, a restart 735 mechanism, a local search procedure, and a self-adaptive strategy for the algorithms’ parameters.
+The heuristic initialization works by generating one initial solution by means of a heuristic procedure purposely deﬁned for the problem at hand, while the remaining N − 1 individuals are randomly generated. For PFSP and LOP, we 740 have adopted very popular and eﬀective constructive procedures: respectively, the Liu-Reeves [56] and best-insertion [57] heuristics. For NK landscapes, as far as we know, there is no heuristic available in literature, thus we have designed a simple procedure: randomly generate n(K + 1) bit-strings and select the best one. Though being very simple, we have experimentally observed that it 745 guarantees a good starting point for the algorithms.
+Restarts are triggered when the best population solution has not been improved during the last T generations. After some preliminary experiments, T has been set to 1000. In the DE-based schemes, as done for example in [8], the restart randomizes all the solutions except the best one, while in the PSO750 based schemes we have adopted the restart strategy described in [58], i.e., all the personal best solutions are randomized except for the global best particle that randomizes its velocity.
+As suggested in [59], in every generation, local search is applied to every solution with probability 1/N . Hence, in average, one solution per generation 755 undergoes local search. Additionally, in order to reﬁne the search as much as possible, we apply the local search also to the best solution after every restart and at the end of the evolution. A complete best-improvement local search procedure has been employed. The bit-ﬂip neighborhood has been used in NKL instances, while for PFSP and LOP, the commonly used neighborhood based 760 on item’s insertion moves has been considered [45].
+In order to automatically calibrate the parameters during the evolution we have used two popular self-adaptive mechanisms: the jDE scheme for the DE-
+33
+
+based algorithms [60], and the self-adaptive PSO scheme introduced in [61].
+
+Both schemes extend each population individual with a personal copy of the
+
+765 parameters which are evolved similarly to the genotype solution. Therefore, no
+
+parameter setting is required except for the population size N and the random-
+
+key parameter k that have been set as in Table 2.
+
+The enhanced algorithms are denoted as: ADE+, APSO+, BDE+, BPSO+,
+
+AM-DE+, AM-PSO+, RK-DE+, and RK-PSO+. Note also that, both in the
+
+770 heuristic initialization and after any application of the local search, the random-
+
+key and the angle modulated schemes require to encode the obtained discrete
+
+solution to a numerical vector. For random-key schemes, this is done by normal-
+
+izing the permutation to a numerical vector such that any dimension is within
+
+the allowed numerical bounds. However, as far as we know, there is no known
+
+775 method to invert the AM decoder of equation (4), therefore, AM-DE+ and
+
+AM-PSO+ actually do not use heuristic initialization and adopt a Baldwinian
+
+local search, i.e., the (hopefully) improved solution is recorded but does not
+
+enter the population. Moreover, BPSO+ has been further improved by setting
+
+vmax = ln(n − 1), as suggested in [62].
+
+780
+
+Experiments have been held using the set of selected instances, every algo-
+
+rithm has been executed 20 times per instance, and each execution terminates
+
+after 10 consecutive restarts without improvement of the best solution or after
+
+10 minutes of computational time. The aggregated experimental results are
+
+presented in Tables 6, 7, and 8 for, respectively, the NKL, PFSP and LOP
+
+785 benchmarks. The same layout described in Section 7.4 is used.
+
+Table 6: Experimental results of enhanced algorithms on NKL
+
+Performance ADE+ BDE+ [32] AM-DE+ [2] APSO+ BPSO+ [7] AM-PSO+ [37]
+Measure
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.16 1.32 60/60 best
+
+12.85 6.00 0/60
+< 10−10
+
+13.68 4.00 0/60
+< 10−10
+
+0.25 1.78 60/60 best
+
+1.29 5.00 3/60 < 10−10
+
+4.15 2.90 0/60 < 10−10
+
+34
+
+Table 7: Experimental results of enhanced algorithms on PFSP
+
+Performance ADE+ RK-DE+ [31] APSO+ RK-PSO+ [3]
+Measure
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.42 1.48 49/60 best
+
+1.06 3.13 11/60 < 10−7
+
+0.59 2.45 41/60 best
+
+0.92 2.93 19/60 < 10−5
+
+Table 8: Experimental results of enhanced algorithms on LOP
+
+Performance ADE+ RK-DE+ [31] APSO+ RK-PSO+ [3]
+Measure
+
+Overall ARPD Avg Rank Success Rate p-value
+
+0.01 1.22 57/60 best
+
+0.29 3.10 4/60 < 10−9
+
+0.20 2.58 41/60 best
+
+0.24 3.10 20/60 0.018
+
+The results clearly show that the AEAs outperform the decoder-based approaches in every problem also when both classes of algorithms are enhanced with additional algorithmic components. Indeed, as in the previous experiments, the reported p-values largely indicate that all the comparisons have very 790 high signiﬁcance, thus deﬁnitely validating our proposals with respect to the decoder-based competitors.
+In general, all algorithms, apart few exceptions (BDE+, AM-DE+, AMPSO+ in NKL instances), decrease their overall ARPDs with respect to the experiments of Section 7.4. This is a consequence of the additional algorithmic 795 components which tend to reduce performance diﬀerences among multiple runs of the same algorithms. In a few instances, the decoder-based approaches have been able to reach the ARPDs of the algebraic algorithms. This is shown by the non-zero success rates obtained by BPSO+ in the NKL instances, and by RKDE+ and RK-PSO+ in both the PFSP and LOP instances. However, also the 800 AEAs have consistently improved their overall ARPDs: the best one is 0.01%
+
+35
+
+(ADE+ in the LOP problem), while the worst one is only 0.59% (APSO+ in
+
+the PFSP problem). Finally, it is worth to note that, as in the previous set
+
+of experiments, ADE+ is clearly the best algorithm, though APSO+ reaches a
+
+quite comparable average rank on NKL instances.
+
+805
+
+Finally, we refer the interested reader to the supplementary material [52] for
+
+the full details of the experimental results.
+
+7.6. Comparison with State-of-the-art Results
+Though the algebraic algorithms clearly outperform the decoder-based approaches, the previous experiments say nothing about the general performances 810 of AEAs with respect to pure combinatorial algorithms. Therefore, in this section we compare the AEAs performances with respect to the state-of-the-art results on the tackled problems.
+The analysis has been conducted by comparing, on every instance, the best objective function values obtained by both ADE+ and APSO+ with respect to 815 the best known solutions available in literature. In particular, these latter have been obtained from: the CBBOC website for NKL (see footnote 2), the LOLIB website for LOP (see footnote 4), and from [8, Table III] for PFSP. With this regard, it is important to stress out that the best known solutions have been obtained by a variety of diﬀerent algorithms, often purposely designed for the 820 problem at hand. We think that this comparison is much more explanatory and comprehensive than comparing the AEAs with a bunch of chosen algorithms.
+Both for ADE+ and APSO+, the analysis is summarized by the indices provided in Table 9 where, aggregated over the instances of every problem, it is reported: the average, maximum and minimum percentage improvement with 825 respect to the best known solution (BKS) together with the number of BKSs that have been matched or improved by our proposals.
+In the NK landscapes, all the best known solutions have been improved (46 cases), or at least reached (14 cases), by both ADE+ and APSO+. Though these instances have been only investigated during the CBBOC competition, the 830 results are anyway interesting since they clearly show that algebraic algorithms
+
+36
+
+Table 9: Comparison with state-of-the-art results
+
+Performance Measure
+
+NKL Instances
+
+PFSP Instances
+
+ADE+ APSO+ ADE+ APSO+
+
+LOP Instances ADE+ APSO+
+
+Avg Improvement Max Improvement Min Improvement BKSs reached BKSs improved
+
++2.06% +10.96%
+0.00% 60/60 46/60
+
++2.05% +10.85%
+0.00% 60/60 46/60
+
+−0.60% 0.00%
+−2.54% 20/60 0/60
+
+−0.93% 0.00%
+−2.85% 20/60 0/60
+
+−0.0005% 0.00%
+−0.03% 58/60 0/60
+
+−0.02% 0.00%
+−0.19% 31/60 0/60
+
+are competitive on binary problems. In the selected LOP instances, it is worth to note that the best known
+solutions have been proven to be optimal [21]. Hence, Table 9 shows that ADE+ has been able to reach the optimum in almost the totality of the instances while 835 its average deviation from the optimum, though negative, is almost negligible. Moreover, the worst deviation obtained by APSO+ is only 0.19%.
+For PFSP, though both of our proposals have matched the state-of-theart results in the 20 smaller instances, the average deviations from the best known solutions are slightly larger than in LOP, but they are anyway not greater 840 than 1%.
+In conclusion, this analysis shows that the algebraic framework here proposed is quite general and eﬀective also from a practical point of view.
+
+8. Conclusion and Future Work
+The main contribution of this work is the general algebraic framework by 845 which it is possible to adapt a large class of numerical evolutionary algorithms
+to tackle an important class of combinatorial optimization problems. The framework has been abstractly described by means of the algebraic
+properties of ﬁnitely generated groups, while concrete implementations are provided for binary and permutation search spaces. Discrete vector operations have 850 been proposed in such a way that their geometric interpretations are consistent
+
+37
+
+throughout the diﬀerent spaces and with respect to their numerical counter-
+
+parts.
+
+The algebraic variants of two popular algorithms have been proposed: Alge-
+
+braic Diﬀerential Evolution (ADE) and Algebraic Particle Swarm Optimization
+
+855 (APSO).
+
+These algorithms have been implemented and compared with six algorithms
+
+in literature which use the decoder-based schemes, i.e., classical numerical algo-
+
+rithms endowed with decoding procedures that convert continuous individuals
+
+to discrete solutions. To the best of our knowledge, this is the only technique in
+
+860 literature that guarantees a level of applicability comparable to our framework.
+
+Experiments have been held both on binary and permutation problems by
+
+considering two scenarios: standalone and enhanced implementations of the al-
+
+gorithms. The experimental results show that the algebraic algorithms clearly
+
+outperform the competitors in both scenarios. Importantly, a further compari-
+
+865 son with state-of-the-art results in literature shows that our proposals are also
+
+competitive with pure combinatorial algorithms. These empirical results, to-
+
+gether with the strong mathematical foundations over which our proposal is
+
+built, allow us to suggest our framework in the design of new algorithms for
+
+combinatorial optimization problems.
+
+870
+
+A future research of direction is to apply the proposed framework to other
+
+search spaces such as, for instance, the space of integer vectors. Moreover, since
+
+the Cartesian product of search spaces representable as groups form itself a
+
+group (the so-called product group), we are also planning to expand the appli-
+
+cations of the framework to more complex search spaces that are usually tackled
+
+875 by means of co-evolutionary algorithms. Another research direction is to pro-
+
+pose algebraic variants for other numerical algorithms like, for example, Fireﬂy
+
+Algorithm or Bacterial Foraging Optimization scheme. Finally, it is interesting
+
+to study the potentialities of the framework in order to provide a new perspec-
+
+tive in the theoretical analysis of combinatorial meta-heuristics. Preliminary
+
+880 investigations in some of these directions are presented in [63, 64].
+
+38
+
+References
+
+[1] S. Mirjalili, A. Lewis, S-shaped versus V-shaped transfer functions for binary Particle Swarm Optimization, Swarm and Evolutionary Computation 9 (2013) 1–14.
+
+885 [2] G. Pampara, A. P. Engelbrecht, N. Franken, Binary Diﬀerential Evolution, in: Proc. of 2006 IEEE International Conference on Evolutionary Computation (CEC 2006), 2006, pp. 1873–1879.
+
+[3] M. F. Tasgetiren, Y.-C. Liang, M. Sevkli, G. Gencyilmaz, A particle swarm
+
+optimization algorithm for makespan and total ﬂowtime minimization in
+
+890
+
+the permutation ﬂowshop sequencing problem, European Journal of Oper-
+
+ational Research 177 (3) (2007) 1930–1947.
+
+[4] M. K. Marichelvam, T. Prabaharan, X. S. Yang, A Discrete Fireﬂy Algorithm for the Multi-Objective Hybrid Flowshop Scheduling Problems, IEEE Transactions on Evolutionary Computation 18 (2) (2014) 301–305.
+
+895 [5] M. Ayodele, J. A. W. McCall, O. Regnier-Coudert, RK-EDA: A Novel Random Key Based Estimation of Distribution Algorithm, in: Proc. of 14th International Conference on Parallel Problem Solving from Nature (PPSN XIV), 2016, pp. 849–858.
+
+[6] J. C. Bean, Genetic Algorithms and Random Keys for Sequencing and
+
+900
+
+Optimization, ORSA Journal on Computing 6 (2) (1994) 154–160.
+
+[7] J. Kennedy, R. C. Eberhart, A discrete binary version of the particle swarm algorithm, in: Proc. of 1997 IEEE International Conference on Systems, Man, and Cybernetics (SMC 1997), Vol. 5, 1997, pp. 4104–4108.
+
+[8] V. Santucci, M. Baioletti, A. Milani, Algebraic Diﬀerential Evolution Algo-
+
+905
+
+rithm for the Permutation Flowshop Scheduling Problem With Total Flow-
+
+time Criterion, IEEE Transactions on Evolutionary Computation 20 (5)
+
+(2016) 682–694. doi:10.1109/TEVC.2015.2507785.
+
+39
+
+[9] M. Baioletti, A. Milani, V. Santucci, An Extension of Algebraic Dif-
+
+ferential Evolution for the Linear Ordering Problem with Cumulative
+
+910
+
+Costs, in: Proc. of 14th International Conference on Parallel Problem
+
+Solving from Nature (PPSN XIV), 2016, pp. 123–133. doi:10.1007/
+
+978-3-319-45823-6_12.
+
+[10] M. Baioletti, A. Milani, V. Santucci, Algebraic particle swarm optimization
+
+for the permutations search space, in: Proc. of 2017 IEEE Congress on
+
+915
+
+Evolutionary Computation (CEC 2017), 2017, pp. 1587–1594. doi:10.
+
+1109/CEC.2017.7969492.
+
+[11] M. Baioletti, A. Milani, V. Santucci, MOEA/DEP: An Algebraic
+
+Decomposition-Based Evolutionary Algorithm for the Multiobjective Per-
+
+mutation Flowshop Scheduling Problem, in: Evolutionary Computa-
+
+920
+
+tion in Combinatorial Optimization, 2018, pp. 132–145. doi:10.1007/
+
+978-3-319-77449-7_9.
+
+[12] V. Santucci, M. Baioletti, G. Di Bari, A. Milani, A Binary Algebraic Diﬀer-
+
+ential Evolution for the MultiDimensional Two-Way Number Partitioning
+
+Problem, in: Evolutionary Computation in Combinatorial Optimization,
+
+925
+
+2019, pp. 17–32. doi:10.1007/978-3-030-16711-0_2.
+
+[13] M. Baioletti, A. Milani, V. Santucci, Variable neighborhood algebraic Diﬀerential Evolution: An application to the Linear Ordering Problem with Cumulative Costs, Information Sciences 507 (2020) 37–52. doi: 10.1016/j.ins.2019.08.016.
+
+930 [14] H. H. Hoos, T. Stützle, Stochastic local search: Foundations & applications, Elsevier, 2004.
+
+[15] R. Storn, K. Price, Diﬀerential Evolution – A Simple and Eﬃcient Heuristic for global Optimization over Continuous Spaces, Journal of Global Optimization 11 (4) (1997) 341–359.
+
+40
+
+935 [16] J. Kennedy, R. Eberhart, Particle swarm optimization, in: Proc. of IEEE International Conference on Neural Networks, Vol. 4, 1995, pp. 1942–1948.
+
+[17] X.-S. Yang, Fireﬂy algorithms for multimodal optimization, in: Proc. of 5th International Symposium on Stochastic Algorithms, 2009, pp. 169–178.
+
+[18] S. Das, A. Biswas, S. Dasgupta, A. Abraham, Bacterial foraging optimiza-
+
+940
+
+tion algorithm: theoretical foundations, analysis, and applications, Foun-
+
+dations of Computational Intelligence 3 (2009) 23–55.
+
+[19] S. A. Kauﬀman, E. D. Weinberger, The NK model of rugged ﬁtness landscapes and its application to maturation of the immune response, Journal of Theoretical Biology 141 (2) (1989) 211–245.
+
+945 [20] R. Ruiz, C. Maroto, A comprehensive review and evaluation of permutation ﬂowshop heuristics, European Journal of Operational Research 165 (2) (2005) 479–494.
+
+[21] T. Schiavinotto, T. Stützle, The Linear Ordering Problem: Instances,
+
+Search Space Analysis and Algorithms, Journal of Mathematical Modelling
+
+950
+
+and Algorithms 3 (4) (2004) 367–402.
+
+[22] A. Milani, V. Santucci, Asynchronous diﬀerential evolution, in: Proc. of 2010 IEEE Congress on Evolutionary Computation (CEC 2010), 2010, pp. 1–7. doi:10.1109/CEC.2010.5586107.
+
+[23] Q. Guo, L. Tang, Modelling and discrete diﬀerential evolution algorithm
+
+955
+
+for order rescheduling problem in steel industry, Computers & Industrial
+
+Engineering 130 (2019) 586 – 596.
+
+[24] G. Zhang, K. Xing, F. Cao, Discrete diﬀerential evolution algorithm for distributed blocking ﬂowshop scheduling with makespan criterion, Engineering Applications of Artiﬁcial Intelligence 76 (2018) 96–107.
+
+960 [25] J. Bock, J. Hettenhausen, Discrete particle swarm optimisation for ontology alignment, Information Sciences 192 (2012) 152–173.
+
+41
+
+[26] M. F. Tasgetiren, P. Suganthan, Q.-K. Pan, An ensemble of discrete diﬀerential evolution algorithms for solving the generalized traveling salesman problem, Applied Mathematics and Computation 215 (9) (2010) 3356–3368.
+
+965 [27] W. Chen, J. Zhang, H. S. Chung, W. Zhong, W. Wu, Y. Shi, A Novel Set-Based Particle Swarm Optimization Method for Discrete Optimization Problems, IEEE Transactions Evolutionary Computation 14 (2) (2010) 278–300.
+
+[28] Y. Liu, W. Chen, Z. Zhan, Y. Lin, Y. Gong, J. Zhang, A Set-Based Discrete
+
+970
+
+Diﬀerential Evolution Algorithm, in: Proc. of 2013 IEEE International
+
+Conference on Systems, Man, and Cybernetics, Manchester (SMC 2013),
+
+2013, pp. 1347–1352.
+
+[29] M. Clerc, Discrete particle swarm optimization, illustrated by the travel-
+
+ing sales-man problem, in: New Optimization Techniques in Engineering,
+
+975
+
+Studies in Fuzziness and Soft Computing, 2004, pp. 219–239.
+
+[30] A. Moraglio, J. Togelius, S. Silva, Geometric Diﬀerential Evolution for Combinatorial and Programs Spaces, Evolutionary Computation 21 (4) (2013) 591–624.
+
+[31] X. Li, M. Yin, An opposition-based diﬀerential evolution algorithm for
+
+980
+
+permutation ﬂow shop scheduling based on diversity measure, Advances in
+
+Engineering Software 55 (2013) 10–31.
+
+[32] L. Wang, X. Fu, Y. Mao, M. I. Menhas, M. Fei, A novel modiﬁed binary diﬀerential evolution algorithm and its applications, Neurocomputing 98 (2012) 55–75.
+
+985 [33] M. F. Taşgetiren, Y.-C. Liang, A binary particle swarm optimization algorithm for lot sizing problem, Journal of Economic and Social Research 5 (2) (2003) 1–20.
+
+42
+
+[34] S. Pookpunt, W. Ongsakul, Optimal placement of wind turbines within
+
+wind farm using binary particle swarm optimization with time-varying ac-
+
+990
+
+celeration coeﬃcients, Renewable Energy 55 (2013) 266–276.
+
+[35] L.-Y. Chuang, C.-H. Yang, J.-C. Li, Chaotic maps based on binary particle swarm optimization for feature selection, Applied Soft Computing 11 (1) (2011) 239–248.
+
+[36] I. Babaoglu, O. Findik, E. Ulker, A comparison of feature selection mod-
+
+995
+
+els utilizing binary particle swarm optimization and genetic algorithm in
+
+determining coronary artery disease using support vector machine, Expert
+
+Systems with Applications 37 (4) (2010) 3177 – 3183.
+
+[37] G. Pampara, N. Franken, A. P. Engelbrecht, Combining particle swarm
+
+optimisation with angle modulation to solve binary problems, in: Proc. of
+
+1000
+
+2005 IEEE Congress on Evolutionary Computation (CEC 2005), Vol. 1,
+
+2005, pp. 89–96.
+
+[38] L. Liu, W. Liu, D. A. Cartes, I.-Y. Chung, Slow coherency and angle modulated particle swarm optimization based islanding of large-scale power systems, Advanced Engineering Informatics 23 (1) (2009) 45 – 56.
+
+1005 [39] B. J. Leonard, A. P. Engelbrecht, Angle Modulated Particle Swarm Variants, in: Proc. of 9th International Conference on Swarm Intelligence (ANTS 2014), 2014, pp. 38–49.
+
+[40] H. Gao, S. Kwong, B. Fan, R. Wang, A hybrid particle-swarm tabu search
+
+algorithm for solving job shop scheduling problems, IEEE Transactions on
+
+1010
+
+Industrial Informatics 10 (4) (2014) 2044–2054.
+
+[41] E. Cao, M. Lai, H. Yang, Open vehicle routing problem with demand uncertainty and its robust strategies, Expert Systems with Applications 41 (7) (2014) 3569–3575.
+
+43
+
+[42] T. J. Ai, V. Kachitvichyanukul, A particle swarm optimization for the
+
+1015
+
+vehicle routing problem with simultaneous pickup and delivery, Computers
+
+& Operations Research 36 (5) (2009) 1693–1702.
+
+[43] G. Koulinas, L. Kotsikas, K. Anagnostopoulos, A particle swarm optimization based hyper-heuristic algorithm for the classic resource constrained project scheduling problem, Information Sciences 277 (2014) 680–693.
+
+1020 [44] S. Lang, Algebra, Vol. 211, Springer, 2002.
+
+[45] T. Schiavinotto, T. Stützle, A review of metrics on permutations for search landscape analysis, Computers & Operations Research 34 (10) (2007) 3143– 3153.
+
+[46] J. Scharnow, K. Tinnefeld, I. Wegener, The analysis of evolutionary algo-
+
+1025
+
+rithms on sorting and shortest paths problems, Journal of Mathematical
+
+Modelling and Algorithms 3 (4) (2005) 349–366.
+
+[47] D. Karaboga, B. Akay, A comparative study of artiﬁcial bee colony algorithm, Applied mathematics and computation 214 (1) (2009) 108–132.
+
+[48] H.-G. Beyer, H.-P. Schwefel, Evolution strategies – A comprehensive intro-
+
+1030
+
+duction, Natural Computing 1 (1) (2002) 3–52.
+
+[49] K. Price, R. M. Storn, J. A. Lampinen, Diﬀerential evolution: a practical approach to global optimization, Springer Science & Business Media, 2006.
+
+[50] V. Santucci, M. Baioletti, A. Milani, Tackling Permutation-based Opti-
+
+mization Problems with an Algebraic Particle Swarm Optimization Algo-
+
+1035
+
+rithm, Fundamenta Informaticae 167 (1-2) (2019) 133–158. doi:10.3233/
+
+FI-2019-1812.
+
+[51] E. Taillard, Benchmarks for basic scheduling problems, European Journal of Operational Research 64 (2) (1993) 278 – 285.
+
+44
+
+[52] V. Santucci, M. Baioletti, A. Milani, Supplementary material for "An Alge-
+
+1040
+
+braic Framework for Evolutionary Algorithms in Combinatorial Optimiza-
+
+tion".
+
+URL https://bit.ly/2RL3MMC
+
+[53] J. Derrac, S. García, D. Molina, F. Herrera, A practical tutorial on the use
+
+of nonparametric statistical tests as a methodology for comparing evolu-
+
+1045
+
+tionary and swarm intelligence algorithms, Swarm and Evolutionary Com-
+
+putation 1 (1) (2011) 3–18.
+
+[54] F. Hutter, H. H. Hoos, K. Leyton-Brown, Sequential model-based optimization for general algorithm conﬁguration, in: Proc. of Learning and Intelligent Optimization Conference (LION 5), 2011, pp. 507–523.
+
+1050 [55] M. Birattari, Tuning Metaheuristics: A Machine Learning Perspective, Springer, 2009.
+
+[56] J. Liu, C. R. Reeves, Constructive and composite heuristic solutions to the p// ci scheduling problem, European Journal of Operational Research 132 (2) (2001) 439–452.
+
+1055 [57] R. Martí, G. Reinelt, The linear ordering problem: exact and heuristic methods in combinatorial optimization, Springer Science & Business Media, 2011.
+
+[58] J. Zhang, X. Zhu, W. Wang, J. Yao, A fast restarting particle swarm op-
+
+timizer, in: Proc. of 2014 IEEE Congress on Evolutionary Computation
+
+1060
+
+(CEC 2014), 2014, pp. 1351–1358.
+
+[59] Q. Duan, T. Liao, H. Yi, A comparative study of diﬀerent local search application strategies in hybrid metaheuristics, Applied Soft Computing 13 (3) (2013) 1464 – 1477.
+
+[60] J. Brest, B. Boskovic, M. Mernik, V. Zumer, Self-adapting control parame-
+
+1065
+
+ters in diﬀerential evolution: A comparative study on numerical benchmark
+
+45
+
+problems, IEEE Transactions on Evolutionary Computation 10 (6) (2006) 646–657.
+
+[61] A. Ismail, A. P. Engelbrecht, The self-adaptive comprehensive learning par-
+
+ticle swarm optimizer, in: Proc. of 8th International Conference on Swarm
+
+1070
+
+Intelligence (ANTS 2012), 2012, pp. 156–167.
+
+[62] D. Sudholt, C. Witt, Runtime analysis of a binary particle swarm optimizer, Theoretical Computer Science 411 (21) (2010) 2084–2100.
+
+[63] M. Baioletti, A. Milani, V. Santucci, Automatic algebraic evolutionary
+
+algorithms, in: Proc. of International Workshop on Artiﬁcial Life and
+
+1075
+
+Evolutionary Computation (WIVACE 2017), 2018, pp. 271–283. doi:
+
+10.1007/978-3-319-78658-2_20.
+
+[64] M. Baioletti, A. Milani, V. Santucci, Learning bayesian networks with al-
+
+gebraic diﬀerential evolution, in: Proc. of 15th International Conference
+
+on Parallel Problem Solving from Nature (PPSN XV), 2018, pp. 436–448.
+
+1080
+
+doi:10.1007/978-3-319-99259-4_35.
+
+46
+
+Credit Author Statement
+All the authors indicated in the article equally contributed to the work.
+

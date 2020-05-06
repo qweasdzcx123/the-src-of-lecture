@@ -1,0 +1,92 @@
+
+close this message
+Donate to arXiv
+
+Please join the Simons Foundation and our generous member organizations in supporting arXiv during our giving campaign September 23-27. 100% of your contribution will fund improvements and new initiatives to benefit arXiv's global scientific community.
+DONATE
+
+[secure site, no need to create account]
+Skip to main content
+Cornell University
+We gratefully acknowledge support from
+the Simons Foundation and member institutions.
+arXiv.org > stat > arXiv:1412.6572
+
+Help | Advanced Search
+Search
+arXiv
+Cornell University Logo
+open search
+GO
+open navigation menu
+quick links
+
+    Login
+    Help Pages
+    About
+
+Statistics > Machine Learning
+arXiv:1412.6572 (stat)
+[Submitted on 20 Dec 2014 ( v1 ), last revised 20 Mar 2015 (this version, v3)]
+Title: Explaining and Harnessing Adversarial Examples
+Authors: Ian J. Goodfellow , Jonathon Shlens , Christian Szegedy
+Download PDF
+
+    Abstract: Several machine learning models, including neural networks, consistently misclassify adversarial examples---inputs formed by applying small but intentionally worst-case perturbations to examples from the dataset, such that the perturbed input results in the model outputting an incorrect answer with high confidence. Early attempts at explaining this phenomenon focused on nonlinearity and overfitting. We argue instead that the primary cause of neural networks' vulnerability to adversarial perturbation is their linear nature. This explanation is supported by new quantitative results while giving the first explanation of the most intriguing fact about them: their generalization across architectures and training sets. Moreover, this view yields a simple and fast method of generating adversarial examples. Using this approach to provide examples for adversarial training, we reduce the test set error of a maxout network on the MNIST dataset. 
+
+Subjects: 	Machine Learning (stat.ML) ; Machine Learning (cs.LG)
+Cite as: 	arXiv:1412.6572 [stat.ML]
+  	(or arXiv:1412.6572v3 [stat.ML] for this version)
+Bibliographic data
+[ Enable Bibex  ( What is Bibex? )]
+Submission history
+From: Ian Goodfellow [ view email ]
+[v1] Sat, 20 Dec 2014 01:17:12 UTC (389 KB)
+[v2] Wed, 25 Feb 2015 17:25:05 UTC (688 KB)
+[v3] Fri, 20 Mar 2015 20:19:16 UTC (688 KB)
+Full-text links:
+Download:
+
+    PDF
+    Other formats
+
+( license )
+Current browse context:
+stat.ML
+< prev   |   next >
+new | recent | 1412
+Change to browse by:
+cs
+cs.LG
+stat
+References & Citations
+
+    NASA ADS
+    Google Scholar
+    Semantic Scholar
+
+13 blog links
+( what is this? )
+Export citation
+Bookmark
+BibSonomy logo Mendeley logo Reddit logo ScienceWISE logo
+Which authors of this paper are endorsers? | Disable MathJax ( What is MathJax? ) Browse v0.3.0 released 2020-04-15    Feedback?
+
+    About arXiv
+    Leadership Team
+
+    contact arXiv Click here to contact arXiv Contact
+    arXiv Twitter arXiv Twitter Follow us on Twitter
+
+    Help
+    Privacy Policy
+
+    Blog
+    Subscribe
+
+arXiv® is a registered trademark of Cornell University.
+
+arXiv Operational Status
+Get status notifications via email or slack
+
+If you have a disability and are having trouble accessing information on this website or need materials in an alternate format, contact web-accessibility@cornell.edu for assistance.

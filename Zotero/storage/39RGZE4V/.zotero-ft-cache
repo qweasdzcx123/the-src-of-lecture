@@ -1,0 +1,878 @@
+S
+
+S symmetry
+Article
+Research on a Tool Wear Monitoring Algorithm Based on Residual Dense Network
+Yiting Li, Qingsheng Xie, Haisong Huang * and Qipeng Chen Key Laboratory of Advanced Manufacturing Technology, Ministry of Education, Guizhou University, Guiyang 550025, China; tgl226537@163.com (Y.L.); qsxie@gzu.edu.cn (Q.X.); cqplll@gmail.com (Q.C.) * Correspondence: huang_h_s@126.com; Tel.: +86-13985146670
+Received: 21 May 2019; Accepted: 16 June 2019; Published: 19 June 2019
+Abstract: To accurately and eﬃciently detect tool wear values during production and processing activities, a new online detection model is proposed called the Residual Dense Network (RDN). The model is created with two main steps: Firstly, the time-domain signals for a cutting tool are obtained (e.g., using acceleration sensors); these signals are processed to denoise and segmented to provide a larger number of uniform samples. This processing helps to improve the robustness of the model. Secondly, a new deep convolutional neural network is proposed to extract features adaptively, by combining the idea of a recursive residual network and a dense network. Notably, this method is speciﬁcally tailored to the tool wear value detection problem. In this way, the limitations of traditional manual feature extraction steps can be avoided. The experimental results demonstrate that the proposed method is promising in terms of detection accuracy and speed; it provides a new way to detect tool wear values in practical industrial scenarios.
+Keywords: tool wear; residual dense network; wavelet denoising; convolutional neural network
+
+1. Introduction
+Manufacturing is a critical part of a national economy. With economic globalization and the emergence of Industry 4.0, it has become increasingly important to enhance eﬃciency and promote business transformation of enterprises. Research in the area of prognostics and health management (PHM) plays a pivotal role in promoting the transformation of the production industry [1]. Current topics of interest in the PHM focus on identifying potential relationships within the data by searching and analyzing massive amounts of industrial data with the aid of artiﬁcial intelligence algorithms. The goal of such research is to further optimize production processes; recent results have allowed the maintenance of industrial equipment to evolve from expert, experience based methods to automated adaptive learning methods. Ultimately, these intelligent detection methods can help to improve the eﬃciency of manufacturing processes from a number of perspectives.
+Tool wear monitoring is an important aspect in the PHM area. During the machining process, the tool wear occurs, which aﬀects the quality of the machined surface and may lead to the risk of the machine tool damage [2]. Tool wear measuring methods can be categorized into direct and indirect methods. For the direct methods, the tool wear value can be obtained directly by a machine vision, surface measurement, or laser technique. However, it is often necessary to interrupt the manufacturing process due to the inﬂuences of interference sources such as coolant. This results in a detrimental impact on productivity in real-time environments, which limits their practicability [3]. For the indirect methods, sensing equipment is used to collect the signals and acquire the signal features related to the wear value. Since the sensor does not have direct contact with the tool and does not aﬀect the machining process, this class of methods is well-suited for practical working conditions in production workshops. At present, sensor-based tool data acquisition mainly includes the following signals;
+
+Symmetry 2019, 11, 809; doi:10.3390/sym11060809
+
+www.mdpi.com/journal/symmetry
+
+Symmetry 2019, 11, 809
+
+2 of 19
+
+cutting force, vibration, acoustic emission, current, and torque [4–6]. In traditional tool wear detection methods, the acquired data is preprocessed with normalizing and denoising methods. Then, design features are manually extracted from the time domain, the frequency domain, the time-frequency domain, respectively, to reduce the dimensionality. Finally, a hidden Markov model (HMM), neural networks, or support vector machine (SVM) is used for the classiﬁcation or regression purposes [7–12].
+Most of the current tool wear detection algorithms collect signals with the indirect methods, which is implemented using machine learning algorithms. For example, Liao et al. propose a tool wear condition monitoring system based on the acoustic emission technology [7]. By analyzing representative acoustic signals, the energy ratios from six diﬀerent frequency bands are selected from the time-frequency domain. These are used as a classiﬁcation feature to determine the amount of tool wear. In this method, the SVM is used as the classiﬁcation method, which can ultimately achieve the accuracy ratio of 93.3%. In [10], the cutting force signal and the multiscale hybrid HMM are combined to monitor the wear state of the tool. From the perspectives of local and global analyses, this method can deeply capture the tool wear state information; accurate performance monitoring of the tool wear value is achieved. The experimental results indicate the hybrid approach achieves better performance in comparison to that obtained by the use of the HMM alone. Zhang et al. apply the multifractal theory to calculate the generalized fractal dimensionality of the acoustic emission signal during the cutting process [12]. Here, the generalized dimensional spectrum of the acoustic emission signal is obtained under diﬀerent tool conditions. The generalized fractal dimensionality and cutting process parameters are used as the input feature vector of a backpropagation neural network (BPNN), where the initial weight value of the network is optimized with a genetic algorithm. The experimental results show that this method is able to predict the tool wear eﬀectively, where the tool machining eﬃciency can be further improved. The above methods are often constrained by the quality of the extracted features; manually reﬁning the features requires researchers to master speciﬁc experience and skills related to the production environment. Therefore, the enhancement of the machine learning models remains rather limited.
+In recent years, rapid developments have seen for deep learning methods based on artiﬁcial neural networks. These methods can extract diﬀerent features by building a deep neural network structure. In contrast, the traditional methods are only able to extract speciﬁc features. Multifeature learning can describe the research problem more comprehensively and improve the accuracy and robustness of the algorithm. Therefore, deep learning methods have demonstrated superior performance in various classiﬁcation and regression tasks; in particular, they have received attention in the ﬁelds of image and speech processing [13–15]. Remarkably, the deep neural network can replace the feature extractor and classiﬁer (regressor) in conventional feature learning theory. It can be considered as an end-to-end model, which does not depend on the complicated preprocessing of original data. As a result, these networks are more concise and fast. The deep learning method has shown promising results in related areas of the PHM, and has been applied to fault diagnosis, equipment life prediction, and tool wear detection [16–19]. In [16] a bearing fault diagnosis method is proposed based on a fully connected competitive self-encoder. This model can explicitly activate certain neurons from all of the samples of a minibatch, where the life cycle sparsity can be encoded into the features. A soft voting method is further used to make predictions on the signal segments generated from the sliding window. The experimental results show that the methods using a two-layer network can obtain higher diagnostic accuracy under normal conditions and can also demonstrate better robustness than methods with deeper and more complicated network models. Zhang et al. propose a transferring learning and Long Short-Term Memory (LSTM) based model for predicting the remaining life of equipment [18]. This research addresses the problem of a small sample size, due to the diﬃculty in acquiring the faulty data. In particular, this model can be pretrained on diﬀerent, but related, datasets. Subsequently, the network structure and the training parameters are ﬁnely tuned for the target dataset. The experimental results demonstrate that the transfer learning method is capable of improving the model’s prediction accuracy using a small number of samples. Zhang et al. apply
+
+Symmetry 2019, 11, 809
+
+3 of 19
+
+Symmetry 2019, 11, x FOR PEER REVIEW
+
+3 of 19
+
+the wavelet packet transform method to transform the acquired tool vibration signal to the energy
+
+sapcqecutirruemd ,twoohlicvhibisrafutirotnhersiugsneadl atso inthpeuteinnetrogtyhescpoenctvroulmut,iownahlicnheuirsalfunretthweorrkus(eCdNNas) [i1n9p]u. tThinetroefothree,
+
+fceoantvuorelus tciaonnbale anuetuormalatniceatlwlyolrekar(nCt NanNd)ac[c1u9]r.atTelhyecrleafsosrieﬁ,edfewatiuthretshecpanowbeerfualuitmomagaetifceaaltluyreleeaxrtnratctainodn
+
+caacpcuarbaitlietlyy oclfatshseifiCedNwNi.tIht tihseinpdoiwcaetrefdulinim[a19g]etfheatuaredeexptralecatironnincgapbaabsielidtyCoNf NthecaCnNaNch. Iiteviseinsudpiceartieodr
+
+aincc[u19ra] cthyaitnacdoemepplaeraisronnintgoboatsheedrCcNlaNssiccaanl atocohliewveasruperreidoircaticocnurmacoydienlscofomrptahreismonilltionogthcuerttcelraswsiecaarl
+
+ctolaoslswiﬁecaartipornepdricotbiolenmm. odels for the milling cutter wear classification problem.
+
+In ssuummmmaarryy, ,sisgignniﬁifciacnant pt rporgorgersessosnodnedepeelpealrenairnnginmgetmhoedthsohdass hbaesenbreeepnoretepdorinteadvianriaetvyaorfieatryeaosf.
+
+Haroewase. vHeor,wresveearr,crhesoenartchheiornustheeiinr tuosoel iwnetaorolmwoenaitromrionngiitsorjuinsgt bisegjuinstnbinegitnoneinmgertogee.mTehrege.nTdh-teo-eenndd-
+
+ptor-oecnedssipnrgotcheessdineegptlheeardneinegpmleeatrhnoidnsgpmroevtihdoedhsasptrhoevipdoetehnatisalthfoer psiogtneinﬁtcianl tfoimr psaigcnt inficmanant uimfapctaucrtining
+
+imndanuustfraicetsu. rAincgruincidaul,sotprieens.reAsecarrucchialr,eoapisetnheredsevaerclohpamreantiosftahlegodreitvhemlosptmhaetnatreofcaaplgaobrleithofmasdathpatitvaerlye
+
+ecaxptraabctleingoffeaadtuapretsivferolymetximtraec-dtionmg afienatsuigrnesalfsraonmd ctiamnea-ldsomstariknesaigbnaalalsncaenbdetcwaneeanlsaoccsutrraikcye aandbaslpaenecde
+
+byetawdejeunstaincgcutrhaecytrainndinsgpmeeedthboydaodlojugsytianngdthmeotdraeilnsitnrgucmtuerteh.odology and model structure.
+
+2. The Detection Method of Tool WeeaarrVVaalluuee
+
+22..11.. SSiiggnnaall PPrreepprroocceessssiinngg
+IInn tthhiiss ppaappeerr,,aacccceelleerraattiioonnsseennssoorrssaarereuusesdedtotococlolellcetctthtehtehtrheere-aex-aisxivsibvriabtriaotniosnigsniaglngaelngeernaeteradtebdy bthyethcuetctuintgtintogotlo;otlh; ethseesseigsniganlsalasraerue suesdedfofrorththeetotoool lwweeaarrvvaalluueeddeetteeccttiioonn.. AAcccceelleerraattiioonn sseennssoorrss aarree ssiimmppllee ttoo mmeeaassuurree aanndd aarree ccoonnvveenniieenntt ttoo iinnssttaallll aanndd mmoonniittoorr.. SSiinnccee tthhee vviibbrraattiioonn ssiiggnnaall ddiirreeccttllyy ccoommeess ffrroomm tthhee ccuuttttiinngg wwoorrkk aarreeaa,, tthhee sseennssiittiivviittyy iiss rreellaattiivveellyy hhiigghh aanndd tthhee rreessppoonnssee ttiimmee iiss ffaasstt.. HHoowweevveerr,, tthhee ccoollleleccteteddreraeladl adtaatsauﬀseurffferor mfruomnequunaelqleunagl thle,nrgedthu,nrdeadnucny,daanndcyh,igahnndoihsieg.hThneoriesfeo.reT,hiterisefnoercee,ssitariys tnoecpeesrsfaorrymtodepneorfiosirnmg danendouisniinfogramndscuanliinfgoromn sthcaelicnoglleocntetdhesicgonllaelcst.ed signals.
+RRaannddoomm nnooiissee wwiillll iinneevviittaabbllyy aarriissee iinn wwoorrkksshhoopp pprroodduuccttiioonn eennvviirroonnmmeenntt aanndd eeqquuiippmmeenntt iinntteerrffeerreennccee.. SSoononisoeisoefteonfteexnistesxiinststheinprothdeucptiroondpurcoticoenss,persopceecsisa,llyedspuerciniagllpyredciusrioinngmpacrhecinisiinogn. mThaecsheinnionigse. sTahreesuesnuoailsleysreagrearudseudaallsyGreaguasrsdneodisaesinGsaiugsnsanl poirseeprinocseisgsninagl .pTrehperfoecaetussrienegx. tTrahcetifoenataunrde ewxetararcvtiaolnueanddetwecetiaornvaallguoerditehtmecstiaorneaalfgfoercittehdmbsyatrheeaﬀneocisteed. Tboy rtehdeuncoeisthe.eTionfrleudeunccee tohfeninoﬂisueeonncethoef ndoetiesectoionntrheesudletste, cthtieown arevseulelttst,htrheeshwoaldvedleent othisriensghmoledthdoednoisisaipnpglimedetthootdheisoraipgpinliaeldlytcootllheectoerdigsiinganlalyl. cInolFleigctuerdes1i,ganafllo. wIncFhiagrutroef1t,haeﬂwoawveclheatrtthoref sthhoelwd adveenloetistihnrgesmheotlhdoddeinsopisriensgenmteedth. od is presented.
+
+Original signal
+
+Select Wavelet Functions
+
+Wavelet decomposition
+
+Determination threshold
+
+Figure 1. The fﬂlow chart of wavelet threshold denoising.
+
+Wavelet reconstruction
+
+The selection of wavelet mother function and threshold determines the performance of wavelet
+threshold deennooiissiinngg mmeetthhoodd..DDaauubbeecchhieiessaannddSySmymleltestswwavaevleltemt motohtehrefrufnucnticotniosnasrearoeftoefnteunseudsetdo tdoendoeinsoeisveibvriabtiroantiosnigsniaglnsailns ienngeinngeienreinergi;ntgh;ethsoefstoofrt ohrarhdartdhrtehsrheoslhdoinldginmgemtheotdhsodasrearoeftoenfteunseudseidn itnhrtehsrheoslhdolpdropcreoscseinssgi.ngT.hTehwe awvaevleetlectoceoffeiﬃciecnietns tsobotbatianiendedbybyththeehhaardrdtthhrreesshhooldld mmeetthhoodd arre not continuous at the threshold, which may cause oscillation when reconstructing the signal. But the wavveelleett ccooeeﬃffcicieienntstsobotbatianiendedbybsyofstotfhtrethshreosldhomldethmoedthhoadvehgaovoedgcooondtincuointytinanuditythaenpdrotcheesspedrosciegsnsaelds asirgensamlsoaorteh.smItsooexthp.rIetssseioxnprceasnsiboenrceapnrebseenretepdreassenfotleldowass follows
+
+( ) Wˆj,k
+
+ W=ˆ j,k
+
+
+=s0ignsigWn
+
+jW,k
+
+(
+j,k
+
+W( Wj,k
+0
+
+−
+j,k
+
+−λ
+
+)λ)
+
+Wj,k W≥j,λk ≥ λ Wj,k W≥j,λk ≥ λ
+
+(1(1) )
+
+wWrcweohhsej,pekeffreraieeccntidjeivnijWsetˆlstyj;h,ik;seWλasrthrecj,eakeoplrerasiegnocsiafdnelwneaWltasˆowvjtf,ekahlveweaettalrhedevrteeeocclsroeohitegmoﬃidlnpdceaoi;clesaownintmtiadsopvnatoenh;lsdeekitthditcoheeoneune;rwofiftsiaekctvsiiceeanltdnehtetsrincenaoosndehtdeeﬃoxstlcdhsiaeeemnqnwutesiatenhpvndoerceoldeexctoeisscfssoeuweqesdfauefvdeibcenyitlecoesentodtfcseototfpteehrﬃrwormeccaseiihvneseonseleltedidstt;,.
+
+Mbyorseofstptehcrieﬁschaolllyd, ,Draeuspbeecchtiiveeslyan; dλSyrmepleretssewnatsvetlheet mthortehsehrofludn; catniodntshaerehueuserdistwicitthhrthesehdoeldcommeptohsoitdioins
+sucsaelde toof dtherteeermleivneelsit.. SMinocree mspoesctifoicfatlhlye,eDﬀaeuctbievcehvieibs raantdionSysmiglneatslswgaevneelreattmedotdhuerrinfugntcotoiolnpsroacreesussinedg
+
+awriethcotnhceednetrcaotmedpionsitthioenloswca-lfereoqfutehnrceye pleavret,lst.hSeinthcreesmhoosldt ofof rththeeefhfiegchti-vfreevqiubernactiyonsigsniganlaplsrogceensseirnagteids
+
+during tool processing are concentrated in the low-frequency part, the threshold for the high-
+
+frequency signal processing is chosen as follows; the first layer of the high-frequency is set to zero
+
+Symmetry 2019, 11, 809 SSyymmmmeettrryy22001199,,1111,,xxFFOORRPPEEEERRRREEVVIIEEWW
+
+4 of 19 44 ooff 1199
+
+caahnnoddsettnhheaesssfooofflttlotthwhrrsee;ssthhhooelldﬁdirinnsgtglammyeeetrthhooofddthiiess huuisgseehdd-frffoeoqrruttehhneecysseeicscoosnnedtdtaoannzddertothhaiirnrddd ltlaahyyeeesrross.f.tTTthhhereesSShNNoRlRdioonffgddmiiffeffetehrreoenndtt iwws auavsveeedlleetftoggrrrotohuueppssseacaroreensdshhaoonwwdnnthiinnirFdFiiglgauuyrreeer2s2... The SNR of diﬀerent wavelet groups are shown in Figure 2.
+
+FFiigguurree22.. DDeennooiissiinngg eeﬀffffeeccttooffddiiﬀffffeeerrreeennntttwwwaaavvveeelleleetttmmmoootththheeerrrffufuunnncccttitioioonnnsss...
+IIInnnFFFiiiggguuurrreee222,,,ttthhheeedddeeennnoooiiisssiiinnngggpppeeerrrfffooorrrmmmaaannnccceeeooofffdddbbb111888wwwaaavvveeelleleetttmmmooottthhheeerrrfffuuunnnccctttiioioonnniisissttthhheeebbbeeesssttt,,,aaannndddiiitttssseeﬀffffeeeccctttsss aaarrreeesshhoowwnniiinnnFFFiiiggguuurrreee333...IIttItccaacnannbbeebseseeseeennetnthhatahttatthhteethooerriigogiriningaaillnvvaiilbbrvraaitbtiirooanntisosiinggnnsaaigllbnbeaeclcoobmmeceeossmrreeellasattriivevleealltyyivssemmlyoooostmthhoaaoffttteherr aaafpptepprllyayipinnpgglyttihhneegwwthaaevvweellaeetvtettlhherrteetsshhhroeolslddhoddledenndooeiisnsiionniggsinmmgeemtthheootddh.o. IdInn. Iaanddadddiitdtiioiotnino,,ntth,hteeheffoofrormmrmoooffftththheeeooorrriiigggiiinnnaaalll ssiiggnnaall iiisss rrreeessstttooorrreeedddttotooaaagggrrreeeaaattteeexxxtteteennntt.t..
+
+FFFiiiggguuurrreee333...TThheeiilllluussttrraattiivveerreessuullttssoofftthheewwaavveelleettttthhhrrreeessshhhooolldldddddeeennnoooiisissiininnggg...
+AAAffftteerrtthheessiiggnnaallddeeennnoooiiisssiininnggg,,,tththheeessasamammppplleelessiiszzieezemmmuussuttsbbteebrreeeddreuudcceuedcdeaadnndadnuudnniuiffinieeiddﬁettodosstaaottiissaffyytitsthfhyeestshppeeeesddpeaaennddd assnaamdmpspalleme sspiizzlee dsdiezetteeeccdttieiootnencrtreieoqqnuuirirreeeqmmueiernnettmss..eIInnttsthh. iiIssnpptaahppiseerrp,,atthpheervv, iitbbhrreaattviiooibnnrsasitiggionnnaallsgiggeennaeerlraagtteenddebbryayteeadacchbhyttooeooallcfhfeeeetdodoiilss fsseeeeggdmmiesennstteegddmiinnettnootemmduuillnttiitppolleemttiuimmlteiep--ddleoommtimaaiinen-sdsiioggmnnaallissn,, wwsihghenerraeelsee,aawcchhhhehraaess aeaallceehnngghttahhsooaff 5l5e00n00g00tphpoooiinnftt5ss0tt0oo0rrepeddouuinccetestththoee rcceoodmmupcpeuuttahatetiioocnnoamallpcucootammtippolnleeaxxliittcyyomddpuulreriixnnigtgy dnnueetrtwiwnogorrknkettwtrraoaiirnnkiinntrgga..inTiTnhhgee.ssTeehesssaaemmspaplmleesspleaasrreaereiininndddeeepppeeennndddeeennnttt aaannnddd nnnooonnoovveerrllaappppiinngg wwiitthh eeaacchh ootthheerr... IInn tthhee mmeeaannttiimmee,, iitt wwoouulldd bbee bbeenneeﬁffiicciiaall ttoo tthheerrrooobbbuuussttnneessssoooffttthhheee nnneeetttwwoorrkkaannddrrreeeddduuuccceettthhheeeooovvveeerrrﬁffiitttttiiinnngggiisisssssuuueeeddduuueeetttoootththheeeiininncccrrreeeaaassseeedddsssaaammmppplleleesssiizizzeee...TThheeppprrroooccceeessssssiinnggsssttteeeppssaaarrreee aaasssfffooolllllooowwwss;;ccchhhooooossee555000,,0,00000cccooonnsseeccuuttiivveeppooiinnttssiinntthheemmmiiddddlleeoooffttthhheeesssiigiggnnnaaalllaaannndddssseeegggmmmeeennntttttthhheeesssiigiggnnnaaallliininntttooo 111000sssaaammmppplleleessswwwiitiththhlleleennngggtththhsssooofff555000000000...TThheessee1100ssaammpplleessccoorrrreessppoonndddttootthheessaammeellaabbeelloofftthheettoooollwweeaarrvvaalluuee..
+
+Symmetry 2019, 11, 809 Symmetry 2019, 11, x FOR PEER REVIEW
+
+5 of 19 5 of 19
+
+22..22.. RReessiidduuaall NNeettwwoorrkk TThhee rreessiidduuaallnneetwtwoorkrk(R(ReseNsNete)t)prporpoopsoaslablybKy aKimaiimnginHg eHeet aelt. ainl. 2in01250h15asheaﬀseecftfivecetliyvreelysorlevseodlvthede
+gthraedgireandtieexnpt leoxspiolonsiaonndannedtwneotrwkodrikvedrigveenrgceenpcreopblreomblsemdusedtuoethtoetihnecrienacsreeaisnetihnetnhuemnubmerboefrloafylearyseirns tihnethdeeedpeeCpNCNNN[20[2].0R].eRseNsNetehtahsaps rporfoofuonudnldylyaﬀaeffcetcetdedrerseesaeracrhchininddeeepepleleaarnrnininggnneetwtwoorrkkssaassiittaalllloowwss tthhee nnuummbbeerr ooff nneettwwoorrkk llaayyeerrss ttoo bbee ffuurrtthheerr iinnccrreeaasseedd,, aanndd ddeeeeppeerr ffeeaattuurreess ccaann bbee eexxttrraacctteedd aass aa rreessuulltt.. TThhee bbaassiicc ccoommppoonneenntt ooff tthheeRReessNNeettiisstthheerreessiidduuaallbblloocckk,,wwhhiicchhiissiilllulussttrraatteeddininFFigiguurree44. .
+
+FFiigguurree 44.. TThhee sscchheemmaattiicc ddiiaaggrraamm ooff tthhee rreessiidduuaall bblloocckk ssttrruuccttuurree..
+
+IInntthheeﬁfgiguurer,et,hteheinipnuptustigsniganl aisl diseﬁdneefidneads xa.sTxh.eTfehaetufereateuxrteraecxtitorancltaioynerliasydeerﬁinseddeafisnCedonavs, wChoenrve,
+
+awChNerNe aisCgNenNerisalglyenuesreadll.yTuhseede. gTrheee doef gfereaetuorfefeexattruarcetieoxntrraecﬂteiocntsrtehfelecotsgtnhiteivceogannidtivleeaarnidngleabrniliintyg
+
+oafbtilhiteymoof dthele, wmhoidcehl,iswthiechbaissisthoef cblaassissiﬁocfactliaosnsiafnicdatrieognreasnsdiornegtarsekssioinndteaeskpsleinardnienegp alenadrnminagchained lmeaarcnhininge. lTeharenriensgid. Tuhaleirsedsiedﬁunaeldisads eFf(ixn)e,di.ea.s, tFh(ex)d, iﬀ.ee.,rethnecedbifefetwreenecne tbheetwfeeaetunrtehHe f(exa)tlueraernHe(dx)frloemarnthede cforonmvotluhteiocnoanlvloayluetrioanadltlhaeyoerigainndaltihnepourtisgiignnaalli(noprutht esioguntaplu(tofrrothmetohuetppruetviforoums latyheer)p.rTehveiorueslulaisytehre). aTchtievraetilounisfuthnectaioctni.vTathieornefaurnecdtioﬀne.reTnhtevraeraiaretiodnifsfeorfetnhtevraerliuatfiuonncstioofnt,hseurcehluasfuLnRcetLioUn,,PsuRcehLUas, CLReLU, EPLRUeL, aUn,dCSREeLLUU.,TEhLeUm, aninddSiEﬀLerUen. Tceheofmthaeinsedvifafreiraetinocnesoifs thhoewsetvhaersieaftuionncstiiosnhsomwatphtehse nfuengactiovnesvmaluape othf ethneefgeaattiuvreesv.aIlut sehoofutlhdebfeeantoutreeds.thItasththoeulrdelbuefunnoctetidonthcaatnthaevoriedluthfeungcrtaidoniencat ndiasvapoipdeathraengcreaidsiseunet dduisrainpgpethareatnrcaeinisinsugepdroucreinssgathnedtcraninsinpgeepdroucpesths eantrdaicnainnsgppereodceusps.thLeetrtahienionugtpurotcseisgsn.aLleotbthtaeinoeudtpbuyt
+
+tshigenraelsiodbutalinbelodcbkybtehye, raensdidiutsalexbplorcekssbioenyc, andbeitrseepxrpersesnstieodnacsafnoblleowrespresented as follows
+
+{ } yy == FF((xx,,{WWi}i) )++WWsxs x
+
+(2(2) )
+
+wtttrwrhreahaehpnneerosrserefufesooetxrrpnmmxiutsstatththiftiseeeohanetdithnuitepmooreuuteitrntnfparspsonuiiugmsottnfnoafastrelhilm,agietWtnyutcahiroolede,fnedxvWfnirotmoooiltumeettdhnsioeesttihnnhoseoaeanltmpaelclasaeiortynaydtehmvirome,ofelaetpuennxatrdisrsoiatonoWomnfatsalethhltrieeleetarypsyscarooemeonfrs,fvetehnoadtehltniusmefdetaiaecontonnWusnorilsvnoeaoylnFirlenauefrlep,otiatiFrroyre(ntsoxhter,fealn{taWnchtysoseeifn}rofa)v,erraemenntFpuoai(errxnteein,lo{sicFWnenenefi to}oatos)frr
+
+tthheeircoandvdeitnioienn.ce of their addition.
+
+IInn tthheeoorirgigininalarlerseidsiudaulanletnweotwrko,rtkh,e trheseidruesaildisucaal lcisulcaatelcduflraotmedthfreolmocatlhreesliodcuaall brelosicdku; tahlebilnopcukt;
+
+tohfethinepruetsiodfutahlebrleoscikduisalthbeloocuktpisutthoefotuhteppurteovfiothues plaryeevri.oAuss ltahyeenr.eAtwsotrhkebneectowmoerks dbeeecpomer,esthdeeeerpreorr,
+
+tahcecuermrourlaatcecsuamnudltahteesloacnadl rtheseidloucaallerrersoidr uinaclreerarsoersiancccroeardseinsgalcyc.oTrdaiinegt layl.. Tparioeptoasle. parroepcuosrseivaerelecaurrnsiivneg
+
+lmeaertnhiondgtomiemthpordovteothime rpersoidveuatlhneertwesoidrkuafol rntehtewaoprpklifcoartiothneoaf psuppliecra-trieosnolouftisounpimer-argeesorelucotinosntriumctaigoen
+
+r[e2c1o].nTshtreumctieotnho[d21i]s. cTahlleedmtehtehoDdeeispcRaellceudrsthiveeDReeespidRueacluNresitvweoRrkes(iDdRuRalNN).eTtwheormka(iDnRidReNa)o. fTDheRRmNainis
+
+itdoema oafkDe RfuRlNl uissetoofmbaoktehfgullol ubasel roefsbidotuhaglsloabnadl rleosciadluraelssidanudallso.cIanl rpeasridtiucuallsa.r,Ineapcahrtriecusildaur,aelauchnirtesshidaureasl
+
+uthneitssahmareesintphuets, ai.me.e, tihnepuotu, tip.eu.,t tfhreomoutthpeutfifrrsotmcotnhveoﬁlurstitocnoanlvloayluetrioonfatlhleayreercuorfstihvee rbelcouckrs.ivWeitbhloincka.
+
+Wreictuhrinsiaverebcluorcskiv, ethbeloccokr,rtehsepcoonrdreinspgopnadrianmg eptaerrasmoefttehrse ocfotnhveoclountivoonlaultiloanyaelrlainyeeraicnheraecshidreusailduunalituanriet asrheasrhedar. eTdh.eTshtreuscttruurcetuorfethoef tbhaesibcarseiccurersciuvresirveesirdeusiadlubalol cbkloicskililsuisltlruastterdatiendFiingFuirgeu5r.e 5.
+
+Symmetry 2019, 11, 809 Symmetry 2019, 11, x FOR PEER REVIEW
+
+6 of 19 6 of 19
+
+FFiigguurree55.. TThhee sscchheemmaattiicc ddiiaaggrraamm ooff tthhee rreeccuurrssiivveerreessiidduuaallbblloocckkssttrruuccttuurree..
+
+TThheeDDRRRNRNadjaudstjus tshtse etxhisetinegxiRsteisnNgetRsetrsuNcetut restbrauscetduroen tbhaesiemdagoensutpheer-riemsoalguetiosnurpeecro-nresstroulucttiioonn mreectohnosdtrbuyctinoncomrpeothraotdinbgytihnecogrlpoobraaltriensgidthueagl laonbdalardeosipdtuinagl aanddeaedpoepr tninegtwaodrekespterruncteutwreo. rIknstthriuscwtuarye,. fIunrtheisr wimapy,rofuvretmhernitms hparvoevebmeeenntdsehmaovnesbtreaetneddeinmtohnesetrxapterdiminetnhtealerxepseurlitms. ental results.
+
+22..33.. TToooollWWeeaarrDDeetteeccttiioonnMMeetthhoodd
+
+22..33..11.. NNeettwwoorrkk SSttrruuccttuurree
+
+MMoottiivvaatteedd bbyy tthhee wwoorrkk iinn DDRRRRNN,, aa nneeww ttooooll wweeaarr ddeetteeccttiioonn mmeetthhoodd iiss pprrooppoosseedd bbyy uussiinngg tthhee DDRRRRNN iiddeeaa,, wwhheerreeffuurrtthheerrimimpprorovveemmeenntstsononthtehreerceucrusirvseivreesriedsuidaul ballobclkocokf tohfetDheRRDNRRarNe maraedme.aTdhee. TDhReRDNRRisNoriisgoinriaglliynaulslyedustoedptroocpersosctewssot-wdiom-denimsieonnsailoinmaal gimesa.gHeso.wHeovwere,vthere, tshigensailginnalthinistphaispperapisera iosnae-odnime-ednimsioennasilosniaglnsailg, naanld, atnhde nthuemnbuemr obferdoatfadsaatma psalemspilsessmisasllm. Talhl.erTehfoerree,foimre,primovpermovenemtseanntsd asnimdpsliimficpalitﬁiocnastioanres anreeendeeeddteod ttaoiltoarilothrethme omdoedl eflofrorthtehetotoool lwweeaarr ddeetteeccttiioonn pprroobblleemm.. TThhee DDRRRRNN nneettwwoorrkk iiss ffuurrtthheerr iimmpprroovveedd iinntthhiissppaappeerrinintwtwoowwayasy.sF. irFsitr,slto, claolcarelsriedsuidalusaalsndangdlogblaolbraelsirdeusiadlsuaalrse acroemcopmrephreenhseivnesliyveilnycionrcpoorrpaoteradt.edSe. cSoencdon, dth, ethdeednesnesenentewtworokrk(D(DenensesNeNete)t)sstrtruucctuturreeiiss ccoonnssiiddeerreedd iinn bbuuiillddiinngguuppthtehme omdeold[e2l2][.2T2]h.eTsehiemsepriomvpemroevnetms aelnletsviaatleletvhieatgeratdhieengtrdaidsiaepnptedariasanpcepeparorabnlecme ,pernohbalnemce, feenahtuarneceprfoepataugraetiopnro, psuagpaptoiornt ,thseupppoossritbtleheofproesussibelefeaotfurreeus,seanfdearteudruesc,e atnhde nruedmubceer tohfepnaurammbeetrerosf. Ipt asrhaomueldterbse. nItotsehdotuhladt tbhee nooritgedinatlhdatenthsee noertiwgionrakl ddoeenssenontectownotarkindthoeesrensoidt ucaolnitnafionrmthaetiorens.idTuhael minafionrmcoantitorinb.uTtihoenmoaf itnhicsopnatrpiebruitsiotno oinfctohrips opraapteerthisetroeisnidcourapl ostrrautecttuhree,reasnidducaolnsnteructctfuearteu, raensdincosnernieecst. Bfeeafotureretsheindsaetraieasr.eBpeafsosreedthtoe tdhaetaneaxrtelpayasesr,edthteoy tahree nneoxrmt laalyizere,dthuesyinagrtehneobramtcahlizneodrmuasilnizgattihoenb(BatNch) mnoertmhoadliztoattiorann(sBfNor)mmtehtheomdetaontrtaonbsfeozrmerothaenmdetahne tvoabreiaznecreotaonbdethoeneva[r2i3a]n. cTehteo kbeeyonpeoi[n2t3]i.sTthoeakdedy
+lpeaorinntabisletopaardadmleetaerrnsaγblaenpdaβrafmorerteecrsonγstrauncdtioβn, wfohrerreecthonesftorrumctuiolan,cawnhbeeregtihveenfoarsmfoulllaowcasn be given
+
+as follows
+
+y(k) = γ(k)xˆ(k) + β(k)
+
+(3)
+
+y(k) =γ (k)xˆ(k) +β(k)
+
+(3)
+
+where k is the index value of layers and xˆ represents the standardized feature element,
+
+wwhheenreγ(kk) =is thVe airn[xd(ekx)] vaanldueβo(kf) la=yeErs[xa(kn)d] itxˆcarneprreessteonretstthhee dsitsatnridbaurtdioiznedoffetahteurfeeaetluermesentth,awt htheen
+oγr（igk）in=al nVetawro[rxk(ki)s]suapnpdoseβd（tko）l=eaErn[xa(nkd) ]avitoidcacnharnegsteosrien the odrigstirniablufteiaotnuroefs dthisetrifbeuatiuornescatuhsaetdtbhye
+
+tohreigBiNnapl nroectewsos.rkThisesBuNppaolgseodritthomleaﬂronwanisdaasvfooildlocwhsanges in the original features distribution caused
+
+by the BN process. The BN algorithm flow is as follows
+
+(1) Calculating the mean value of all features
+
+ μ B
+
+=
+
+1 m
+
+m i=1
+
+xi
+
+(4)
+
+Symmetry 2019, 11, 809
+
+7 of 19
+
+(1) Calculating the mean value of all features
+
+µB
+
+=
+
+1 m
+
+m
+
+xi
+
+(4)
+
+i=1
+
+Symmewtrhy e20r1e9m, 11i,sxtFhOeRsiPzEeERofRaEVmIEinWibatch and xi is the i-th value in a feature.
+
+7 of 19
+
+(2) Calculating the variance of all features
+
+ (w(32))herCNeaomlrcmiuslaatlhtiizenasgtiiztoheneovf aarmiainnciebaotfcahllaσfnedaB2tu=xriem1σs2Bisim==1th(me1xiii-=−mth1μ(vBxai)l−2ueµiBn)2a feature.
+
+(3) Normalization (4) Reconstructing the feature
+
+xˆi =
+
+xxˆii
+
+= xi − µB
+− μB ε + σ2B
+
+ε
+
++σ
+
+2 B
+
+(4) Reconstructing the feature yi = γxˆyi i+=βγ≡xˆi B+Nβγ≡,β (BxNi )γ,β(xi)
+
+(5) (5)
+(6) (6)
+(7) (7)
+
+IInn ppaarrttiiccuullaarr,, BBNN ccaann mmaakkee tthhee ppaarraammeetteerrss ooff eeaacchh llaayyeerr ssiimmiillaarr wwiitthhiinn tthhee nnuummeerriiccaall iinntteerrvvaall.. TThheerreeffoorree,, tthhee ddeeeepp nneettwwoorrkk ttrraaiinniinngg pprroocceessss ccaann bbeeccoommee mmoorree ssttaabbllee,, aanndd tthhee ggrraaddiieenntt eexxpplloossiioonn pprroobblleemmccaannbbeeaavvooiiddeedd.. IInn tthhiiss ppaappeerr,,tthheeddeessiiggnneeddddeennsseeuunniittiisssshhoowwnnininFFigiguurree66. .
+
+FFiigguurree66.. The dense network diagramm ffoorr ccoommbbiinniinngg rreessiidduuaalliinnffoorrmmaattiioonn..
+
+IInn tthhis ﬁfigure, the input siggnnaall iiss rreepprreesseenntteeddbbyyxx,,aannddththeeoouutptpuuLtt ssiiggnnaal is represented by y.
+
+AAfftteerr the 1D ccoonnvvoolluuttiioonnkkeerrnneellooffsiszieze= =5 a5nadn3d, t3h,ethloeclaolcraelsirdeusiadluFa1(lxF)1a(nx)datnhde gthloebaglorbesaildrueaslidFu2(axl)
+
+Fa2r(ex)calrceuclatlecudl,aatendd, tahnedltohceallofecaltufereatHur1eaHnd1 atnhde tghloebgallobfeaaltfueraetuHrecHancabne bseubsusebqsueeqnutelnytloybotabitnaeidneads
+
+afos lfloolwlosws
+
+{ } HH11 == FF((xx,,{WW33}) )++WWssxx
+
+(8) (8)
+
+H = F(H1, {W5}) + Wsx
+
+(9)
+
+{ } where H1 represents the local feature frHom=thFe(Hth1i,rdWc5on)v+oWlutsixonal layer as shown in Figure 4, and(9H)
+
+rwephreerseeHnt1srtehpergesloebnatsl tfheaetluorceaflrfoematuthree fﬁrfotmh ctohnevtohliurdtiocnoanlvloalyuetri.onal layer as shown in Figure 4, and H
+
+represents the global feature from the fifth convolutional layer.
+
+By using the idea of the dense network, the local feature can be combined in series with the
+
+global feature to obtain the output signal y, which can be expressed as
+
+y =Ws[H1,H]
+
+(10)
+
+where Ws represents a nonlinear transformation to make the dimensionality of the output features to be the same. The operation in (9) represents that the output of the dense block is the combined
+
+Symmetry 2019, 11, 809
+
+8 of 19
+
+By using the idea of the dense network, the local feature can be combined in series with the global feature to obtain the output signal y, which can be expressed as
+
+y = Ws[H1, H]
+
+(10)
+
+where Ws represents a nonlinear transformation to make the dimensionality of the output features to be the same. The operation in (9) represents that the output of the dense block is the combined output from all of the previous residual features.
+According to the idea of the dense network, a transition layer is added after a dense block. In this paper, the transition layer is composed of a 1D convolution layer with a kernel size = 1, a pooling lSayymemr,etaryn2d01a9,d1r1o, pxoFuOtRlPaEyEeRr.RAEVnIaEvWerage pooling approach is adopted by the pooling layer. The pu8rpoof s1e9 opfutrhpeosteraonfstihtieontralanyseitrioins tloayreerdiuscteo trheedudcime tehnesidoinmoenf stihoenionfptuhtefienaptuurtefseaptruorveisdperdovtoidtehde tnoetxhtelanyeexrt, alanydeer,nasunrde ethnesunruemthbeernoufmfebateurroesf pferaotvuirdeesdptorotvhieddeedntsoe bthloecdkernemseabinlosctkheresammaeinesacthhetismaem. eTheaecahmtoimunet. oTfhceoammpouutnattioofnccoamnpbuetraetdiouncecdanbbyeareddouwcnesdabmypalidnogwapnpsarmoapchlinwgiathppproooalicnhgw. Tithheppouorlipnogs.eTohfeapduorpptoinsge tohfeaDdoropptionugt tlhayeeDr rios ptoouratnladyoemrliys rtoedruacnedtohme lnyurmedbuerceofthneeunruomnsbearndofpnreeuveronnt sovaenrdﬁtptrinevg.enTthoevperrofpitotisnegd. nTehtewporrokpostsreudctnuertewionrkthsitsrupcatpuerer ienxtphliositpsatpheer iedxepalsoiotsf tthheeirdeesaisdoufatlhneertewsiodrukaalnndettwhoerdkeannsdetnheetdweonrske; inteitswnoarmke; idt itshneaRmeseidduthael DReesnisdeuNaleDtweonrske N(ReDtwNo).rkTh(ReDstNru)c. tTuhree sdtiraugcrtaumreodfitahgeraRmDNof ntheetwRoDrNk insesthwoowrnk iins sFhigouwrne 7in. Figure 7.
+
+FFiigguurree 77.. TThhee nneettwwoorrkk ssttrruuccttuurree ddiiaaggrraamm ooff tthhee RReessiidduuaall DDeennssee NNeettwwoorrkk ((RRDDNN))..
+
+As sshhoowwnnininthtehﬁegfuirgeu,rteh,etRhDe NRDneNtwnoertkwisocrokmispocsoemdpoofsthedreeorfetshidreuealrdeesindsueabllodceknss, etwbolotrcaknss,itiwono ltaraynerssit,ione lcaoynevrso,luotnioenaclolnavyoelru, otinoenaploolaleyderl,ayoenr,eanpdooolnede fulalylyerc,onandectoendelafyuelrl.yAcoconnnveoctleudtiolnaykeerr.neAl ocof nsivzoel=ut1io3niskuesrendeilnotfhseiﬁzers=t c1o3nvisoluusteiodnitno tehxepafinrdstthcoenrvecoelputivoenrtaongeexpaannddcatphteurectehpetgivloebraalnfegaetuarneds ocaf pthtuerseigtnhael bgelottbear.l Tfehaetudreensseobf ltohcek sciagnntahlebneitdteern.tiTfyhesudbetnlesefeabtluorceks caaronutnhdeneaicdhensitgifnyalspuobitnlet bfeyautusirnegs caoronuvnodluetiaocnhkseigrnneallspoofisnitzeby=u5sainngd csoiznev=olu3.tiTohnekpearnraemls eotferssizoen=e5acahnldayseizreof=t3h.eTnheetwpoarakmareetesrestoans sehaochwlnayinerToafbtlehe1.network are set as shown in Table 1.
+
+LLaayyeerrNNaammee InInppuut t
+Convolution Convolution
+RD Block1 RD Block1
+Transition Layer 1
+RD Block2
+
+TTaabbllee 11.. RRDDNN:: TThhee nneettwwoorrkk ppaarraammeetteerr sseettttiinnggss..
+
+OuOtpuuttpFuetaFteuarteuSreizSeize 3 ×35×0050000 3 ×35×0050000
+3 × 5000 3 × 5000
+3 × 2500
+3 × 157
+
+QuQanutaitnytity 11 1 1
+2 2
+1
+4
+
+RDRNDNNeNtwetowrkork
+—— CoCnCovon1nDvv1,1D1D;,,k12e;;rkkneeerrlnnseeilzlsesiiz=zee1=3=;13s3;t;rssitdtrrieidd=ee=1=11 CoCnovn1Dv1,D2;, k2e; rkneerlnseilzseiz=e3=; 5st;rsitdreid=e 1= 1 CoCnovn1Dv1,D2;, k2e; rkneerlnseilzseiz=e5=; 3st;rsitdreid=e 1= 1 CoCnovn1Dv1,D2;, k2e; rkneerlnseilzseiz=e3=; 5st;rsitdreid=e 1= 1
+Conv1D, 2; kernel size = 3; stride = 1 Conv1D, 2C; koenrvn1e*l1s,1iz;est=rid5;es=tr1ide = 1 Conv1DA,v2e;Pkoeorlninelgs1iDze, 3=; 3st;rsitdreid=e2= 1
+Conv1D, 4; kernel size = 3; stride = 1
+Conv1D, 4; kernel size = 5; stride = 1 Conv1D, 4; kernel size = 3; stride = 2
+Conv1D, 4; kernel size = 5; stride = 1
+Conv1D, 4; kernel size = 3; stride = 1
+Conv1*1,1; stride = 1
+
+Symmetry 2019, 11, 809
+
+9 of 19
+
+Layer Name Transition Layer 1
+
+Table 1. Cont. Output Feature Size Quantity
+
+3 × 2500
+
+1
+
+RD Block2
+
+3 × 157
+
+4
+
+Transition Layer 2
+
+3 × 78
+
+1
+
+RD Block3
+
+3 × 20
+
+2
+
+Pooling layer
+
+3 × 10
+
+1
+
+Full connected layer
+
+1
+
+2
+
+Output layer
+
+1
+
+1
+
+RDN Network Conv1*1,1; stride = 1 AvePooling1D, 3; stride = 2 Conv1D, 4; kernel size = 3; stride = 1 Conv1D, 4; kernel size = 5; stride = 1 Conv1D, 4; kernel size = 3; stride = 2 Conv1D, 4; kernel size = 5; stride = 1 Conv1D, 4; kernel size = 3; stride = 1 Conv1*1,1; stride = 1 AvePooling1D, 3; stride = 2 Conv1D, 2; kernel size = 3; stride = 1 Conv1D, 2; kernel size = 5; stride = 1 Conv1D, 2; kernel size = 3; stride = 2 Conv1D, 2; kernel size = 5; stride = 1 Conv1D, 2; kernel size = 3; stride = 1 AvePooling1D, 3; stride = 2
+Dense, 1000, 1 Linear regression Loss function: mean square error
+
+2.3.2. Network Training
+After setting up the network structure, the dataset needs to be divided into training and validation sets. The vibration data and corresponding labels of wear values are collected from four tools in the experiment. In particular, the data from three tools is divided into training sets, and the data from the remaining tool is used as a validation set. The training set is input into the network for training. The validation set is used to test the network performance, determine whether the network is overﬁtting, and calculate the network performance index. The output value in the network is the predicted tool wear value, and the network type is a regression network. The mean square error is used as the loss function, which can be calculated as follows
+
+JMSE
+
+=
+
+1 n
+
+n
+
+(xi − xi )2
+
+(11)
+
+i=1
+
+where n is the number of training samples and xi represents the true value of the wear of the ith sample.
+The maximum value of the ﬂank wear after milling is used as the real label and xi is the predicted value of the wear of the ith sample.
+Since the weights are shared for each layer of the CNN, Wl represents the shared weight in the lth layer, and bl is the oﬀset of the lth layer. Subsequently, the output of the lth layer can be expressed as
+
+yl = f Wlxl−1 + bl
+
+(12)
+
+where f (•) represents the relu activation function.
+
+Symmetry 2019, 11, 809
+
+10 of 19
+
+The gradient descent method is used to back propagate the updated weights and oﬀsets until the loss function is less than the expected value. The parameter updating formula of the weight and oﬀset
+
+can be expressed as
+
+W
+
+=
+
+W
+
+−
+
+η
+
+∂JMSE ∂W
+
+(13)
+
+b
+
+=
+
+b
+
+−
+
+η
+
+∂
+
+JMSE ∂b
+
+(14)
+
+where η is the learning rate with η ∈ (0, 1). Note that the learning rate aﬀects the convergence speed of
+
+the loss function. A smaller learning rate leads to a slower convergence speed. If the learning rate is
+
+too large, the loss function does not converge. In this paper, the initial learning rate is 0.001.
+
+3. Experimental Results and Analysis
+The intelligent manufacturing laboratory of Guizhou University, Guizhou Province, China, is selected as the validation platform. The experimental equipment is as follows; one computer numerical control (CNC) milling machine for machining workpieces; one die steel (S163H) as the workpiece to be machined—the machining tool has a cemented carbide 4-edge milling cutter (diameter of 6 mm) and its surface is covered with layers of titanium aluminium nitride coating; and a signal processing unit. The cutting parameters are set as shown in Table 2.
+
+Table 2. Table of cutting parameters setting.
+
+Spindle Speed Feed Rate Cutting Width Cutting Depth
+
+8000 RPM
+
+1000 mm/min
+
+0.5 mm
+
+1 mm
+
+Cooling Condition Dry cut
+
+Processing Mode Face milling
+
+The signal preprocessing mainly transmits the three-axis vibration signal from the tool processing to the upper computer through the acquisition unit. The upper computer performs the wavelet threshold noise reduction. In traditional machine learning methods, the corresponding features are ﬁrst extracted from the time domain, the frequency domain, and the time-frequency domain. Then, these methods are used to reduce the dimensions of the features and input them into the neural network (or SVR regression) in order to obtain the wear detection value. In this paper, the deep RDN model is used to adaptively extract features from the time-domain signal after the noise reduction, and the wear detection value is obtained. The network training parameters are as follows; the learning rate is initialized to 0.001 and set to exponential decay, the batch size is 32, the epoch is 100, the optimizer uses Adam, the weights and bias are randomly initialized.
+3.1. Signal Processing Unit
+The signal processing unit can be divided into a data acquisition unit and an upper computer analysis unit. The data acquisition unit consists of an acceleration sensor, a constant current adapter, a digital acquisition card, an acquisition software program, and a microscope (workﬂow as shown in Figure 8). Before the start of the data acquisition, three accelerometers are installed in the X, Y, and Z directions of the workbench. Then the magniﬁcation of the microscope is adjusted and the measurement calibration of the microscope is completed. The sampling frequency of the digital acquisition card is set to 20 KHz. Each tool performs 330 feeds in the X-axis direction, with a feed of 200 mm each time. When the machining completes, the cutter is removed from the machine and a picture is taken. The measurement process selects the position of the rear edge as the measurement position. This position is the most prone to wear. The same datum line is used to ensure the position remains unchanged during the measurement. The wear value is calculated by subtracting the length of the current rear edge from the last rear edge length.
+
+acquisition card is set to 20 KHz. Each tool performs 330 feeds in the X-axis direction, with a feed of 200 mm each time. When the machining completes, the cutter is removed from the machine and a picture is taken. The measurement process selects the position of the rear edge as the measurement position. This position is the most prone to wear. The same datum line is used to ensure the position Sryemmmaetirnys20u1n9,c1h1a, 8n0g9ed during the measurement. The wear value is calculated by subtracting the 1l1enofg1t9h of the current rear edge from the last rear edge length.
+
+FFiigguurree88..DDaattaaaaccqquuiissiittiioonnuunniittddiiaaggrraamm..
+
+TThhee hhardware confﬁiguraattiioonnooffththeeuuppperercocmompuptuetrearnaanlyaslyissiusnuitniistais faosllofowllso;wInst;eIlnCtoelreCio7r7e7i070 7K70p0roKcepsrsoocre,scsloorc,kcelodcakted4.2atG4H.2zG; 3H2zG; 3B2mGeBmmoreym; oarnyd; tawndo tliwnokeldinGkeedFoGrecFeo1r0c8e01T0i8g0rTaipghriacps hcaicrsdcsa. rTdhse. Tshoeftswoaftrwe aurseesusthese tUhebuUnbtun1t6u.0146.a0s4tahsetohpeeorpaetirnagtinsygsstyemste; mth;ethdeeedpeelpealrenairnnginfgrafmraemweowrkoruksueseKseKraesraass atshethferofrnotn-etn-edndanadndTeTnesnosroFrlFolwowasasththeebbaacckk--eenndd. .BBeefoforeretthhee mmooddeell is trained, tthhe vviibbrraattiioonn ssiiggnnaall ggeenneerraateteddbbyyeaecahchtotooloflefeededis issegsmegemnteendteindtoin1to0 t1im0 tei-mdoem-daoimn asignnsailgsnaaml psalemspolfelsenogf tlhen5g00th0.5A00ft0e.rAthftaetr, tthheast,atmhpelseasmfrpolmestfhrroeme ttohorleseartoeoslcsraamrebslcerdamasbtlheedtraasinthinegtrsaeitn; itnhge seatm; tphlessfarmomplethsefrroematihneinrgemtoaoilnainreg utoseodl aarsetuhesevdaalisdtahtieovnasleidt.ation set.
+
+3.2. Evaluation Indicators
+
+In this paper, the root mean square error (RMSE), the coeﬃcient of determination R-square, and
+
+the mean absolute percentage error (MAPE) are used as the evaluation indicators of the prediction
+
+accuracy. Speciﬁcally, the RMSE indicates the degree to which the predicted value deviates from the
+
+true label. The closer the value is to zero, the better the performance is. The RMSE calculation is
+
+as follows
+
+RMSE =
+
+1 n
+
+n
+
+(Yi − Yi )2
+
+(15)
+
+i=1
+
+where Yi is the true label value of the ith sample wear value, here it represents the tool wear value
+measured by the microscope; Yi is the predicted value of the ith sample wear value, here it represents the predicted value of designed model; and n is the total sample number of the test set, here it represents
+
+the number of vibration samples for prediction.
+
+The coeﬃcient of determination R-square represents the degree of ﬁt between the predicted value
+
+of the tool wear value and the real label. The closer the value is to one, the better the ﬁt is. The R-square
+
+calculation is as follows
+
+R2
+
+=
+
+1
+
+−
+
+n
+(Yi
+i=1
+n
+
+−
+
+Yi )2
+−2
+
+(16)
+
+Yi − Yi
+
+i=1
+
+−
+
+−
+
+n
+
+where,
+
+Yi
+
+represents
+
+the
+
+mean
+
+value
+
+of
+
+all
+
+the
+
+true
+
+label
+
+values
+
+in
+
+the
+
+test
+
+set
+
+Yi
+
+=
+
+1 n
+
+Yi.
+
+i=1
+
+Symmetry 2019, 11, 809
+
+12 of 19
+
+The MAPE represents the mean value of the absolute value of the relative error. The closer the value is to zero, the better the prediction performance is. The MAPE calculation is as follows
+
+MAPE
+
+=1 n n
+i=1
+
+Yi − Yi Yi
+
+× 100%
+
+(17)
+
+3.3. Experimental Results of Network Structure Comparison
+
+3.3.1. Impact of BN and Dropout Strategies on Model Performance
+
+In the experiment, we mainly focus on the impact of the BN batch normalization and the Dropout
+
+regularization strategy on the network convergence performance in RDN. The network convergence
+
+performance is compared on the training set and the validation set as the basis for judging the results.
+
+The comparisons are performed by (1) removing the BN layer of the RDN network and (2) removing
+
+tShyme mDertroyp2o01u9t, 1la1y, xeFrOoRf tPhEeERRRDENVIEnWetwork. The comparison results are shown in Figure 9.
+
+12 of 19
+
+(a) Convergence performance of the training set
+
+(b) Convergence performance of the validation set
+
+FFiigguurree 99.. CCoonnvveerrggeennccee ppeerrffoorrmmaannccee ooff ddiiﬀffeerreenntt mmeetthhooddss..
+
+According to the results in the ﬁfigure, there iiss nnoo ggrraaddiient eexxplosion or dispersion in the three netwwoorrkk ssttrruuccttuurreess,,aannddththeennetewtworokrkcocnovnevregregnecnecsepsepeedeids fisasftawstitwhiotuhtoouvt eorvﬁetrtifnitgti.nIgt .inIdt icnadtiecsattheastththaet RthDeNRDcoNnvceorgnevnecregepnecrefoprmerafonrcme iasnscuepiesrisourpaenrdiotrhaengdentehrealgizeanteioranliazbaitliiotyn iasbsitlriotyngis. TshtreoRnDg.NThnetwRDorNk wneithwtohrek BwNithanthdeDBrNopaonudt lDayroeprsocuotnlavyeergrsescofansvtergtehsanfatshteerRthDaNn ntheetwRoDrNk wneitthwtohrekBwNitlhaytheer rBeNmolavyeedr orermthoevDedrooprouthtelaDyerorpreomutolvaeyde.rAreftmero1v5edit.eArafttieorn1s,5thiteerlaotsisonfusn, cthtieonlovsaslufuenicstciolonsevatoluietsilsowcloestevtaoluites. Ilnowtheestsuvbalsueeq.uIennthiteersautbivseqpureoncetsiste, rcahtaivnegepsrofcethsse, lcohsasnfugnesctoiofnthvealuoess afurencstmioanllvaanldueths earceonsvmearlgleanncde ptheerfcoornmvaenrgceniscegpooerdf.oHrmoawnecveeirs, gthoeodp.eHrfowrmevanerc,ethoef tpheerfRoDrmNanceetwoof rthkewRiDthNthneeBtwNorlakyweritrhemthoevBeNd olarytehreredmroopvoeudtolarythere rdermopoovuetdlaisyeimr rpeemdoevde. dThiseimpodedeel dn.eTedhes mtooidteerlantee3d5sttiomietesrianteth3e5 tirmaiensining tsheet toracinoninvgersgeet too cthoenvmeringiemtoumthevamluinei,mthuemcovnavluereg, etnhececsopneveedrgiesnscloewspeereodnitshselovwereirﬁcoantitohne sveetr,iafincdattiohne osebtt,aianned lothssefuonbcttaiionnedis allossoshfiguhnecrt.ioTnheisabaolvseoexhpigehriemr.enTtshedeamboonvsetraetxeptehreimeﬀeencttsivedneemssonosfttrhaeteRDthNe meffoedcetilvpernoepsossoefdthine tRhDisNpampoedr,ewl phricohpoadseodptins tthheisBpNapbelor,cwk hanicdhtahdeoDprtsopthoeuBt lNaybelro.ck and the Dropout layer. 3.3.2. Impact of Network Layer Number on Model Performance
+3.3.2.InImoprdaectr otof NveertiwfyorthkeLiamyperacNtuomf dbieﬀreornenMt noedtewl oPrekrfdoermptahnscoen the performance of the model, 24-,
+44-(thIne noerdtwerortok vueseridfyinthtehiismppaapcetro),fadnidffe8r4e-nlatyneertnweotwrkodrkespthhasvoenbethene pseelrefcotremdafnorceanoaf ltyhseism. Aodlleol,f2th4-e, n44e-tw(thoerknseutwseotrhkeussaemd eindtehnissepbalpoecrk),aannddtr8a4n-lsaiytieornnbeltowcko.rkTshheadvieﬀebreeennceseilsecintetdhefoirnaconnaslyisstiesn. At nlluomf btheer onfedtwenosreksbluoscektsh. eThsaemcoemdpenarsiesobnloocfktahnedcotrnavnesrigteionncebploecrkfo. rTmhaendcieffoenretnhceetirsaiinninthgesientcaonndsitshteenvtanliudmatiboenr soeft dfoerntshee bvlaorcykisn.gTdheeptchosmispsahroiswonn ionfFtihgeureco1n0v. ergence performance on the training set and the validation set for the varying depths is shown in Figure 10.
+
+3.3.2. Impact of Network Layer Number on Model Performance
+In order to verify the impact of different network depths on the performance of the model, 24-, 44-(the network used in this paper), and 84-layer networks have been selected for analysis. All of the networks use the same dense block and transition block. The difference is in the inconsistent number oSyfmdmeentrsye201b9l,o1c1k, s80. 9The comparison of the convergence performance on the training set an1d3 otfh1e9 validation set for the varying depths is shown in Figure 10.
+
+(a) Convergence performance of the training set
+
+(b) Convergence performance of the validation set
+
+Symmetry 2019, 1F1F,iigxguFurOreeR11P00E..ECCRoomRmEppVaaIrEriisWsoonnooffccoonnvveerrggeenncceeppeerrffoorrmmaanncceeffoorrddiifﬀfeerrent network layers.
+
+13 of 19
+
+It can be shown that a certain depth of the network can better extract the efﬀfective features and reduce tthheeRRMMSESEbebtweteweenetnhethperepdricetdeidctveadluveaalunde tahnedtrtuheevtarlue. vHaoluwee.vHero, whevenert,hwe nheetnwtohrek snterutwctourrke sistrcuocntutirneuiosucsolyntdineuepoeunselyddtoeeapceenretadintoeaxtceenrtt,aginraedxiteennttd, gisrpaedriseinotndoicscpuerrssiionnthoeccmurosdienl.tThehims coaduesle. sTthhies cloasussfeusntchteiolnostsofruenmcatiionnatoarceemrtain alatragecevrataluine;liatrcgaenvnaoltubee; idteccarnenasoetdb.eDduercirnegastehde.tDrauinring pthreogtraeisnsionng, pthreognreetswsoiornk,mthoedneel twwiothrkamdeopdtehl owf i4th4 laaydeerpsthaosft4h4elbaeysetrcsohnavsetrhgenbceestpceorfnovremrganencec.eTpheerfmoremananvcael.uTehoef mthealnosvsafluunecotifotnhde rloopsspefudntcoti3o.n82dirnotphpeeldasttoﬁ3v.8e2itienratthioenlsasotnfitvhee ittreariantinognsseotn, atnhde rtreaaicnhiendg 9s4e.t6, 7anodn rtheaecvhaeldid9a4t.i6o7n osnet.thTehveraelifdoareti,oanmseotr.eTahpeprerofoprrei,ataemneotrwe oarpkpdroeprtihatceanneimtwporrokvde ethpethfecaatnuriemepxrtorvacetitohne fqeuaatluitrye aenxtdraccatuiosentqhuealloitsys faunndctciaounsveatlhueeltoosscofunnticntuioanllyvadleuceretoasceo. nAtitntuhaelslyamdectriemaes,et.hAetcthhoeicsaemofedteimpteh, tbhaelacnhcoeiscethoef ndeetpwthorbkaclaonmcepsletxhietynaentwdoprrkedcoicmtiponlexaictcyuarancdy,prreedduiccteisonthaechcuardacwya, reedreuqcuesirtehmeehnatrsdowf athre rneeqtwuiorerkm, eanntds omfatkhesniet tmwoorrekp, aonrtdabmleakaensditscmaloarbelep.ortable and scalable.
+
+33..44.. CCoommppaarriissoonn RReessuullttss ooff DDeeeepp LLeeaarrnniinngg MMooddeellss
+TThhee rreeggrreessssiioonn ppeerrffoorrmmaannccee ooff tthhee RRDDNN mmeetthhoodd pprrooppoosseeddiinntthhiissppaappeerriisssshhoowwnniinnFFiigguurree1111.. TThhee ttrruueewweeaarrvvaalulueeininththeeﬁfgiguurereisims meaesausruerdedbybmy imcriocsrcoospcoepaeftaerfteearcehacfehedfe.eIdn. tIhnetﬁhgeufrige,utrhee, tRhDeNRDhaNs haalasragelaprgreedpicrteidoincteirornorervraolur evaaltuteheatinthiteiailnwitieaalrwsteaagresatangdeaatnthdeastetvheeresewveeraer wstaegaer;stthaegep;rtehdeicptereddvicatleude visarleuleatiisverelylasttiavbelley isntathbleeminodtheeramteowdeearartsetawgee.arThstiasgaeli.gTnhsiswaitlhigtnhsewacittuhatlhneeaecdtufoarl tnoeoeldwfeoarrtdoeotlewctieoanr. dTheteecretisounlt.sTahlseo rsehsouwltsthaelsRoDsNholewarnthsethReDdNatalefeaarntusreths eaddaapttaivfeelaytutoreaschaidevapetbivetetleyr ptoreadcihctiieovnerebseuttletsr, pi.ere.,dsiecptiaornatreessutelptss, tio.e.e,xsterpaactraatnedstreepﬁsnteofeeaxtturarcetsaanrednreoftinneeefdeaetdu.res are not needed.
+
+FFiigguurree 1111.. RReeggrression performance of validation set in the RDN.
+In the deep learning model, CNNs and cyclic neural networks are commonly used to deal with sequence problems, such as speech recognition and natural language processing. VGGNet-16 [24] and ResNet-50 are used in the experiment, which have achieved excellent results in the ImageNet competition. In addition, the convolution method is replaced with a one-dimensional convolution.
+
+Symmetry 2019, 11, 809
+
+14 of 19
+
+In the deep learning model, CNNs and cyclic neural networks are commonly used to deal with
+
+sequence problems, such as speech recognition and natural language processing. VGGNet-16 [24]
+
+and ResNet-50 are used in the experiment, which have achieved excellent results in the ImageNet
+
+competition. In addition, the convolution method is replaced with a one-dimensional convolution.
+
+At the same time, the RNN [25] and LSTM [26] models are also selected. The network structure is
+
+set to a two-layer structure with neurons of 120 and 50, and then regression is performed after the
+
+fully connected layers. The above four models are compared with the RDN proposed in this paper.
+
+The results are shown in Figure 12, Figure 13 and Table 3.
+
+The results are the performance of the models on the validation set. It can be seen from the
+
+analysis that when the RNN and LSTM models (with certain advantages in processing time series
+
+data) are directly used to predict the wear value, their performance is not satisfactory. One reason may
+
+be that the above models did not extract the characteristics of the vibration signals well. In addition,
+
+the performance may also be due to the model structure and preprocessing method selected in the
+
+experiment. For CNNs, VGG-16 has the worst performance among three convolutional structures
+
+because the number of convolutional layers is not large; high-dimensional signal features are not
+
+extracted. However, the performance results of VGG-16 are better than the designed cyclic neural
+
+network. Both ResNet-50 and RDN have achieved satisfactory results. The results show that it is
+
+feasible to use CNNs for tool wear value regression.
+Symmetry 2019, 11, x FOR PEER REVIEW
+
+14 of 19
+
+(a) Regression performance in the RNN
+
+(b) Regression performance of in the LSTM
+
+(c) Regression performance in the VGG-16
+
+(d) Regression performance of in the ResNet-50
+
+FFiigguurree 1122.. RReeggrreessssiioonn ppeerrffoorrmmaannccee ooff vvaalliiddaattiioonn sseett iinn ddeeeepp lleeaarrnniinngg mmooddeellss..
+
+(c) Regression performance in the VGG-16
+Symmetry 2019, 11, 809
+
+(d) Regression performance of in the ResNet-50
+15 of 19
+
+Figure 12. Regression performance of validation set in deep learning models.
+
+Figure 13. Error box diagram of deep learning models.
+
+Table 3. Performance comparison of the deep learning models.
+
+Parameters/Indicators
+Initial learning rate Epoch
+Optimizer RMSE R2 MAPE
+Single operation time/ms
+
+RNN
+0.001 100 Adam 18.54 0.714 14.92% 45
+
+LSTM
+0.001 100 Adam 15.56 0.825 12.78% 32
+
+VGG-16
+0.001 100 Adam 13.07 0.874 10.65% 65
+
+ResNet-50
+0.001 100 Adam 11.14 0.916 8.87% 145
+
+RDN
+0.001 100 Adam 9.73 0.935 7.24% 112
+
+3.5. Comparison Results of Machine Learning Models
+In order to further validate the feasibility of the proposed RDN model, a comparative experiment is designed with alternative machine learning models. More speciﬁcally, the commonly used models in the traditional tool wear value detection approaches including the BP neural network (BPNN), the radial basis functions neural network (RBFN), and the support vector regression model (SVR) are compared with the RDN network proposed in this paper. The data preprocessing and feature extraction methods are as follows.
+(1) The wavelet threshold denoising method is employed to perform the noise reduction processing on the acquired three-axis acceleration signal.
+(2) The data features of time domain, frequency domain, and time-frequency domain are extracted, and the speciﬁc extraction methods are shown in Table 4.
+(3) Pearson’s Correlation Coeﬃcient (PCC) is used to reﬂect the correlation between the feature and the wear value, and the feature with a correlation coeﬃcient greater than 0.9 is selected as the extraction object to reduce the feature dimension.
+(4) The extracted features are used as the inputs of the machine learning model.
+
+Table 4. Feature extraction category table of machine learning models.
+
+Feature Attribute
+Time domain Frequency domain Time-frequency domain
+
+Transformation Mode
+\ Fourier transform Wavelet decomposition
+
+Feature Category
+Maximum, Mean, Root mean square, Variance, Standard deviation, Skewness, Kurtosis, Peak, Peak coeﬃcient
+Maximum, Mean, Variance, Skewness, Peak, Frequency band peak Node energy
+
+The results are shown in Figure 14, Figure 15 and Table 5.
+
+Symmetry 2019, 11, 809 Symmetry 2019, 11, x FOR PEER REVIEW
+
+16 of 19 16 of 19
+
+(a) Regression performance in the BPNN
+
+(b) Regression performance of in the RBFN
+
+(a) Regression performance in the BPNN
+
+(b) Regression performance of in the RBFN
+
+(c) Regression performance of in the SVR Figure 14. Regression performance of validation set in machine learning models.
+
+Table 4. Feature extraction category table of machine learning models.
+
+Feature Attribute
+
+Transformation Mode
+
+Feature Category
+
+Maximum, Mean, Root mean square,
+
+Time domain
+
+\
+
+Variance, Standard deviation, Skewness,
+
+Kurtosis, Peak, Peak coefficient
+
+FrequFFeiniggcuuyrrdeeo11m44..aRRineeggrreessssiioo(ncn)ppRFeeerorgffuoorrrerimmsesraiaotnnrncaceenpsooeffrfofvvromaarlmliiddaaanttciiooennosfsMeeitntaiixtnnhimmmePeSuaaaVcmckhhR,,iinnFMeereellqaeenauarr,ennVniicannyrggibammnancooeddd,eepSllsske..aekwness,
+
+Time-frequency domain Wavelet decomposition
+
+Node energy
+
+Table 4. Feature extraction category table of machine learning models.
+
+Feature Attribute Time domain
+Frequency domain Time-frequency domain
+
+Transformation Mode \
+Fourier transform Wavelet decomposition
+
+Feature Category
+Maximum, Mean, Root mean square, Variance, Standard deviation, Skewness,
+Kurtosis, Peak, Peak coefficient Maximum, Mean, Variance, Skewness,
+Peak, Frequency band peak Node energy
+
+FFiigguurree 1155.. EErrrroorr bbooxx ddiiaaggrraamm ooff mmaacchhiinnee lleeaarrnniinngg mmooddeellss..
+According to the results, it can be seen that the results obtained from the machine learning models are not stable. Compared to the deep learning model, only the BPNN can achieve better results than the RNN model. This is due to the fact that the accuracy of the network prediction is largely inﬂuenced by the data preprocessing, feature extraction, and model structure selection. Deep learning can achieve very strong results with an adaptive feature learning process and a reasonable network depth design. These results can be achieved under the premise of little or no data preprocessing. Compared with
+Figure 15. Error box diagram of machine learning models.
+
+Symmetry 2019, 11, 809
+
+17 of 19
+
+the other algorithm models, RDN achieves a signiﬁcant performance improvement. The time for the forward operation of the RDN is approximately 112 ms. Although this result is not as good as the partial comparison model, the RDN model provides a better balance between time and accuracy. Therefore, it can be adopted to meet the real-time and accuracy requirements in industrial production.
+
+Table 5. Structure and performance table of machine learning models.
+
+Parameters/Indicators
+Learning rate Number of layers Number of nodes per layer
+Iteration times RMSE R2 MAPE
+Single operation time/ms
+
+BPNN
+0.1 4 46, 100, 50, 1 100 15.73 0.818 12.84% 28
+
+RBFN
+0.1 3 46, 200, 1 100 17.95 0.746 14.54% 15
+
+SVR
+0.1 \
+\
+100 19.41 0.673 15.46%
+18
+
+4. Conclusions
+In this paper, we propose to innovatively apply the idea of the DRRN, originally used for super-resolution image reconstruction, to the tool wear value detection problem. To be more suitable for this application, the network parameters and the structure are optimized based on the characteristics of the vibration signal, and the loss function is redesigned. In the preprocessing stage, a wavelet denoising procedure is used on the time domain signal of the acceleration sensor, and the redundant signals generated by each tool are segmented into multiple training samples to ﬁlter out noise and improve the robustness of the algorithm. Moreover, the DRRN is further improved. Speciﬁcally, the global residual, local residual, and dense network ideas are integrated together. A meta-structure, called the RDN, is proposed. To further alleviate the problem of gradient dispersion, BN layers and Dropout layers are added to the network; these have eﬀectively improved the convergence of the network. The feasibility of this method is validated with the milling cutter wear value detection platform. In this experiment, the signal acquisition unit and the upper computer analysis unit are built; the proposed deep learning framework is used to predict the tool wear value. The experimental results demonstrate that the proposed tool wear value detection method is both eﬃcient and accurate, has a clear workﬂow, and can adapt to the hardware system of most production environments. These results are promising, and indicate the RDN has the potential to meet the stringent requirements of real-time production environments.
+In practical production, the working procedures and site conditions are often complicated and variable. The proposed signal acquisition method and prediction model are restricted by the training data volume and processing method, which may not be applicable to arbitrary working conditions. In the future research, the following two directions are worthy of further investigation. First, from the signal acquisition perspective, the generalization capability of the prediction model can be improved by using multiple sensors to monitor the processing. The RDN approach can be extended to combine multisource data fusion technology with deep learning theory. Second, from the perspective of network design, the network prediction performance can be further improved by combining CNNs with other intelligent models.
+Author Contributions: Project Administration, Y.L.; Validation, Y.L.; Resources, H.H. and Q.X.; Investigation, Q.C.
+Funding: This study was supported by the major project of the National Natural Science Foundation of China (No. 51865004) and the Science and Technology Project of Guizhou Province (No. [2018]5781 and No. [2017]0034).
+Conﬂicts of Interest: The authors declare no conﬂict of interest. The founding sponsors had no role in the design of the study; in the collection, analysis, or interpretation of data; in the writing of the manuscript, and in the decision to publish the results.
+
+Symmetry 2019, 11, 809
+
+18 of 19
+
+References
+1. Yu, P. A review: Prognostics and health management. J. Electron. Meas. Instrum. 2010, 24, 1007–1015. 2. Zhou, Y.; Xue, W. Review of tool condition monitoring methods in milling processes. Int. J. Adv. Manuf.
+Technol. 2018, 96, 2509–2523. [CrossRef] 3. Dutta, S.; Pal, S.K.; Mukhopadhyay, S.; Sen, R. Application of digital image processing in tool condition
+monitoring: A review. CIRP J. Manuf. Sci. Technol. 2013, 6, 212–232. [CrossRef] 4. Patra, K.; Jha, A.K.; Szalay, T.; Ranjan, J.; Monostori, L. Artiﬁcial neural network based tool condition
+monitoring in micro mechanical peck drilling using thrust force signals. Precis. Eng. 2017, 48, 279–291. [CrossRef] 5. Martins, C.H.; Aguiar, P.R.; Frech, A.; Bianchi, E.C. Tool Condition Monitoring of Single-Point Dresser Using Acoustic Emission and Neural Networks Models. IEEE Trans. Instrum. Meas. 2014, 63, 667–679. [CrossRef] 6. Li, X.; Lim, B.S.; Zhou, J.H.; Huang, S.; Phua, S.J.; Shaw, K.C.; Er, M.J. Fuzzy neural network modelling for tool wear estimation in dry milling operation. In Proceedings of the Annual Conference of the Prognostics and Health Management Society, PHM, Montreal, QC, Canada, 27 September–1 October 2009. 7. Liao, Z.R.; Li, S.M.; Lu, Y.; Gao, D. Tool Wear Identiﬁcation in Turning Titanium Alloy Based on SVM. Mater. Sci. Forum 2014, 800, 446–450. [CrossRef] 8. Liu, C.; Wu, H.; Wang, L.; Zhang, Z. Tool wear state recognition based on LS-SVM with the PSO algorithm. J. Tsinghua Univ. 2017, 57, 975–979. 9. Li, W.L.; Fu, P.; Zhang, E.Q. Application of Fractal Dimensions and Fuzzy Clustering to Tool Wear Monitoring. Telkomnika 2013, 11, 187–194. [CrossRef] 10. Liao, Z.; Gao, D.; Lu, Y.; Lv, Z. Multi-scale hybrid HMM for tool wear condition monitoring. Int. J. Adv. Manuf. Technol. 2016, 84, 2437–2448. [CrossRef] 11. Li, X.; Er, M.J.; Ge, H.; Gan, O.P.; Huang, S.; Zhai, L.Y.; Torabi, A.J. Adaptive Network Fuzzy Inference System and support vector machine learning for tool wear estimation in high speed milling processes. In Proceedings of the Conference of the IEEE Industrial Electronics Society, Montreal, QC, Canada, 25–28 October 2012. 12. Zhang, K.F.; Yuan, H.Q.; Nie, P. Prediction of tool wear based on generalized dimensions and optimized BP neural network. J. Northeast. Univ. 2013, 34, 1292–1295. 13. Esteva, A.; Kuprel, B.; Novoa, R.A.; Ko, J.; Swetter, S.M.; Blau, H.M.; Thrun, S. Dermatologist-level classiﬁcation of skin cancer with deep neural networks. Nature 2017, 542, 115. [CrossRef] [PubMed] 14. Litjens, G.; Kooi, T.; Bejnordi, B.E.; Setio, A.A.A.; Ciompi, F.; Ghafoorian, M.; Sánchez, C.I. A survey on deep learning in medical image analysis. Med. Image Anal. 2017, 42, 60–88. [CrossRef] [PubMed] 15. Hinton, G.E.; Osindero, S.; The, Y.A. Fast learning algorithm for deep belief nets. Neural Comput. 2006, 18, 1527–1554. [CrossRef] [PubMed] 16. Li, C.; Zhang, W.E.I.; Peng, G.; Liu, S. Bearing Fault Diagnosis Using Fully-Connected Winner-Take-All Autoencoder. IEEE Access 2017, 6, 6103–6115. [CrossRef] 17. Zhao, R.; Yan, R.; Wang, J.; Mao, K. Learning to Monitor Machine Health with Convolutional Bi-Directional LSTM Networks. Sensors 2017, 17, 273. [CrossRef] [PubMed] 18. Zhang, A.; Wang, H.; Li, S.; Cui, Y.; Liu, Z.; Yang, G.; Hu, J. Transfer Learning with Deep Recurrent Neural Networks for Remaining Useful Life Estimation. Appl. Sci. 2018, 8, 2416. [CrossRef] 19. Zhang, C.J.; Yao, X.F.; Zhang, J.M. Research on tool wear monitoring based on deep learning. Comput. Integr. Manuf. Syst. 2017, 10, 2146–2155. 20. He, K.; Zhang, X.; Ren, S.; Sun, J. Deep Residual Learning for Image Recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, Las Vegas, NV, USA, 1–26 June 2016; pp. 770–778. 21. Tai, Y.; Yang, J.; Liu, X. Image Super-Resolution via Deep Recursive Residual Network. In Proceedings of the IEEE Computer Vision and Pattern Recognition (CVPR 2017), Honolulu, HI, USA, 21–26 July 2017. 22. Huang, G.; Liu, Z.; Laurens, V.D.M. Densely Connected Convolutional Networks. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, Las Vegas, NV, USA, 27–30 July 2016. 23. Ioﬀe, S.; Szegedy, C. Batch normalization: Accelerating deep network training by reducing internal covariate shift. arXiv 2015, arXiv:1502.03167.
+
+Symmetry 2019, 11, 809
+
+19 of 19
+
+24. Simonyan, I.K.; Zisserman, I.A. Very Deep Convolutional Networks for Large-Scale Image Recognition. arXiv 2014, arXiv:1409.1556.
+25. Zaremba, W.; Sutskever, I.; Vinyals, O. Recurrent Neural Network Regularization. arXiv 2014, arXiv:1409.2329. 26. Xingjian, S.H.I.; Chen, Z.; Wang, H.; Yeung, D.Y.; Wong, W.K.; Woo, W.C. Convolutional LSTM Network:
+A Machine Learning Approach for Precipitation Nowcasting. In Proceedings of the 28th International Conference on Neural Information Processing Systems, Montreal, QC, Canada, 7–12 December 2015; pp. 802–810.
+© 2019 by the authors. Licensee MDPI, Basel, Switzerland. This article is an open access article distributed under the terms and conditions of the Creative Commons Attribution (CC BY) license (http://creativecommons.org/licenses/by/4.0/).
+
