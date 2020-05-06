@@ -1,0 +1,1286 @@
+Universal adversarial perturbations
+
+Seyed-Mohsen Moosavi-Dezfooli∗†
+seyed.moosavi@epfl.ch
+Omar Fawzi‡
+omar.fawzi@ens-lyon.fr
+
+Alhussein Fawzi∗†
+alhussein.fawzi@epfl.ch
+Pascal Frossard†
+pascal.frossard@epfl.ch
+
+arXiv:1610.08401v3 [cs.CV] 9 Mar 2017
+
+Abstract
+Given a state-of-the-art deep neural network classiﬁer, we show the existence of a universal (image-agnostic) and very small perturbation vector that causes natural images to be misclassiﬁed with high probability. We propose a systematic algorithm for computing universal perturbations, and show that state-of-the-art deep neural networks are highly vulnerable to such perturbations, albeit being quasiimperceptible to the human eye. We further empirically analyze these universal perturbations and show, in particular, that they generalize very well across neural networks. The surprising existence of universal perturbations reveals important geometric correlations among the high-dimensional decision boundary of classiﬁers. It further outlines potential security breaches with the existence of single directions in the input space that adversaries can possibly exploit to break a classiﬁer on most natural images.1
+
+Face powder
+
+Chihuahua
+
+Joystick
+
+Chihuahua
+
+Grille
+
+Jay
+
+Thresher
+
+Labrador
+
+Flagpole
+
+Labrador
+
+Tibetan masti
+
+Tibetan masti
+
+1. Introduction
+Can we ﬁnd a single small image perturbation that fools a state-of-the-art deep neural network classiﬁer on all natural images? We show in this paper the existence of such quasi-imperceptible universal perturbation vectors that lead to misclassify natural images with high probability. Specifically, by adding such a quasi-imperceptible perturbation to natural images, the label estimated by the deep neural network is changed with high probability (see Fig. 1). Such perturbations are dubbed universal, as they are imageagnostic. The existence of these perturbations is problematic when the classiﬁer is deployed in real-world (and possibly hostile) environments, as they can be exploited by ad-
+∗The ﬁrst two authors contributed equally to this work. †E´ cole Polytechnique Fe´de´rale de Lausanne, Switzerland ‡ENS de Lyon, LIP, UMR 5668 ENS Lyon - CNRS - UCBL - INRIA, Universite´ de Lyon, France 1To encourage reproducible research, the code is available at gitHub. Furthermore, a video demonstrating the effect of universal perturbations on a smartphone can be found here.
+
+Lycaenid
+
+Brabancon gri on
+
+Balloon
+
+Labrador
+
+Whiptail lizard
+
+Border terrier
+
+Figure 1: When added to a natural image, a universal perturbation image causes the image to be misclassiﬁed by the deep neural network with high probability. Left images: Original natural images. The labels are shown on top of each arrow. Central image: Universal perturbation. Right images: Perturbed images. The estimated labels of the perturbed images are shown on top of each arrow.
+
+1
+
+versaries to break the classiﬁer. Indeed, the perturbation process involves the mere addition of one very small perturbation to all natural images, and can be relatively straightforward to implement by adversaries in real-world environments, while being relatively difﬁcult to detect as such perturbations are very small and thus do not signiﬁcantly affect data distributions. The surprising existence of universal perturbations further reveals new insights on the topology of the decision boundaries of deep neural networks. We summarize the main contributions of this paper as follows:
+• We show the existence of universal image-agnostic perturbations for state-of-the-art deep neural networks.
+• We propose an algorithm for ﬁnding such perturbations. The algorithm seeks a universal perturbation for a set of training points, and proceeds by aggregating atomic perturbation vectors that send successive datapoints to the decision boundary of the classiﬁer.
+• We show that universal perturbations have a remarkable generalization property, as perturbations computed for a rather small set of training points fool new images with high probability.
+• We show that such perturbations are not only universal across images, but also generalize well across deep neural networks. Such perturbations are therefore doubly universal, both with respect to the data and the network architectures.
+• We explain and analyze the high vulnerability of deep neural networks to universal perturbations by examining the geometric correlation between different parts of the decision boundary.
+The robustness of image classiﬁers to structured and unstructured perturbations have recently attracted a lot of attention [19, 16, 20, 3, 4, 12, 13, 14]. Despite the impressive performance of deep neural network architectures on challenging visual classiﬁcation benchmarks [6, 9, 21, 10], these classiﬁers were shown to be highly vulnerable to perturbations. In [19], such networks are shown to be unstable to very small and often imperceptible additive adversarial perturbations. Such carefully crafted perturbations are either estimated by solving an optimization problem [19, 11, 1] or through one step of gradient ascent [5], and result in a perturbation that fools a speciﬁc data point. A fundamental property of these adversarial perturbations is their intrinsic dependence on datapoints: the perturbations are specifically crafted for each data point independently. As a result, the computation of an adversarial perturbation for a new data point requires solving a data-dependent optimization problem from scratch, which uses the full knowledge of the classiﬁcation model. This is different from the universal perturbation considered in this paper, as we seek a
+
+single perturbation vector that fools the network on most natural images. Perturbing a new datapoint then only involves the mere addition of the universal perturbation to the image (and does not require solving an optimization problem/gradient computation). Finally, we emphasize that our notion of universal perturbation differs from the generalization of adversarial perturbations studied in [19], where perturbations computed on the MNIST task were shown to generalize well across different models. Instead, we examine the existence of universal perturbations that are common to most data points belonging to the data distribution.
+2. Universal perturbations
+We formalize in this section the notion of universal perturbations, and propose a method for estimating such perturbations. Let µ denote a distribution of images in Rd, and kˆ deﬁne a classiﬁcation function that outputs for each image x ∈ Rd an estimated label kˆ(x). The main focus of this paper is to seek perturbation vectors v ∈ Rd that fool the classiﬁer kˆ on almost all datapoints sampled from µ. That is, we seek a vector v such that
+kˆ(x + v) = kˆ(x) for “most” x ∼ µ.
+We coin such a perturbation universal, as it represents a ﬁxed image-agnostic perturbation that causes label change for most images sampled from the data distribution µ. We focus here on the case where the distribution µ represents the set of natural images, hence containing a huge amount of variability. In that context, we examine the existence of small universal perturbations (in terms of the p norm with p ∈ [1, ∞)) that misclassify most images. The goal is therefore to ﬁnd v that satisﬁes the following two constraints:
+1. v p ≤ ξ,
+2. P kˆ(x + v) = kˆ(x) ≥ 1 − δ.
+x∼µ
+The parameter ξ controls the magnitude of the perturbation vector v, and δ quantiﬁes the desired fooling rate for all images sampled from the distribution µ.
+Algorithm. Let X = {x1, . . . , xm} be a set of images sampled from the distribution µ. Our proposed algorithm seeks a universal perturbation v, such that v p ≤ ξ, while fooling most data points in X. The algorithm proceeds iteratively over the data points in X and gradually builds the universal perturbation, as illustrated in Fig. 2. At each iteration, the minimal perturbation ∆vi that sends the current perturbed point, xi +v, to the decision boundary of the classiﬁer is computed, and aggregated to the current instance of the universal perturbation. In more details, provided the current universal perturbation v does not fool data point xi, we seek the extra perturbation ∆vi with minimal norm that allows to fool data point xi by solving the following opti-
+
+v ∆v 2 R3
+∆v 1
+
+x1,2,3
+R2
+
+R1
+Figure 2: Schematic representation of the proposed algorithm used to compute universal perturbations. In this illustration, data points x1, x2 and x3 are super-imposed, and the classiﬁcation regions Ri (i.e., regions of constant estimated label) are shown in different colors. Our algorithm proceeds by aggregating sequentially the minimal perturbations sending the current perturbed points xi + v outside of the corresponding classiﬁcation region Ri.
+
+mization problem:
+
+∆vi
+
+←
+
+arg
+
+min
+r
+
+r
+
+2 s.t. kˆ(xi + v + r) = kˆ(xi).
+
+(1)
+
+To ensure that the constraint v p ≤ ξ is satisﬁed, the updated universal perturbation is further projected on the p ball of radius ξ and centered at 0. That is, let Pp,ξ be the projection operator deﬁned as follows:
+
+Pp,ξ(v) = arg min v − v 2 subject to v p ≤ ξ.
+v
+
+Then, our update rule is given by v ← Pp,ξ(v + ∆vi). Several passes on the data set X are performed to improve the
+quality of the universal perturbation. The algorithm is ter-
+minated when the empirical “fooling rate” on the perturbed data set Xv := {x1 + v, . . . , xm + v} exceeds the target threshold 1 − δ. That is, we stop the algorithm whenever
+
+1m
+
+Err(Xv) := m
+
+1kˆ(xi+v)=kˆ(xi) ≥ 1 − δ.
+
+i=1
+
+The detailed algorithm is provided in Algorithm 1. Interestingly, in practice, the number of data points m in X need not be large to compute a universal perturbation that is valid for the whole distribution µ. In particular, we can set m to be much smaller than the number of training points (see
+Section 3). The proposed algorithm involves solving at most m in-
+stances of the optimization problem in Eq. (1) for each pass. While this optimization problem is not convex when kˆ is a
+
+Algorithm 1 Computation of universal perturbations.
+
+1: input: Data points X, classiﬁer kˆ, desired p norm of the perturbation ξ, desired accuracy on perturbed sam-
+
+ples δ.
+
+2: output: Universal perturbation vector v.
+
+3: Initialize v ← 0.
+
+4: while Err(Xv) ≤ 1 − δ do
+
+5: for each datapoint xi ∈ X do
+
+6:
+
+if kˆ(xi + v) = kˆ(xi) then
+
+7:
+
+Compute the minimal perturbation that
+
+sends xi + v to the decision boundary:
+
+∆vi
+
+←
+
+arg
+
+min
+r
+
+r
+
+2 s.t. kˆ(xi + v + r) = kˆ(xi).
+
+8:
+
+Update the perturbation:
+
+v ← Pp,ξ(v + ∆vi).
+
+9:
+
+end if
+
+10: end for
+
+11: end while
+
+standard classiﬁer (e.g., a deep neural network), several efﬁcient approximate methods have been devised for solving this problem [19, 11, 7]. We use in the following the approach in [11] for its efﬁcency. It should further be noticed that the objective of Algorithm 1 is not to ﬁnd the smallest universal perturbation that fools most data points sampled from the distribution, but rather to ﬁnd one such perturbation with sufﬁciently small norm. In particular, different random shufﬂings of the set X naturally lead to a diverse set of universal perturbations v satisfying the required constraints. The proposed algorithm can therefore be leveraged to generate multiple universal perturbations for a deep neural network (see next section for visual examples).
+3. Universal perturbations for deep nets
+We now analyze the robustness of state-of-the-art deep neural network classiﬁers to universal perturbations using Algorithm 1.
+In a ﬁrst experiment, we assess the estimated universal perturbations for different recent deep neural networks on the ILSVRC 2012 [15] validation set (50,000 images), and report the fooling ratio, that is the proportion of images that change labels when perturbed by our universal perturbation. Results are reported for p = 2 and p = ∞, where we respectively set ξ = 2000 and ξ = 10. These numerical values were chosen in order to obtain a perturbation whose norm is signiﬁcantly smaller than the image norms, such that the perturbation is quasi-imperceptible when added to
+
+CaffeNet [8] VGG-F [2] VGG-16 [17] VGG-19 [17] GoogLeNet [18] ResNet-152 [6]
+
+X 2 Val.
+
+85.4% 85.6
+
+85.9% 87.0%
+
+90.7% 90.3%
+
+86.9% 84.5%
+
+82.9% 82.0%
+
+89.7% 88.5%
+
+X ∞ Val.
+
+93.1% 93.3%
+
+93.8% 93.7%
+
+78.5% 78.3%
+
+77.8% 77.8%
+
+80.8% 78.9%
+
+85.4% 84.0%
+
+Table 1: Fooling ratios on the set X, and the validation set.
+
+natural images2. Results are listed in Table 1. Each result is reported on the set X, which is used to compute the perturbation, as well as on the validation set (that is not used in the process of the computation of the universal perturbation). Observe that for all networks, the universal perturbation achieves very high fooling rates on the validation set. Speciﬁcally, the universal perturbations computed for CaffeNet and VGG-F fool more than 90% of the validation set (for p = ∞). In other words, for any natural image in the validation set, the mere addition of our universal perturbation fools the classiﬁer more than 9 times out of 10. This result is moreover not speciﬁc to such architectures, as we can also ﬁnd universal perturbations that cause VGG, GoogLeNet and ResNet classiﬁers to be fooled on natural images with probability edging 80%. These results have an element of surprise, as they show the existence of single universal perturbation vectors that cause natural images to be misclassiﬁed with high probability, albeit being quasiimperceptible to humans. To verify this latter claim, we show visual examples of perturbed images in Fig. 3, where the GoogLeNet architecture is used. These images are either taken from the ILSVRC 2012 validation set, or captured using a mobile phone camera. Observe that in most cases, the universal perturbation is quasi-imperceptible, yet this powerful image-agnostic perturbation is able to misclassify any image with high probability for state-of-the-art classiﬁers. We refer to the supp. material for the original (unperturbed) images, as well as their ground truth labels. We also refer to the video in the supplementary material for real-world examples on a smartphone. We visualize the universal perturbations corresponding to different networks in Fig. 4. It should be noted that such universal perturbations are not unique, as many different universal perturbations (all satisfying the two required constraints) can be generated for the same network. In Fig. 5, we visualize ﬁve different universal perturbations obtained by using different random shufﬂings in X. Observe that such universal perturbations are different, although they exhibit a similar pattern. This is moreover conﬁrmed by computing the normalized inner products between two pairs of perturbation images, as the normalized inner products do not exceed 0.1, which shows that one can ﬁnd diverse universal perturbations.
+2For comparison, the average 2 and ∞ norm of an image in the validation set is respectively ≈ 5 × 104 and ≈ 250.
+
+While the above universal perturbations are computed for a set X of 10,000 images from the training set (i.e., in average 10 images per class), we now examine the inﬂuence of the size of X on the quality of the universal perturbation. We show in Fig. 6 the fooling rates obtained on the validation set for different sizes of X for GoogLeNet. Note for example that with a set X containing only 500 images, we can fool more than 30% of the images on the validation set. This result is signiﬁcant when compared to the number of classes in ImageNet (1000), as it shows that we can fool a large set of unseen images, even when using a set X containing less than one image per class! The universal perturbations computed using Algorithm 1 have therefore a remarkable generalization power over unseen data points, and can be computed on a very small set of training images.
+Cross-model universality. While the computed perturbations are universal across unseen data points, we now examine their cross-model universality. That is, we study to which extent universal perturbations computed for a speciﬁc architecture (e.g., VGG-19) are also valid for another architecture (e.g., GoogLeNet). Table 2 displays a matrix summarizing the universality of such perturbations across six different architectures. For each architecture, we compute a universal perturbation and report the fooling ratios on all other architectures; we report these in the rows of Table 2. Observe that, for some architectures, the universal perturbations generalize very well across other architectures. For example, universal perturbations computed for the VGG-19 network have a fooling ratio above 53% for all other tested architectures. This result shows that our universal perturbations are, to some extent, doubly-universal as they generalize well across data points and very different architectures. It should be noted that, in [19], adversarial perturbations were previously shown to generalize well, to some extent, across different neural networks on the MNIST problem. Our results are however different, as we show the generalizability of universal perturbations across different architectures on the ImageNet data set. This result shows that such perturbations are of practical relevance, as they generalize well across data points and architectures. In particular, in order to fool a new image on an unknown neural network, a simple addition of a universal perturbation computed on the VGG-19 architecture is likely to misclassify the data point.
+
+wool
+
+Indian elephant
+
+Indian elephant
+
+African grey
+
+tabby
+
+African grey
+
+common newt
+
+carousel
+
+grey fox
+
+macaw
+
+three-toed sloth
+
+macaw
+
+Figure 3: Examples of perturbed images and their corresponding labels. The ﬁrst 8 images belong to the ILSVRC 2012 validation set, and the last 4 are images taken by a mobile phone camera. See supp. material for the original images.
+
+(a) CaffeNet
+
+(b) VGG-F
+
+(c) VGG-16
+
+(d) VGG-19
+
+(e) GoogLeNet
+
+(f) ResNet-152
+
+Figure 4: Universal perturbations computed for different deep neural network architectures. Images generated with p = ∞, ξ = 10. The pixel values are scaled for visibility.
+
+Visualization of the effect of universal perturbations.
+To gain insights on the effect of universal perturbations on
+natural images, we now visualize the distribution of labels
+on the ImageNet validation set. Speciﬁcally, we build a directed graph G = (V, E), whose vertices denote the labels, and directed edges e = (i → j) indicate that the majority of images of class i are fooled into label j when applying the universal perturbation. The existence of edges i → j
+
+therefore suggests that the preferred fooling label for images of class i is j. We construct this graph for GoogLeNet, and visualize the full graph in the supp. material for space constraints. The visualization of this graph shows a very peculiar topology. In particular, the graph is a union of disjoint components, where all edges in one component mostly connect to one target label. See Fig. 7 for an illustration of two connected components. This visualization clearly shows the existence of several dominant labels, and that universal perturbations mostly make natural images classiﬁed with such
+
+Figure 5: Diversity of universal perturbations for the GoogLeNet architecture. The ﬁve perturbations are generated using different random shufﬂings of the set X. Note that the normalized inner products for any pair of universal perturbations does not exceed 0.1, which highlights the diversity of such perturbations.
+
+VGG-F CaffeNet GoogLeNet VGG-16 VGG-19 ResNet-152
+
+VGG-F 93.7% 74.0% 46.2% 63.4% 64.0% 46.3%
+
+CaffeNet 71.8% 93.3% 43.8% 55.8% 57.2% 46.3%
+
+GoogLeNet 48.4% 47.7% 78.9% 56.5% 53.6% 50.5%
+
+VGG-16 42.1% 39.9% 39.2% 78.3% 73.5% 47.0%
+
+VGG-19 42.1% 39.9% 39.8% 73.1% 77.8% 45.5%
+
+ResNet-152 47.4 % 48.0% 45.5% 63.4% 58.0% 84.0%
+
+Table 2: Generalizability of the universal perturbations across different networks. The percentages indicate the fooling rates. The rows indicate the architecture for which the universal perturbations is computed, and the columns indicate the architecture for which the fooling rate is reported.
+
+Fooling ratio (%)
+
+90
+
+80
+
+70
+
+60
+
+50
+
+40
+
+30
+
+20
+
+10
+
+0
+
+500
+
+1000
+
+2000
+
+Number of images in X
+
+4000
+
+Figure 6: Fooling ratio on the validation set versus the size of X. Note that even when the universal perturbation is computed on a very small set X (compared to training and validation sets), the fooling ratio on validation set is large.
+
+labels. We hypothesize that these dominant labels occupy large regions in the image space, and therefore represent good candidate labels for fooling most natural images. Note that these dominant labels are automatically found by Algorithm 1, and are not imposed a priori in the computation of perturbations.
+Fine-tuning with universal perturbations. We now examine the effect of ﬁne-tuning the networks with perturbed
+
+images. We use the VGG-F architecture, and ﬁne-tune the network based on a modiﬁed training set where universal perturbations are added to a fraction of (clean) training samples: for each training point, a universal perturbation is added with probability 0.5, and the original sample is preserved with probability 0.5.3 To account for the diversity of universal perturbations, we pre-compute a pool of 10 different universal perturbations and add perturbations to the training samples randomly from this pool. The network is ﬁne-tuned by performing 5 extra epochs of training on the modiﬁed training set. To assess the effect of ﬁne-tuning on the robustness of the network, we compute a new universal perturbation for the ﬁne-tuned network (using Algorithm 1, with p = ∞ and ξ = 10), and report the fooling rate of the network. After 5 extra epochs, the fooling rate on the validation set is 76.2%, which shows an improvement with respect to the original network (93.7%, see Table 1).4 Despite this improvement, the ﬁne-tuned network remains largely vulnerable to small universal perturbations. We therefore
+3In this ﬁne-tuning experiment, we use a slightly modiﬁed notion of universal perturbations, where the direction of the universal vector v is ﬁxed for all data points, while its magnitude is adaptive. That is, for each data point x, we consider the perturbed point x+αv, where α is the smallest coefﬁcient that fools the classiﬁer. We observed that this feedbacking strategy is less prone to overﬁtting than the strategy where the universal perturbation is simply added to all training points.
+4This ﬁne-tuning procedure moreover led to a minor increase in the error rate on the validation set, which might be due to a slight overﬁtting of the perturbed data.
+
+window shade
+
+slide rule
+space shuttle platypus
+
+leopard
+
+nematode
+
+microwave dining table
+cash machine television
+
+dowitcher
+
+refrigerator
+
+great grey owl
+
+mosquito net
+
+pillow
+
+computer keyboard
+
+fountain
+
+wardrobe
+
+quilt plate rack
+
+tray pencil box
+
+digital clock Arctic fox
+
+medicine chest
+
+envelope
+
+Figure 7: Two connected components of the graph G = (V, E), where the vertices are the set of labels, and directed edges i → j indicate that most images of class i are fooled into class j.
+
+repeated the above procedure (i.e., computation of a pool of 10 universal perturbations for the ﬁne-tuned network, ﬁnetuning of the new network based on the modiﬁed training set for 5 extra epochs), and we obtained a new fooling ratio of 80.0%. In general, the repetition of this procedure for a ﬁxed number of times did not yield any improvement over the 76.2% fooling ratio obtained after one step of ﬁnetuning. Hence, while ﬁne-tuning the network leads to a mild improvement in the robustness, we observed that this simple solution does not fully immune against small universal perturbations.
+4. Explaining the vulnerability to universal perturbations
+The goal of this section is to analyze and explain the high vulnerability of deep neural network classiﬁers to universal perturbations. To understand the unique characteristics of universal perturbations, we ﬁrst compare such perturbations with other types of perturbations, namely i) random perturbation, ii) adversarial perturbation computed for a randomly picked sample (computed using the DF and FGS methods respectively in [11] and [5]), iii) sum of adversarial perturbations over X, and iv) mean of the images (or ImageNet bias). For each perturbation, we depict a phase transition graph in Fig. 8 showing the fooling rate on the validation set with respect to the 2 norm of the perturbation. Different perturbation norms are achieved by scaling accordingly each perturbation with a multiplicative factor to have the target norm. Note that the universal perturbation is computed for ξ = 2000, and also scaled accordingly.
+Observe that the proposed universal perturbation quickly reaches very high fooling rates, even when the perturbation is constrained to be of small norm. For example, the uni-
+
+versal perturbation computed using Algorithm 1 achieves a fooling rate of 85% when the 2 norm is constrained to ξ = 2000, while other perturbations achieve much smaller ratios for comparable norms. In particular, random vectors sampled uniformly from the sphere of radius of 2000 only fool 10% of the validation set. The large difference between universal and random perturbations suggests that the universal perturbation exploits some geometric correlations between different parts of the decision boundary of the classiﬁer. In fact, if the orientations of the decision boundary in the neighborhood of different data points were completely uncorrelated (and independent of the distance to the decision boundary), the norm of the best universal perturbation would be comparable to that of a random perturbation. Note that the latter quantity is well understood (see [4]), as the norm of the random perturbation re√quired to fool a speciﬁc data point precisely behaves as Θ( d r 2), where d is the dimension of the input space, and r 2 is the distance between the data point and the decision boundary (or equivalently, the norm of the smallest adversarial perturbation). For the consi√dered ImageNet classiﬁcation task, this quantity is equal to d r 2 ≈ 2×104, for most data points, which is at least one order of magnitude larger than the universal perturbation (ξ = 2000). This substantial difference between random and universal perturbations thereby suggests redundancies in the geometry of the decision boundaries that we now explore.
+For each image x in the validation set, we compute the adversarial perturbation vector r(x) = arg minr r 2 s.t. kˆ(x + r) = kˆ(x). It is easy to see that r(x) is normal to the decision boundary of the classiﬁer (at x + r(x)). The vector r(x) hence captures the local geometry of the decision boundary in the region surrounding the data point x. To quantify the correlation
+
+Fooling rate Singular values
+
+1 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1
+0 0
+
+Universal Random Adv. pert. (DF) Adv. pert. (FGS) Sum ImageNet bias
+
+2000
+
+4000
+
+6000
+
+Norm of perturbation
+
+8000
+
+10000
+
+Figure 8: Comparison between fooling rates of different perturbations. Experiments performed on the CaffeNet architecture.
+
+5
+
+Random
+
+4.5
+
+Normal vectors
+
+4
+
+3.5
+
+3
+
+2.5
+
+2
+
+1.5
+
+1
+
+0.5
+
+0 0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+
+Index
+
+104
+
+Figure 9: Singular values of matrix N containing normal vectors to the decision decision boundary.
+
+between different regions of the decision boundary of the classiﬁer, we deﬁne the matrix
+
+N=
+
+r(x1) r(x1)
+
+2
+
+.
+
+..
+
+r(xn) r(xn) 2
+
+of normal vectors to the decision boundary in the vicinity of n data points in the validation set. For binary linear classiﬁers, the decision boundary is a hyperplane, and N is of rank 1, as all normal vectors are collinear. To capture more generally the correlations in the decision boundary of complex classiﬁers, we compute the singular values of the matrix N . The singular values of the matrix N , computed for the CaffeNet architecture are shown in Fig. 9. We further show in the same ﬁgure the singular values obtained when the columns of N are sampled uniformly at random from the unit sphere. Observe that, while the latter singular values have a slow decay, the singular values of N decay quickly, which conﬁrms the existence of large correlations and redundancies in the decision boundary of deep networks. More precisely, this suggests the existence of a subspace S of low dimension d (with d d), that contains most normal vectors to the decision boundary in regions surrounding natural images. We hypothesize that the existence of universal perturbations fooling most natural images is partly due to the existence of such a low-dimensional subspace that captures the correlations among different regions of the decision boundary. In fact, this subspace “collects” normals to the decision boundary in different regions, and perturbations belonging to this subspace are therefore likely to fool datapoints. To verify this hypothesis, we choose a random vector of norm ξ = 2000 belonging to the subspace S spanned by the ﬁrst 100 singular vectors, and compute its fooling ratio on a different set of images (i.e., a set of images that have not been used to compute the SVD). Such a perturbation can fool nearly 38% of these images, thereby showing that a random direction in this well-sought subspace S signiﬁcantly outperforms random perturbations (we recall
+
+Figure 10: Illustration of the low dimensional subspace S containing normal vectors to the decision boundary in regions surrounding natural images. For the purpose of this illustration, we super-impose three data-points {xi}3i=1, and the adversarial perturbations {ri}3i=1 that send the respective datapoints to the decision boundary {Bi}3i=1 are shown. Note that {ri}3i=1 all live in the subspace S.
+that such perturbations can only fool 10% of the data). Fig. 10 illustrates the subspace S that captures the correlations in the decision boundary. It should further be noted that the existence of this low dimensional subspace explains the surprising generalization properties of universal perturbations obtained in Fig. 6, where one can build relatively generalizable universal perturbations with very few images.
+Unlike the above experiment, the proposed algorithm does not choose a random vector in this subspace, but rather chooses a speciﬁc direction in order to maximize the overall fooling rate. This explains the gap between the fooling rates obtained with the random vector strategy in S and Algorithm 1.
+5. Conclusions
+We showed the existence of small universal perturbations that can fool state-of-the-art classiﬁers on natural images. We proposed an iterative algorithm to generate universal perturbations, and highlighted several properties of
+
+such perturbations. In particular, we showed that universal perturbations generalize well across different classiﬁcation models, resulting in doubly-universal perturbations (imageagnostic, network-agnostic). We further explained the existence of such perturbations with the correlation between different regions of the decision boundary. This provides insights on the geometry of the decision boundaries of deep neural networks, and contributes to a better understanding of such systems. A theoretical analysis of the geometric correlations between different parts of the decision boundary will be the subject of future research.
+Acknowledgments
+We gratefully acknowledge the support of NVIDIA Corporation with the donation of the Tesla K40 GPU used for this research.
+References
+[1] O. Bastani, Y. Ioannou, L. Lampropoulos, D. Vytiniotis, A. Nori, and A. Criminisi. Measuring neural net robustness with constraints. In Neural Information Processing Systems (NIPS), 2016. 2
+[2] K. Chatﬁeld, K. Simonyan, A. Vedaldi, and A. Zisserman. Return of the devil in the details: Delving deep into convolutional nets. In British Machine Vision Conference, 2014. 4
+[3] A. Fawzi, O. Fawzi, and P. Frossard. Analysis of classiﬁers’ robustness to adversarial perturbations. CoRR, abs/1502.02590, 2015. 2
+[4] A. Fawzi, S. Moosavi-Dezfooli, and P. Frossard. Robustness of classiﬁers: from adversarial to random noise. In Neural Information Processing Systems (NIPS), 2016. 2, 7
+[5] I. J. Goodfellow, J. Shlens, and C. Szegedy. Explaining and harnessing adversarial examples. In International Conference on Learning Representations (ICLR), 2015. 2, 7
+[6] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognition. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016. 2, 4
+[7] R. Huang, B. Xu, D. Schuurmans, and C. Szepesva´ri. Learning with a strong adversary. CoRR, abs/1511.03034, 2015. 3
+[8] Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama, and T. Darrell. Caffe: Convolutional architecture for fast feature embedding. In ACM International Conference on Multimedia (MM), pages 675–678, 2014. 4
+[9] A. Krizhevsky, I. Sutskever, and G. E. Hinton. Imagenet classiﬁcation with deep convolutional neural networks. In Advances in neural information processing systems (NIPS), pages 1097–1105, 2012. 2
+[10] Q. V. Le, W. Y. Zou, S. Y. Yeung, and A. Y. Ng. Learning hierarchical invariant spatio-temporal features for action recognition with independent subspace analysis. In Computer Vision and Pattern Recognition (CVPR), 2011 IEEE Conference on, pages 3361–3368. IEEE, 2011. 2
+
+[11] S.-M. Moosavi-Dezfooli, A. Fawzi, and P. Frossard. Deepfool: a simple and accurate method to fool deep neural networks. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016. 2, 3, 7
+[12] A. Nguyen, J. Yosinski, and J. Clune. Deep neural networks are easily fooled: High conﬁdence predictions for unrecognizable images. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pages 427–436, 2015. 2
+[13] E. Rodner, M. Simon, R. Fisher, and J. Denzler. Fine-grained recognition in the noisy wild: Sensitivity analysis of convolutional neural networks approaches. In British Machine Vision Conference (BMVC), 2016. 2
+[14] A. Rozsa, E. M. Rudd, and T. E. Boult. Adversarial diversity and hard positive generation. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR) Workshops, 2016. 2
+[15] O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy, A. Khosla, M. Bernstein, A. Berg, and L. Fei-Fei. Imagenet large scale visual recognition challenge. International Journal of Computer Vision, 115(3):211–252, 2015. 3
+[16] S. Sabour, Y. Cao, F. Faghri, and D. J. Fleet. Adversarial manipulation of deep representations. In International Conference on Learning Representations (ICLR), 2016. 2
+[17] K. Simonyan and A. Zisserman. Very deep convolutional networks for large-scale image recognition. In International Conference on Learning Representations (ICLR), 2014. 4
+[18] C. Szegedy, W. Liu, Y. Jia, P. Sermanet, S. Reed, D. Anguelov, D. Erhan, V. Vanhoucke, and A. Rabinovich. Going deeper with convolutions. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2015. 4
+[19] C. Szegedy, W. Zaremba, I. Sutskever, J. Bruna, D. Erhan, I. Goodfellow, and R. Fergus. Intriguing properties of neural networks. In International Conference on Learning Representations (ICLR), 2014. 2, 3, 4
+[20] P. Tabacof and E. Valle. Exploring the space of adversarial images. IEEE International Joint Conference on Neural Networks, 2016. 2
+[21] Y. Taigman, M. Yang, M. Ranzato, and L. Wolf. Deepface: Closing the gap to human-level performance in face veriﬁcation. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pages 1701–1708, 2014. 2
+
+A. Appendix
+Fig. 11 shows the original images corresponding to the experiment in Fig. 3. Fig. 12 visualizes the graph showing relations between original and perturbed labels (see Section 3 for more details).
+
+Bouvier des Flandres
+
+Christmas stocking
+
+Scottish deerhound
+
+ski mask
+
+porcupine
+
+killer whale
+
+European fire salamander
+
+toyshop
+
+fox squirrel
+
+pot
+
+Arabian camel
+
+coffeepot
+
+Figure 11: Original images. The ﬁrst two rows are randomly chosen images from the validation set, and the last row of images are personal images taken from a mobile phone camera.
+
+tick long-horned beetle
+African chameleon
+green snake
+
+junco
+
+hammer
+
+cricket
+
+mantis
+
+cliff dwelling
+
+axolotl
+
+tree frog burrito
+
+weevil
+
+photocopier
+
+lacewing
+
+common iguana
+
+dough
+
+rhinoceros beetle
+
+tub grasshopper
+
+walking stick
+
+American chameleon
+
+cougar
+
+green lizard
+
+banded gecko water snake night snake
+
+green mamba
+
+African crocodile
+
+Band Aid
+
+tank
+
+giant schnauzer Kerry blue terrier
+
+stove
+
+window shade
+
+microwave
+
+dining table cash machine
+
+television
+
+mosquito net
+
+refrigerator
+
+pillow
+
+computer keyboard
+
+wardrobe
+
+plate rack
+
+quilt
+
+tray pencil box
+
+medicine chest
+
+envelope
+
+chest safe
+chiffonier
+
+Dutch oven
+
+caldron
+
+Crock Pot
+
+neck brace
+
+potter's wheel African elephant
+
+prison
+
+fur coat
+
+black widow
+
+Indian elephant
+
+shovel
+
+espresso maker
+
+hermit crab
+
+catamaran
+
+strainer
+
+black and gold garden spider
+
+sturgeon
+
+modem
+
+mortarboard
+
+nail
+
+planetarium
+
+binoculars
+
+maillot
+
+wing
+
+chime loupe
+
+carton
+
+military uniform
+
+muzzle
+
+swimming trunks
+
+barbershop
+
+ice cream
+
+bathtub
+
+drilling platform
+
+barbell
+
+Lhasa
+
+wok
+
+golf ball suit
+
+missile
+
+breastplate
+
+yawl
+
+oboe
+
+abaya
+
+acoustic guitar
+
+snowmobile
+
+plane
+
+Maltese dog
+
+washbasin
+
+Pembroke
+
+�ireboat
+
+hartebeest
+
+pencil sharpener
+
+crane
+
+cleaver
+
+grey whale
+
+sulphur-crested cockatoo �lute
+
+promontory
+
+water ouzel
+
+sandal
+
+hay
+
+gasmask
+
+Walker hound
+
+castle
+
+desk
+
+suspension bridge hair spray
+
+passenger car
+
+pool table Eskimo dog
+moving van
+
+oystercatcher
+schipperke plastic bag quill
+pier bell cote
+
+saltshaker
+
+loudspeaker
+
+dogsled
+
+volcano
+
+trench coat
+
+speedboat
+
+backpack
+
+red-backed sandpiper
+
+mixing bowl
+
+brassiere
+
+cornet
+
+bannister
+
+chickadee
+
+house �inch
+
+viaduct
+
+ice bear
+
+patio can opener
+
+valley
+
+bikini
+
+sliding door
+
+Great Pyrenees llama
+
+drum
+
+power drill
+
+radiator
+
+assault ri�le
+
+washer
+
+switch
+
+seat belt
+
+megalith
+
+folding chair
+
+syringe
+
+consomme
+
+boathouse
+
+liner
+
+snowplow
+
+lifeboat
+
+groom submarine
+vase
+
+rubber eraser
+
+Pekinese
+
+chocolate sauce
+
+scale
+
+ping-pong ball
+
+re�lex camera
+
+bobsled
+
+garden spider
+
+studio couch
+
+killer whale
+
+gown
+
+knee pad
+
+barn
+
+steel arch bridge
+
+letter opener Petri dish
+
+Persian cat �lagpole
+cliff
+
+dock
+
+palace
+
+nipple
+
+stupa
+
+pole mosque
+
+white stork
+
+amphibian
+
+oxygen mask
+
+African grey
+
+guillotine
+
+albatross
+
+punching bag
+
+diaper
+
+lab coat
+
+kite wig
+harvester
+
+toilet tissue
+
+stethoscope
+
+wreck
+
+sandbar
+
+violin
+
+cocktail shaker
+
+breakwater
+
+spatula
+
+ski
+
+harmonica
+
+sunglass
+
+container ship
+
+paintbrush
+
+balance beam
+
+tripod
+
+thatch
+
+soap dispenser beacon
+
+convertible
+
+pedestal
+
+mouse
+
+measuring cup
+
+Loafer
+
+spotlight
+
+hook
+
+shoji
+
+toaster
+
+screwdriver
+
+bucket
+
+ladle desktop computer
+
+sunscreen
+
+ballpoint
+
+table lamp
+
+pirate
+
+drumstick
+
+radio telescope
+
+garbage truck
+
+seashore
+
+plate
+
+conch
+
+dam
+
+car mirror
+
+microphone
+
+solar dish
+
+corkscrew dumbbell iron
+
+balloon
+
+joystick
+
+whistle
+
+fountain pen
+
+trailer truck
+
+grand piano
+
+turnstile
+
+space heater
+
+home theater
+
+frying pan
+
+cowboy hat
+
+projectile
+
+bassoon
+
+teapot
+
+vacuum
+
+geyser
+
+worm fence
+
+steam locomotive
+
+cannon
+
+whiskey jug cassette player
+
+CD player ruddy turnstone
+
+mobile home
+
+aircraft carrier
+
+mountain tent
+
+traf�ic light
+
+cradle
+
+trimaran
+
+hand blower
+
+paper towel alp
+racket
+
+volleyball
+
+lakeside
+
+airliner
+
+printer
+
+monastery
+
+church
+
+mousetrap
+
+Samoyed
+
+water tower
+
+warplane
+
+plunger bow tie
+airship
+
+Polaroid camera
+
+projector iPod
+
+toy poodle
+
+cockroach cray�ish
+American lobster
+
+Windsor tie
+
+jersey
+
+cardigan
+
+bulletproof vest
+
+sloth bear
+
+cello
+
+spindle
+
+pickelhaube
+
+miniskirt
+
+maillot sax
+
+crutch
+
+miniature poodle
+
+banana
+
+sunglasses
+
+ski mask
+
+mask
+
+crash helmet
+
+shower cap
+
+Egyptian cat
+
+tiger cat
+
+tabby
+
+wine bottle
+
+beaker
+
+espresso
+
+eggnog
+
+thimble
+
+cup oil �ilter
+coffeepot
+
+ringneck snake
+
+china cabinet
+
+perfume
+
+lipstick coffee mug
+
+ladybug
+
+damsel�ly
+
+Siberian husky �ly
+
+ri�le gold�inch
+admiral
+
+bell pepper sulphur butter�ly
+
+hornbill
+
+tiger shark soup bowl
+
+bulbul
+
+chambered nautilus
+
+jacamar
+
+hummingbird
+
+indigo bunting jay
+
+cinema
+
+water jug
+
+jelly�ish
+
+jack-o'-lantern
+
+parachute
+
+lampshade ant
+
+barn spider
+
+matchstick
+
+hammerhead
+
+tennis ball
+
+great white shark
+
+cloak lycaenid
+
+torch
+
+lens cap
+
+magpie
+
+macaw
+
+red wine
+
+lea�hopper
+
+American egret
+
+lighter
+
+parallel bars
+
+electric ray
+
+upright
+
+obelisk
+
+stage lemon
+
+vine snake
+
+stingray
+
+bee eater
+
+beer glass
+
+Angora
+
+dugong
+
+leaf beetle dragon�ly
+
+electric guitar bald eagle
+
+schooner
+
+scuba diver
+
+pinwheel
+
+cabbage butter�ly
+
+candle
+
+sweatshirt
+
+maraca rule
+
+wooden spoon
+
+pill bottle
+
+mitten
+
+mortar hotdog
+
+lotion
+
+face powder
+
+ice lolly
+
+crate
+
+wool
+
+broom
+
+knot
+
+bath towel
+
+velvet
+
+lynx
+
+Granny Smith
+
+spaghetti squash
+
+cheeseburger butternut squash
+
+barrel
+
+leopard
+
+nematode
+
+slide rule
+
+space shuttle
+
+great grey owl
+
+platypus
+
+dowitcher fountain
+
+digital clock
+
+Arctic fox
+
+monitor tape player
+
+screen
+
+wallet
+
+oscilloscope
+
+binder
+
+notebook
+
+strawberry pick
+
+purse
+
+mailbag
+
+Figure 12: Graph representing the relation between original and perturbed labels. Note that “dominant labels” appear systematically. Please zoom for readability. Isolated nodes are removed from this visualization for readability.
+

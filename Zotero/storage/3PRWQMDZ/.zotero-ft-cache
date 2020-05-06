@@ -1,0 +1,320 @@
+
+Skip to search form Skip to main content
+Semantic Scholar
+All Fields
+
+    All Fields
+    Art
+    Biology
+    Business
+    Computer Science
+    Chemistry
+    Economics
+    Engineering
+    Environmental Science
+    Geography
+    Geology
+    History
+    Materials Science
+    Mathematics
+    Medicine
+    Philosophy
+    Physics
+    Political Science
+    Psychology
+    Sociology
+
+Search
+FAQ About Contact •
+Sign In Create Free Account
+You are currently offline. Some features of the site may not work correctly.
+
+    Corpus ID: 49549950 
+
+Adversarial Reprogramming of Neural Networks
+
+ @article{Elsayed2019AdversarialRO,
+  title={Adversarial Reprogramming of Neural Networks},
+  author={Gamaleldin F. Elsayed and Ian J. Goodfellow and Jascha Sohl-Dickstein},
+  journal={ArXiv},
+  year={2019},
+  volume={abs/1806.11146}
+}
+
+Gamaleldin F. Elsayed , Ian J. Goodfellow , Jascha Sohl-Dickstein
+Published in ICLR 2019
+Mathematics, Computer Science
+ArXiv
+Deep neural networks are susceptible to \emph{adversarial} attacks. [ ... ] Key Result We demonstrate adversarial reprogramming on six ImageNet classification models, repurposing these models to perform a counting task, as well as classification tasks: classification of MNIST and CIFAR-10 examples presented as inputs to the ImageNet model. Expand Abstract
+View PDF on ArXiv
+Save to Library
+Create Alert
+Cite
+Launch Research Feed
+Share This Paper
+
+    Abstract
+    Supplemental Code
+    Figures, Tables, and Topics
+    Paper Mentions
+    11 Citations
+    41 References
+    Related Papers
+
+Supplemental Code
+GITHUB REPO
+Via Papers with Code
+lizhuorong/Adversarial-Reprogramming-tensorflow
+TensorFlow implementation of Adversarial Reprogramming of Neural Networks https://arxiv.org/abs/1806.11146
+8 Stars
+Explore Further
+Discover more papers related to the topics discussed in this paper
+Figures, Tables, and Topics from this paper.
+Figures and Tables
+
+    figure 1
+    figure 1
+    table 1
+    table 1
+    figure 2
+    figure 2
+    figure 3
+    figure 3
+
+Explore Further: Topics Discussed in This Paper
+
+    ImageNet
+    Machine learning
+    Computer vision
+    Perturbation theory
+    Neural Networks
+    MNIST database
+    Adversary (cryptography)
+
+Paper Mentions
+NEWS ARTICLE
+Why Salesforce Can Win Influencer Marketing
+Forbes
+21 September 2018
+NEWS ARTICLE
+If You Want to Bootstrap Your Startup, Do This One Thing
+Forbes
+14 September 2018
+NEWS ARTICLE
+Why You Should Hire Someone With A Disability
+Forbes
+13 September 2018
+NEWS ARTICLE
+Four Best Practices For Successful, Responsive Media Campaigns
+Forbes
+12 September 2018
+NEWS ARTICLE
+Worried About The Impact Of Trade Wars? Keep An Eye On The 'Three R's'
+Forbes
+12 September 2018
+NEWS ARTICLE
+10 Questions To Ask Before You Use Blockchain
+Forbes
+11 September 2018
+NEWS ARTICLE
+Evolving Yesterday's Business Instruments For Tomorrow's Opportunity
+Forbes
+7 September 2018
+NEWS ARTICLE
+Six Key Components Of A Sustainable Giving Program
+Forbes
+7 September 2018
+SHOW MORE
+Citations
+Publications citing this paper.
+CITATION TYPE
+SORT BY
+SHOWING 1-10 OF 11 CITATIONS
+Adversarial Reprogramming of Text Classification Neural Networks
+
+    Paarth Neekhara , Shehzeen Hussain , Shlomo Dubnov , Farinaz Koushanfar
+    Computer Science, Mathematics
+    EMNLP/IJCNLP
+    2019
+
+VIEW 6 EXCERPTS
+CITES BACKGROUND, RESULTS & METHODS
+HIGHLY INFLUENCED
+Protecting Neural Networks with Hierarchical Random Switching: Towards Better Robustness-Accuracy Trade-off for Stochastic Defenses
+
+    Xiao Wang , Siyue Wang , +4 authors Sang Peter Chin
+    Mathematics, Computer Science
+    IJCAI
+    2019
+
+VIEW 5 EXCERPTS
+CITES BACKGROUND & METHODS
+HIGHLY INFLUENCED
+A Survey on Machine Learning Adversarial Attacks
+
+    Flávio Luis de Mello
+    Computer Science
+    2020
+
+Adversarial Attacks for Image Segmentation on Multiple Lightweight Models
+
+    Xu Kang , Bin Song , Xiaojiang Du , Mohsen Guizani
+    Computer Science
+    IEEE Access
+    2020
+
+VIEW 1 EXCERPT
+CITES BACKGROUND
+Adversarial Machine Learning - Industry Perspectives
+
+    Ram Shankar Siva Kumar , Magnus Nyström , +5 authors Sharon Xia
+    Computer Science, Mathematics
+    ArXiv
+    2020
+
+VIEW 1 EXCERPT
+CITES BACKGROUND
+Adversarial Attacks on Deep Learning Models in Natural Language Processing: A Survey
+
+    Wei Emma Zhang , Quan Z. Sheng , Ahoud Abdulrahmn F. Alhazmi , Chenliang Li
+    Computer Science
+    2019
+
+VIEW 1 EXCERPT
+CITES METHODS
+Bayesian Generative Models for Knowledge Transfer in MRI Semantic Segmentation Problems
+
+    Anna Kuzina , Evgenii Egorov , Evgeny Burnaev
+    Medicine, Computer Science, Psychology, Engineering, Mathematics
+    Front. Neurosci.
+    2019
+
+VIEW 1 EXCERPT
+CITES BACKGROUND
+Demystifying the Membership Inference Attack
+
+    Paul Irolla , Grégory Châtel
+    Computer Science
+    2019 12th CMI Conference on Cybersecurity and Privacy (CMI)
+    2019
+
+Generative Teaching Networks: Accelerating Neural Architecture Search by Learning to Generate Synthetic Training Data
+
+    Felipe Petroski Such , Aditya Rawal , Joel Lehman , Kenneth O. Stanley , Jeff Clune
+    Mathematics, Computer Science
+    ArXiv
+    2019
+
+VIEW 1 EXCERPT
+CITES BACKGROUND
+Adversarial Reprogramming of Sequence Classification Neural Networks
+
+    Paarth Neekhara , Shehzeen Hussain , Shlomo Dubnov , Farinaz Koushanfar
+    Mathematics, Computer Science
+    ArXiv
+    2018
+
+    ‹
+    1
+    2
+    ›
+
+References
+Publications referenced by this paper.
+SHOWING 1-10 OF 41 REFERENCES
+SORT BY
+Adversarial Examples for Generative Models
+
+    Jernej Kos , Ian C Fischer , Dawn Xiaodong Song
+    Mathematics, Computer Science
+    2018 IEEE Security and Privacy Workshops (SPW)
+    2018
+
+VIEW 1 EXCERPT
+Adversarial Logit Pairing
+
+    Harini Kannan , Alexey Kurakin , Ian J. Goodfellow
+    Computer Science, Mathematics
+    NIPS 2018
+    2018
+
+Deep Neural Networks as Gaussian Processes
+
+    Jaehoon Lee , Yasaman Bahri , +3 authors Jascha Sohl-Dickstein
+    Computer Science, Mathematics
+    ICLR
+    2018
+
+VIEW 1 EXCERPT
+Ensemble Adversarial Training: Attacks and Defenses
+
+    Florian Tramèr , Alexey Kurakin , Nicolas Papernot , Dan Boneh , Patrick D. McDaniel
+    Computer Science, Mathematics
+    ICLR
+    2018
+
+VIEW 1 EXCERPT
+Gaussian Process Behaviour in Wide Deep Neural Networks
+
+    Alexander G. de G. Matthews , Mark Rowland , Jiri Hron , Richard E. Turner , Zoubin Ghahramani
+    Computer Science, Mathematics
+    ICLR
+    2018
+
+VIEW 1 EXCERPT
+Measuring the Intrinsic Dimension of Objective Landscapes
+
+    Chunyuan Li , Heerad Farkhoor , Rosanne Liu , Jason Yosinski
+    Computer Science, Mathematics
+    ICLR
+    2018
+
+VIEW 1 EXCERPT
+Provable defenses against adversarial examples via the convex outer adversarial polytope
+
+    J. Zico Kolter , Eric Wong
+    Mathematics, Computer Science
+    ICML
+    2018
+
+Adversarial Attacks on Neural Network Policies
+
+    Sandy H. Huang , Nicolas Papernot , Ian J. Goodfellow , Yan Duan , Pieter Abbeel
+    Mathematics, Computer Science
+    ICLR
+    2017
+
+VIEW 1 EXCERPT
+Adversarial Examples for Malware Detection
+
+    Kathrin Grosse , Nicolas Papernot , Praveen Manoharan , Michael Backes , Patrick D. McDaniel
+    Computer Science
+    ESORICS
+    2017
+
+VIEW 1 EXCERPT
+Adversarial Machine Learning at Scale
+
+    Alexey Kurakin , Ian J. Goodfellow , Samy Bengio
+    Computer Science, Mathematics
+    ICLR
+    2017
+
+    ‹
+    1
+    2
+    3
+    4
+    5
+    ›
+
+Related Papers
+
+The Allen Institute for AI
+Proudly built by AI2 with the help of our Collaborators using these Sources .
+Blog posts, news articles and tweet counts and IDs sourced by
+Altmetric.com
+Research • Publisher Partnerships • Data Partnerships • API and Open Corpus
+Terms of Service • Privacy Policy
+By clicking accept or continuing to use the site, you agree to the terms outlined in our Privacy Policy , Terms of Service , and Dataset License
+ACCEPT & CONTINUE

@@ -1,0 +1,99 @@
+
+close this message
+Donate to arXiv
+
+Please join the Simons Foundation and our generous member organizations in supporting arXiv during our giving campaign September 23-27. 100% of your contribution will fund improvements and new initiatives to benefit arXiv's global scientific community.
+DONATE
+
+[secure site, no need to create account]
+Skip to main content
+Cornell University
+We gratefully acknowledge support from
+the Simons Foundation and member institutions.
+arXiv.org > cs > arXiv:1610.08401
+
+Help | Advanced Search
+Search
+arXiv
+Cornell University Logo
+open search
+GO
+open navigation menu
+quick links
+
+    Login
+    Help Pages
+    About
+
+Computer Science > Computer Vision and Pattern Recognition
+arXiv:1610.08401 (cs)
+[Submitted on 26 Oct 2016 ( v1 ), last revised 9 Mar 2017 (this version, v3)]
+Title: Universal adversarial perturbations
+Authors: Seyed-Mohsen Moosavi-Dezfooli , Alhussein Fawzi , Omar Fawzi , Pascal Frossard
+Download PDF
+
+    Abstract: Given a state-of-the-art deep neural network classifier, we show the existence of a universal (image-agnostic) and very small perturbation vector that causes natural images to be misclassified with high probability. We propose a systematic algorithm for computing universal perturbations, and show that state-of-the-art deep neural networks are highly vulnerable to such perturbations, albeit being quasi-imperceptible to the human eye. We further empirically analyze these universal perturbations and show, in particular, that they generalize very well across neural networks. The surprising existence of universal perturbations reveals important geometric correlations among the high-dimensional decision boundary of classifiers. It further outlines potential security breaches with the existence of single directions in the input space that adversaries can possibly exploit to break a classifier on most natural images. 
+
+Comments: 	Accepted at IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2017
+Subjects: 	Computer Vision and Pattern Recognition (cs.CV) ; Artificial Intelligence (cs.AI); Machine Learning (cs.LG); Machine Learning (stat.ML)
+Cite as: 	arXiv:1610.08401 [cs.CV]
+  	(or arXiv:1610.08401v3 [cs.CV] for this version)
+Bibliographic data
+[ Enable Bibex  ( What is Bibex? )]
+Submission history
+From: Seyed-Mohsen Moosavi-Dezfooli [ view email ]
+[v1] Wed, 26 Oct 2016 16:30:45 UTC (6,538 KB)
+[v2] Thu, 17 Nov 2016 07:15:00 UTC (6,547 KB)
+[v3] Thu, 9 Mar 2017 17:01:25 UTC (6,548 KB)
+Full-text links:
+Download:
+
+    PDF
+    Other formats
+
+( license )
+Current browse context:
+cs.CV
+< prev   |   next >
+new | recent | 1610
+Change to browse by:
+cs
+cs.AI
+cs.LG
+stat
+stat.ML
+References & Citations
+
+    NASA ADS
+    Google Scholar
+    Semantic Scholar
+
+DBLP - CS Bibliography
+listing | bibtex
+Seyed-Mohsen Moosavi-Dezfooli
+Alhussein Fawzi
+Omar Fawzi
+Pascal Frossard
+Export citation
+Bookmark
+BibSonomy logo Mendeley logo Reddit logo ScienceWISE logo
+Which authors of this paper are endorsers? | Disable MathJax ( What is MathJax? ) Browse v0.3.0 released 2020-04-15    Feedback?
+
+    About arXiv
+    Leadership Team
+
+    contact arXiv Click here to contact arXiv Contact
+    arXiv Twitter arXiv Twitter Follow us on Twitter
+
+    Help
+    Privacy Policy
+
+    Blog
+    Subscribe
+
+arXiv® is a registered trademark of Cornell University.
+
+arXiv Operational Status
+Get status notifications via email or slack
+
+If you have a disability and are having trouble accessing information on this website or need materials in an alternate format, contact web-accessibility@cornell.edu for assistance.

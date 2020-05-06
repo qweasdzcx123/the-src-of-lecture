@@ -1,0 +1,96 @@
+
+close this message
+Donate to arXiv
+
+Please join the Simons Foundation and our generous member organizations in supporting arXiv during our giving campaign September 23-27. 100% of your contribution will fund improvements and new initiatives to benefit arXiv's global scientific community.
+DONATE
+
+[secure site, no need to create account]
+Skip to main content
+Cornell University
+We gratefully acknowledge support from
+the Simons Foundation and member institutions.
+arXiv.org > cs > arXiv:1711.01991
+
+Help | Advanced Search
+Search
+arXiv
+Cornell University Logo
+open search
+GO
+open navigation menu
+quick links
+
+    Login
+    Help Pages
+    About
+
+Computer Science > Computer Vision and Pattern Recognition
+arXiv:1711.01991 (cs)
+[Submitted on 6 Nov 2017 ( v1 ), last revised 28 Feb 2018 (this version, v3)]
+Title: Mitigating Adversarial Effects Through Randomization
+Authors: Cihang Xie , Jianyu Wang , Zhishuai Zhang , Zhou Ren , Alan Yuille
+Download PDF
+
+    Abstract: Convolutional neural networks have demonstrated high accuracy on various tasks in recent years. However, they are extremely vulnerable to adversarial examples. For example, imperceptible perturbations added to clean images can cause convolutional neural networks to fail. In this paper, we propose to utilize randomization at inference time to mitigate adversarial effects. Specifically, we use two randomization operations: random resizing, which resizes the input images to a random size, and random padding, which pads zeros around the input images in a random manner. Extensive experiments demonstrate that the proposed randomization method is very effective at defending against both single-step and iterative attacks. Our method provides the following advantages: 1) no additional training or fine-tuning, 2) very few additional computations, 3) compatible with other adversarial defense methods. By combining the proposed randomization method with an adversarially trained model, it achieves a normalized score of 0.924 (ranked No.2 among 107 defense teams) in the NIPS 2017 adversarial examples defense challenge, which is far better than using adversarial training alone with a normalized score of 0.773 (ranked No.56). The code is public available at this https URL . 
+
+Comments: 	To appear in ICLR 2018, code available at this https URL
+Subjects: 	Computer Vision and Pattern Recognition (cs.CV)
+Cite as: 	arXiv:1711.01991 [cs.CV]
+  	(or arXiv:1711.01991v3 [cs.CV] for this version)
+Bibliographic data
+[ Enable Bibex  ( What is Bibex? )]
+Submission history
+From: Cihang Xie [ view email ]
+[v1] Mon, 6 Nov 2017 16:22:54 UTC (447 KB)
+[v2] Tue, 16 Jan 2018 22:45:32 UTC (456 KB)
+[v3] Wed, 28 Feb 2018 22:39:15 UTC (456 KB)
+Full-text links:
+Download:
+
+    PDF
+    Other formats
+
+( license )
+Current browse context:
+cs.CV
+< prev   |   next >
+new | recent | 1711
+Change to browse by:
+cs
+References & Citations
+
+    NASA ADS
+    Google Scholar
+    Semantic Scholar
+
+DBLP - CS Bibliography
+listing | bibtex
+Cihang Xie
+Jianyu Wang
+Zhishuai Zhang
+Zhou Ren
+Alan L. Yuille
+Export citation
+Bookmark
+BibSonomy logo Mendeley logo Reddit logo ScienceWISE logo
+Which authors of this paper are endorsers? | Disable MathJax ( What is MathJax? ) Browse v0.3.0 released 2020-04-15    Feedback?
+
+    About arXiv
+    Leadership Team
+
+    contact arXiv Click here to contact arXiv Contact
+    arXiv Twitter arXiv Twitter Follow us on Twitter
+
+    Help
+    Privacy Policy
+
+    Blog
+    Subscribe
+
+arXiv® is a registered trademark of Cornell University.
+
+arXiv Operational Status
+Get status notifications via email or slack
+
+If you have a disability and are having trouble accessing information on this website or need materials in an alternate format, contact web-accessibility@cornell.edu for assistance.
